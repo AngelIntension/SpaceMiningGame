@@ -4,12 +4,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Unity game centered around mining in space. Early-stage project built from the URP template.
+**VoidHarvest** — a 3D space mining simulator with EVE Online-inspired controls. Players pilot ships in 3rd-person, mine procedural asteroid fields, manage immutable resource inventories, research tech trees, build bases, and participate in a dynamic economy.
 
 - **Engine:** Unity 6 (6000.3.10f1)
 - **Rendering:** Universal Render Pipeline (URP) 17.3.0
-- **Platform:** Standalone Windows 64-bit
+- **Platform:** Standalone Windows 64-bit (VR/console planned)
 - **C# Version:** 9.0 / .NET Framework 4.7.1
+- **Constitution:** `.specify/memory/constitution.md` v1.1.0 — the authoritative source for all architectural decisions. Read it before any non-trivial work.
+
+**Current phase:** Phase 0 (MVP) — 3rd-person camera, EVE-style controls, basic mining loop, procedural asteroid field, simple HUD.
 
 ## Build & Development
 
@@ -24,14 +27,111 @@ Unity -runTests -batchmode -projectPath . -testResults results.xml -testPlatform
 
 ## Architecture
 
-**Input System:** Uses Unity's new Input System package. Input actions are defined in `InputSystem_Actions.inputactions` at the project root with a Player action map (Move, Look, Attack, Interact, Crouch, Jump, Previous, Next).
+### Core Paradigm: Functional & Immutable First
 
-**Rendering:** Dual pipeline configs — `Assets/Settings/PC_RPAsset.asset` (quality) and `Assets/Settings/Mobile_RPAsset.asset` (performance). Post-processing via Volume Profiles in `Assets/Settings/`.
+All game logic follows a strict functional/immutable pattern. This is non-negotiable.
 
-**Packages of note:** AI Navigation 2.0.10, Visual Scripting 1.9.9, Timeline 1.8.10, Multiplayer Center 1.0.1.
+- **State management:** Pure reducer pattern — `(State, Action) → State`. No direct mutation.
+- **Domain data:** Use `record` types (or `record struct` if C# 10+ confirmed). All data immutable.
+- **Collections:** `ImmutableArray<T>`, `ImmutableDictionary<K,V>`, or `NativeArray`/`BlobAsset` for DOTS. Never mutable `List<T>` or `Dictionary<K,V>` for domain state.
+- **Side effects:** Isolated to Unity lifecycle hooks, I/O, and rendering only.
+- **No mutable globals**, no static singletons for game logic, no service locators.
+
+### Hybrid DOTS Architecture
+
+- **DOTS/ECS + Entities Graphics + Burst/Jobs:** All simulation systems (mining, physics, AI, procedural generation, resource processing).
+- **GameObject/MonoBehaviour + ScriptableObjects:** UI, player input bridging, editor tools, lightweight view layers. MonoBehaviours NEVER hold game state.
+- **Communication:** EventBus (UniTask reactive) or DOTS event entities. Never direct field writes across systems.
+
+### Input Flow
+
+All input follows: Raw Input → immutable `PilotCommand` record → pure `ShipStateReducer`. Controls are EVE Online-inspired (mouse targeting, click-to-align, radial context menus, hotbar modules, keyboard thrust supplement). Input actions defined in `InputSystem_Actions.inputactions`.
+
+### Asset Strategy
+
+- ScriptableObjects = single source of truth for all static/designer data.
+- Addressables for all runtime-loaded assets. No `Resources.Load` calls.
+- Dependency injection via Zenject or VContainer. Pure constructor injection for non-MonoBehaviour systems.
+
+### Rendering
+
+Dual pipeline configs — `Assets/Settings/PC_RPAsset.asset` (quality) and `Assets/Settings/Mobile_RPAsset.asset` (performance). Post-processing via Volume Profiles in `Assets/Settings/`.
+
+### Performance Targets
+
+- 60 FPS minimum on mid-range PC (GTX 1060 / RX 580 class).
+- Zero GC allocations in hot loops.
+- Unity Profiler must be clean (no frame spikes > 2 ms) before any feature is marked done.
+
+## Project Structure
+
+```
+Assets/
+├── Features/                # One folder per major system
+│   ├── Camera/              # 3rd-person orbiting follow camera
+│   ├── Input/               # EVE-style controls, PilotCommand
+│   ├── Ship/                # Ship state, physics, modules
+│   ├── Fleet/               # Multi-ship ownership, swapping
+│   ├── Mining/              # Beam targeting, yield reducers
+│   │   ├── Data/            # ScriptableObjects, records, components
+│   │   ├── Systems/         # Pure logic, reducers, ECS systems
+│   │   ├── Views/           # MonoBehaviours, UI bindings
+│   │   └── Tests/           # Unit + integration tests
+│   ├── Resources/           # Resource / inventory system
+│   ├── Procedural/          # Asteroid field generation
+│   ├── HUD/                 # In-game UI, radial menus, hotbar
+│   ├── TechTree/            # Research / progression (Phase 1+)
+│   ├── Economy/             # Market simulation (Phase 3+)
+│   └── Base/                # Base building (Phase 2+)
+├── Core/                    # Shared infrastructure
+│   ├── EventBus/
+│   ├── State/               # Reducer framework, state store
+│   ├── Pools/               # ObjectPool<T> implementations
+│   └── Extensions/          # C# extension methods, utilities
+├── Settings/                # URP configs, volume profiles
+└── Scenes/
+```
+
+Each feature folder uses the `Data/`, `Systems/`, `Views/`, `Tests/` sub-structure.
+
+## Naming Conventions
+
+- **Namespaces:** `VoidHarvest.Features.<System>.<Layer>` (e.g., `VoidHarvest.Features.Mining.Systems`)
+- **Files:** PascalCase matching type name. One type per file.
+- **Records / Data:** Suffix `Data` or `State` (e.g., `AsteroidData`, `InventoryState`)
+- **Reducers:** Suffix `Reducer` (e.g., `InventoryReducer`, `ShipStateReducer`)
+- **ECS Systems:** Suffix `System` (e.g., `MiningBeamSystem`)
+- **ScriptableObjects:** Suffix `Config` or `Definition` (e.g., `OreTypeDefinition`, `ShipConfig`)
+- **Commands / Actions:** Suffix `Command` or `Action` (e.g., `PilotCommand`, `SwapShipAction`)
+
+## Testing
+
+- **TDD is mandatory.** Tests first → fail (Red) → implement (Green) → refactor.
+- **Unit tests** (NUnit + Unity Test Framework): 100% coverage on all pure reducers, mining logic, resource math, procedural generators. EditMode tests preferred for pure logic.
+- **Integration / PlayMode tests:** Required for any system bridging DOTS and MonoBehaviour layers.
+- **Static analysis:** Roslyn analyzers enforcing immutability. No public mutable fields on data types.
+
+## Development Workflow
+
+All non-trivial work follows the Spec-Kit pipeline:
+1. `/speckit.specify` — feature specification
+2. `/speckit.plan` — implementation plan (must pass Constitution Check)
+3. `/speckit.tasks` — task breakdown
+4. `/speckit.implement` — execution
+
+Any deviation from functional/immutable patterns requires explicit justification in the spec and a `// CONSTITUTION DEVIATION:` comment in code.
 
 ## Git Conventions
 
 - `.gitattributes` uses GameCI conventions: LF line endings, Git LFS for binary assets (textures, models, audio, fonts), Unity Smart Merge for YAML scene/prefab files.
+- Feature branches: `feature/<kebab-case-spec-name>`.
+- Conventional Commits (e.g., `feat:`, `fix:`, `refactor:`).
+- Main branch is protected. No direct pushes.
 - Do not commit `Library/`, `Temp/`, `Logs/`, `UserSettings/`, or generated `*.sln`/`*.csproj` files.
 - Scene and prefab files are YAML — prefer small, targeted edits to avoid merge conflicts.
+
+## Packages of Note
+
+AI Navigation 2.0.10, Visual Scripting 1.9.9, Timeline 1.8.10, Multiplayer Center 1.0.1, Input System.
+
+**Pending installation:** Addressables, UniTask, Zenject/VContainer, System.Collections.Immutable, DOTS Entities + Entities Graphics.
