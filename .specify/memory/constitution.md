@@ -1,61 +1,63 @@
 <!--
   ========== Sync Impact Report ==========
-  Version change: 0.0.0 (unfilled template) → 1.0.0
-  Bump rationale: MAJOR — initial ratification of project
-    constitution. All principles, standards, and governance
-    rules established for the first time.
+  Version change: 1.0.0 → 1.1.0
+  Bump rationale: MINOR — two new sections added with material
+    game design guidance (Game Vision Pillars) and phased
+    development roadmap (Development Roadmap). No existing
+    principles removed or redefined.
 
-  Modified principles: N/A (initial ratification)
+  Modified principles: None renamed or removed.
+
+  Modified sections:
+    - Initial Scope Guardrails (MVP): Refined to align with
+      EVE-style 3rd-person controls and vision pillars. Phase 0
+      description now references EVE controls paradigm.
+    - Project Structure: Added future feature folders (Camera,
+      Input, Fleet, TechTree, Economy, Base) as planned modules.
 
   Added sections:
-    - Project Vision
-    - Core Principles (6 principles):
-        I.   Functional & Immutable First
-        II.  Predictability & Testability
-        III. Performance by Default
-        IV.  Data-Oriented Design
-        V.   Modularity & Extensibility
-        VI.  Explicit Over Implicit
-    - Technical Standards & Coding Style
-        - Functional / Immutable Practices
-        - Unity-Specific Architecture
-        - Project Structure
-        - Naming Conventions
-    - Testing & Quality Standards
-    - Development Workflow
-    - Initial Scope Guardrails (MVP)
-    - Governance (amendment procedure, versioning, compliance)
+    - Game Vision Pillars (new §, between Core Principles and
+      Technical Standards):
+        · Perspective & Camera
+        · Controls (EVE Online-inspired)
+        · Ship Fleet System
+        · Progression (tech tree)
+        · Core Loop Satisfaction
+        · Endgame (economy + bases)
+    - Development Roadmap (new §, before Governance):
+        · Phase 0 (MVP)
+        · Phase 1 (fleet + tech tree)
+        · Phase 2 (refining + bases stub)
+        · Phase 3 (economy + deep customization)
 
-  Removed sections: None (initial creation)
+  Removed sections: None
 
   Templates requiring updates:
     - .specify/templates/plan-template.md:         ✅ No update needed
-      (Constitution Check is dynamic, filled at plan time)
+      (Constitution Check is dynamic; vision pillars provide
+      additional gates at plan time — e.g., camera must be
+      3rd-person, controls must follow EVE paradigm)
     - .specify/templates/spec-template.md:          ✅ No update needed
-      (generic structure supports functional data shape callouts)
+      (specs for camera/controls/fleet features will reference
+      vision pillars as requirements source)
     - .specify/templates/tasks-template.md:         ✅ No update needed
-      (TDD enforcement supported by optional test phases)
+      (phase structure in roadmap aligns with task phases)
     - .specify/templates/checklist-template.md:     ✅ No update needed
-      (generic, dynamically generated)
     - .specify/templates/agent-file-template.md:    ✅ No update needed
-      (auto-populated from plans)
     - .specify/templates/commands/:                 ✅ N/A (no files)
 
-  Follow-up TODOs:
+  Carried-forward TODOs (from v1.0.0):
     - TODO(C#_VERSION): Verify Unity 6 actual C# language level.
       `record struct` requires C# 10+; CLAUDE.md states C# 9.0.
-      If C# 9.0 confirmed, restrict to `record` (class) and
-      `readonly struct` separately.
-    - TODO(PACKAGES): Install required packages not yet present:
-        · com.unity.addressables (Addressables)
-        · Cysharp/UniTask (via git URL or OpenUPM)
-        · DI framework: Zenject or VContainer (via git/OpenUPM)
-        · System.Collections.Immutable (via NuGetForUnity or
-          manual DLL)
-        · com.unity.entities + com.unity.rendering.entities
-          (DOTS / Entities Graphics, if not already present)
-    - TODO(ROSLYN): Configure Roslyn analyzers for immutability
-      enforcement (no public mutable fields on data types).
+    - TODO(PACKAGES): Install required packages (Addressables,
+      UniTask, DI framework, System.Collections.Immutable, DOTS).
+    - TODO(ROSLYN): Configure Roslyn analyzers for immutability.
+
+  New TODOs (v1.1.0):
+    - TODO(INPUT_ACTIONS): Update InputSystem_Actions.inputactions
+      to reflect EVE-style control scheme (mouse targeting,
+      click-to-align, radial context menu trigger, hotbar slots)
+      once the Input feature spec is created.
   ========================================
 -->
 
@@ -181,6 +183,87 @@ No magic. All behavior MUST be traceable from specs → code → tests.
 debugging nightmares. Explicit wiring makes the system
 comprehensible to any team member at any time.
 
+## Game Vision Pillars
+
+These pillars define the game's identity and constrain all design
+decisions. Every feature spec MUST demonstrate alignment with the
+relevant pillars below.
+
+### Perspective & Camera
+
+Strictly 3rd-person. Smooth orbiting follow camera centered on the
+active ship. Cinematic, relaxing feel with speed-based zoom and
+optional free-look toggle.
+
+- Camera MUST orbit the active ship; no 1st-person or top-down
+  modes in the core experience.
+- Zoom level MUST respond dynamically to ship velocity (pull back
+  at high speed, close in when stationary/mining).
+- Free-look toggle MUST NOT affect ship heading or flight path.
+
+### Controls
+
+Heavily inspired by EVE Online — mouse-driven targeting,
+double-click / click-to-align in 3D space, radial context menus
+(Approach, Orbit, Mine, Keep-at-Range), hotbar modules.
+
+- **Mouse**: Left-click select target, double-click to align/fly
+  toward point in 3D space, right-click for radial context menu.
+- **Keyboard thrust** (power-user layer): W/S accelerate/brake,
+  A/D strafe, Q/E roll. These are supplements, not primary.
+- **Hotbar**: Module activation slots (mining lasers, shields,
+  scanners) bound to number keys or custom bindings.
+- All input MUST flow through an immutable `PilotCommand` record
+  into a pure `ShipStateReducer`. No direct state mutation from
+  input handlers.
+
+### Ship Fleet System
+
+Player owns multiple specialized ships (Mining Barge, Hauler,
+Combat Scout, etc.). Instant swap at outposts/stations or via
+recall beacon.
+
+- Ships are immutable data records:
+  `ShipArchetype + CurrentModules + ShipStats`.
+- Ship swapping MUST be a pure state reducer operation
+  (`(FleetState, SwapAction) → FleetState`).
+- Active ship selection determines camera target and available
+  module hotbar.
+
+### Progression
+
+Deep, branching research/tech tree unlocking better hulls, mining
+lasers, refineries, base modules, and economic multipliers.
+
+- Tech nodes MUST be immutable graph data (DAG structure).
+- Unlocking a node MUST be a pure reducer:
+  `(TechTreeState, UnlockAction) → TechTreeState`.
+- Tech tree data MUST be authored via ScriptableObjects for
+  designer iteration.
+
+### Core Loop Satisfaction
+
+Explore procedural asteroid fields → precision EVE-style mining →
+haul/refine → research/upgrade fleet → expand personal empire via
+base building.
+
+- Each loop stage MUST deliver tactile feedback (visual, audio,
+  UI confirmation) within 2 seconds of player action.
+- Mining MUST feel precise and deliberate, not passive — beam
+  targeting, yield variance based on technique, asteroid depletion
+  visuals.
+
+### Endgame
+
+Player-built bases in asteroid belts or Lagrange points + fully
+simulated economy (NPC + player-driven prices based on real-time
+supply/demand of ores, refined goods, modules).
+
+- Economy simulation MUST be a pure system operating on immutable
+  `MarketState` records with deterministic price resolution.
+- Base placement MUST persist as immutable positional data within
+  the world state.
+
 ## Technical Standards & Coding Style
 
 ### Functional / Immutable Practices (Enforced)
@@ -224,15 +307,21 @@ These practices apply to ALL code outside Unity engine boundaries
 ```text
 Assets/
 ├── Features/                # One folder per major system
-│   ├── Mining/
+│   ├── Camera/              # 3rd-person orbiting follow camera
+│   ├── Input/               # EVE-style controls, PilotCommand
+│   ├── Ship/                # Ship state, physics, modules
+│   ├── Fleet/               # Multi-ship ownership, swapping
+│   ├── Mining/              # Beam targeting, yield reducers
 │   │   ├── Data/            # ScriptableObjects, records, components
 │   │   ├── Systems/         # Pure logic, reducers, ECS systems
 │   │   ├── Views/           # MonoBehaviours, UI bindings
 │   │   └── Tests/           # Unit + integration tests
-│   ├── Ship/
 │   ├── Resources/           # Resource / inventory system
 │   ├── Procedural/          # Asteroid field generation
-│   └── HUD/
+│   ├── HUD/                 # In-game UI, radial menus, hotbar
+│   ├── TechTree/            # Research/progression (Phase 1+)
+│   ├── Economy/             # Market simulation (Phase 3+)
+│   └── Base/                # Base building (Phase 2+)
 ├── Core/                    # Shared infrastructure
 │   ├── EventBus/
 │   ├── State/               # Reducer framework, state store
@@ -242,6 +331,9 @@ Assets/
 └── Scenes/
 ```
 
+Each feature folder follows the `Data/`, `Systems/`, `Views/`,
+`Tests/` sub-structure shown under Mining above.
+
 ### Naming Conventions
 
 - **Namespaces**: `VoidHarvest.Features.<System>.<Layer>`
@@ -250,11 +342,13 @@ Assets/
 - **Records / Data**: Suffix with `Data` or `State`
   (e.g., `AsteroidData`, `InventoryState`).
 - **Reducers**: Suffix with `Reducer`
-  (e.g., `InventoryReducer`).
+  (e.g., `InventoryReducer`, `ShipStateReducer`).
 - **ECS Systems**: Suffix with `System`
   (e.g., `MiningBeamSystem`).
 - **ScriptableObjects**: Suffix with `Config` or `Definition`
   (e.g., `OreTypeDefinition`, `ShipConfig`).
+- **Commands / Actions**: Suffix with `Command` or `Action`
+  (e.g., `PilotCommand`, `SwapShipAction`, `UnlockTechAction`).
 
 ## Testing & Quality Standards
 
@@ -292,29 +386,82 @@ Assets/
 
 ## Initial Scope Guardrails (MVP)
 
-The MVP scope is strictly limited to validate the core loop:
+The MVP (Phase 0) scope is strictly limited to validate the core
+loop with the EVE-style 3rd-person experience:
 
-1. **Ship movement** — 6DOF flight with inertia in an asteroid
+1. **3rd-person camera** — Orbiting follow camera with speed-based
+   zoom on the active ship.
+2. **EVE-style controls** — Mouse targeting, click-to-align,
+   radial context menus, keyboard thrust supplement. All input →
+   immutable `PilotCommand` → pure `ShipStateReducer`.
+3. **Ship movement** — 6DOF flight with inertia in an asteroid
    field (functional state, DOTS physics).
-2. **Mining** — Target asteroid → mining beam → resource extraction
+4. **Mining** — Target asteroid → mining beam → resource extraction
    (pure reducer for yield calculation).
-3. **Resource inventory** — Immutable inventory state with
+5. **Resource inventory** — Immutable inventory state with
    add/remove/query operations.
-4. **Procedural asteroid field** — Small-scale procedural generation
+6. **Procedural asteroid field** — Small-scale procedural generation
    (< 500 asteroids) via Burst jobs.
-5. **Simple HUD** — Resource counts, ship status, mining target
-   info.
+7. **Simple HUD** — Resource counts, ship status, mining target
+   info, radial context menu, module hotbar.
 
-**Explicitly OUT of scope for MVP**:
+**Explicitly OUT of scope for MVP (Phase 0)**:
+- Ship fleet swapping (Phase 1)
+- Tech tree / research (Phase 1)
+- Refining / hauling roles (Phase 2)
+- Base building (Phase 2)
+- Dynamic economy simulation (Phase 3)
 - Multiplayer / networking
 - Save / load system
-- Base building or station management
-- Trading / economy
 - Complex AI / enemies
 - Sound design (placeholder only)
 
 These features MUST NOT be started until the MVP is rock-solid,
 fully functional/immutable, and passing all tests at 60 FPS.
+
+## Development Roadmap
+
+All phases MUST preserve the functional/immutable core. No phase
+may introduce mutable game state patterns without a constitution
+deviation approval.
+
+### Phase 0 — MVP (Current)
+
+3rd-person EVE-style controls + basic mining loop + immutable
+resource inventory + small procedural asteroid field + simple HUD.
+
+**Exit criteria**: Core loop playable end-to-end at 60 FPS with
+100% reducer test coverage. Player can fly, target, mine, and
+see resources accumulate.
+
+### Phase 1 — Fleet & Progression
+
+Ship swapping between specialized hulls (Mining Barge, Hauler,
+Combat Scout). Basic tech tree with 3–4 tiers unlocking hulls,
+modules, and mining efficiency upgrades.
+
+**Exit criteria**: Player can own multiple ships, swap at stations,
+and unlock tech nodes. All fleet/tech state managed via pure
+reducers.
+
+### Phase 2 — Refining & Bases
+
+Refining mechanics (ore → processed materials), hauling roles
+with cargo capacity constraints, outpost/base building stub
+(place, store, basic functionality).
+
+**Exit criteria**: Full resource pipeline from mining → refining →
+storage. Base placement functional with immutable world state.
+
+### Phase 3 — Economy & Endgame
+
+Fully simulated dynamic economy (NPC + player-driven supply/demand
+pricing). Deep base customization. Multi-ship fleet management
+with simultaneous NPC crew operations.
+
+**Exit criteria**: Market prices respond deterministically to
+supply/demand. Bases are fully customizable. Fleet operations
+run as autonomous ECS systems.
 
 ## Governance
 
@@ -352,4 +499,4 @@ all other practices, conventions, or preferences.
   feature plan.
 - Per-milestone constitution review to incorporate lessons learned.
 
-**Version**: 1.0.0 | **Ratified**: 2026-02-26 | **Last Amended**: 2026-02-26
+**Version**: 1.1.0 | **Ratified**: 2026-02-26 | **Last Amended**: 2026-02-26
