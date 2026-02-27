@@ -12,7 +12,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **C# Version:** 9.0 / .NET Framework 4.7.1
 - **Constitution:** `.specify/memory/constitution.md` v1.1.0 — the authoritative source for all architectural decisions. Read it before any non-trivial work.
 
-**Current phase:** Phase 0 (MVP) — 3rd-person camera, EVE-style controls, basic mining loop, procedural asteroid field, simple HUD.
+**Current phase:** Phase 0 (MVP) — **complete**. 3rd-person camera, EVE-style controls, 6DOF ship physics, mining beam with asteroid depletion, immutable resource inventory, procedural asteroid field, HUD with target info/radial menus/hotbar.
 
 ## Build & Development
 
@@ -51,7 +51,7 @@ All input follows: Raw Input → immutable `PilotCommand` record → pure `ShipS
 
 - ScriptableObjects = single source of truth for all static/designer data.
 - Addressables for all runtime-loaded assets. No `Resources.Load` calls.
-- Dependency injection via Zenject or VContainer. Pure constructor injection for non-MonoBehaviour systems.
+- Dependency injection via VContainer (`RootLifetimeScope`, `SceneLifetimeScope`). Pure constructor injection for non-MonoBehaviour systems.
 
 ### Rendering
 
@@ -130,8 +130,18 @@ Any deviation from functional/immutable patterns requires explicit justification
 - Do not commit `Library/`, `Temp/`, `Logs/`, `UserSettings/`, or generated `*.sln`/`*.csproj` files.
 - Scene and prefab files are YAML — prefer small, targeted edits to avoid merge conflicts.
 
-## Packages of Note
+## Packages
 
-AI Navigation 2.0.10, Visual Scripting 1.9.9, Timeline 1.8.10, Multiplayer Center 1.0.1, Input System.
-
-**Pending installation:** Addressables, UniTask, Zenject/VContainer, System.Collections.Immutable, DOTS Entities + Entities Graphics.
+| Package | Version | Purpose |
+|---------|---------|---------|
+| Entities | 1.3.2 | DOTS/ECS framework |
+| Entities Graphics | 1.3.2 | DOTS rendering |
+| Input System | 1.18.0 | New input system |
+| Addressables | 2.3.1 | Runtime asset loading |
+| Cinemachine | 3.1.2 | Camera system |
+| URP | 17.3.0 | Universal Render Pipeline |
+| UniTask | 2.5.10 | Async/reactive patterns, EventBus |
+| VContainer | 1.16.7 | Dependency injection |
+| NuGetForUnity | 4.5.0 | System.Collections.Immutable |
+| AI Navigation | 2.0.10 | Navigation meshes |
+| Timeline | 1.8.10 | Timeline sequences |

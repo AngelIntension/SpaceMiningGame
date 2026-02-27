@@ -22,6 +22,8 @@ A relaxing-yet-engaging 3D space mining simulator built in Unity 6. Pilot custom
 | Language | C# 9.0 / .NET Framework 4.7.1 |
 | Architecture | Hybrid DOTS/ECS (simulation) + MonoBehaviour (UI/views) |
 | State Management | Functional/immutable — pure reducers, record types |
+| DI Framework | VContainer 1.16.7 |
+| Async / EventBus | UniTask 2.5.10 |
 
 ## Getting Started
 
@@ -69,10 +71,21 @@ Each feature folder uses `Data/`, `Systems/`, `Views/`, `Tests/` sub-folders.
 
 | Phase | Focus | Status |
 |-------|-------|--------|
-| **0 — MVP** | 3rd-person camera, EVE-style controls, basic mining loop, procedural asteroid field, simple HUD | Current |
+| **0 — MVP** | 3rd-person camera, EVE-style controls, 6DOF ship physics, mining beam, procedural asteroid field, HUD | **Complete** |
 | **1** | Ship fleet swapping, basic tech tree (3–4 tiers) | Planned |
 | **2** | Refining, hauling roles, outpost/base building | Planned |
 | **3** | Dynamic economy simulation, deep base customization, multi-ship fleet management | Planned |
+
+## What's Implemented (Phase 0 MVP)
+
+- **Ship flight** — 6DOF physics with inertia, flight modes, Burst-compiled math
+- **EVE-style controls** — mouse targeting, double-click align, radial context menus, 8-slot hotbar, keyboard thrust/strafe/roll
+- **3rd-person camera** — orbiting follow camera with zoom (Cinemachine)
+- **Mining** — beam targeting, yield calculation, asteroid depletion (ECS systems)
+- **Procedural asteroid field** — Burst-compiled job-based generation
+- **Resource inventory** — immutable state with pure reducers
+- **HUD** — target info panel, warnings, selection outlines, radial menus
+- **Core infrastructure** — EventBus (UniTask), State Store, VContainer DI, 17 tests
 
 ## Architecture Principles
 
