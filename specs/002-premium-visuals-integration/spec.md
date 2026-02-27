@@ -129,7 +129,7 @@ As a player approaching a station, I see a large, detailed modular space station
 ### Key Entities
 
 - **SkyboxConfig**: Per-scene configuration for nebula skybox selection, rotation speed, and exposure. Each scene references a specific nebula variant chosen by the designer. References one of 12 HDRI environment variants.
-- **AsteroidVisualMapping**: Maps ore types (Veldspar, Scordite, Pyroxeres) to dedicated mesh pairs (2 meshes per ore type) and material color tints matching each ore's beam color, enabling visual ore identification by both silhouette and color.
+- **AsteroidVisualMappingConfig**: Maps ore types (Veldspar, Scordite, Pyroxeres) to dedicated mesh pairs (2 meshes per ore type) and material color tints matching each ore's beam color, enabling visual ore identification by both silhouette and color.
 - **ShipArchetype (Small/Medium/Heavy Barge)**: Three ship archetype configurations. The Small Barge is the existing StarterMiningBarge renamed and visually upgraded (same ID preserved); Medium and Heavy are new additions. Each has distinct stats (mass, thrust, speed, cargo, module slots) and visual prefab reference.
 - **StationPreset**: Named assembly of station modules with relative positions and rotations. Defines which modules compose a station layout (e.g., Small Mining Relay = docking ring + control tower + 2 storage; Medium Refinery Hub = hangar + refinery modules + habitat + power + bridge).
 
@@ -164,7 +164,7 @@ As a player approaching a station, I see a large, detailed modular space station
 - **SC-005**: All barge variants respond to existing controls identically to the current StarterMiningBarge — zero input or flight model regressions across all existing tests.
 - **SC-006**: Two station presets render as cohesive modular assemblies — no visible gaps, floating parts, or z-fighting between adjacent modules.
 - **SC-007**: Game maintains 60 FPS on mid-range hardware (GTX 1060 / RX 580 class) with all premium visuals active — asteroid field rendering under 2 ms, station rendering under 5 ms.
-- **SC-008**: All 17 existing tests continue to pass with zero regressions after integration.
+- **SC-008**: All existing tests (17 at time of writing) and all new tests continue to pass with zero regressions after integration.
 - **SC-009**: Asteroid size visually correlates with mass — a 2x mass difference produces a clearly visible size difference at 200+ unit distance.
 - **SC-010**: Mining an asteroid produces visible, continuous shrinkage with noticeable crumble pauses at each 25% threshold — the player can gauge remaining resources by visual size alone.
 - **SC-011**: Depleted asteroids are fully removed from the field within 2 seconds of reaching 0% resources (crumble + fade-out duration) and no longer respond to targeting or consume rendering budget.
