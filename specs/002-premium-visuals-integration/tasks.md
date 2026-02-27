@@ -133,7 +133,7 @@
 - [ ] T033 [US4] Assemble `MediumRefineryHub.prefab` in `Assets/Features/Base/Prefabs/` — compose from Station_MS2 grey variants: MS2_Bridge_grey + MS2_Hangars_grey + MS2_Modules_grey ×2 + MS2_Storage_grey ×2 + MS2_Energy_grey + MS2_Habitat_grey + MS2_Tower_grey + MS2_Connect_grey connectors. Larger, more complex layout (8-12 functional modules).
 - [X] T034 [P] [US4] Create `SmallMiningRelay.asset` StationPresetConfig instance in `Assets/Features/Base/Data/` — document the module composition, positions, and rotations matching the assembled prefab.
 - [X] T035 [P] [US4] Create `MediumRefineryHub.asset` StationPresetConfig instance in `Assets/Features/Base/Data/` — document the module composition, positions, and rotations matching the assembled prefab.
-- [ ] T036 [US4] Create `TestScene_Station.unity` in `Assets/Scenes/` — place both station presets in scene with a nebula skybox (reuse SkyboxConfig from US1). Add a simple camera for inspection.
+- [X] T036 [US4] Create `TestScene_Station.unity` in `Assets/Scenes/` — place both station presets in scene with a nebula skybox (reuse SkyboxConfig from US1). Add a simple camera for inspection.
 
 **Checkpoint**: Both station presets render correctly with no visual artifacts. Modules snap-aligned, no gaps. Materials correct under nebula lighting. Rendering within 5 ms budget.
 
