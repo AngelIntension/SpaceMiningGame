@@ -50,8 +50,8 @@
 
 - [X] T006 [P] [US1] Create `SkyboxConfig` ScriptableObject class in `Assets/Features/Camera/Data/SkyboxConfig.cs` — fields: SkyboxMaterial (Material), FallbackMaterial (Material), RotationSpeed (float, default 0.5), ExposureOverride (float, default 1.0, range 0.1–3.0). Per data-model.md.
 - [X] T007 [US1] Create `SkyboxController` MonoBehaviour in `Assets/Features/Camera/Views/SkyboxController.cs` — reads SkyboxConfig reference, on Awake applies SkyboxMaterial to RenderSettings.skybox (fallback if null), sets ambient lighting mode, each frame rotates skybox via `_Rotation` shader property by RotationSpeed * Time.deltaTime. Per research.md R-002.
-- [ ] T008 [US1] Create `GameSceneSkybox.asset` SkyboxConfig instance in `Assets/Features/Camera/Data/` — reference `HDR_Nebula_2_Pro_1.mat` as SkyboxMaterial, `SpaceSkybox.mat` as FallbackMaterial, RotationSpeed 0.5, Exposure 1.0.
-- [ ] T009 [US1] Wire SkyboxController into GameScene — add SkyboxController component to a GameObject in `Assets/Scenes/GameScene.unity`, reference GameSceneSkybox.asset config. Verify ambient lighting matches nebula.
+- [X] T008 [US1] Create `GameSceneSkybox.asset` SkyboxConfig instance in `Assets/Features/Camera/Data/` — reference `HDR_Nebula_2_Pro_1.mat` as SkyboxMaterial, `SpaceSkybox.mat` as FallbackMaterial, RotationSpeed 0.5, Exposure 1.0.
+- [X] T009 [US1] Wire SkyboxController into GameScene — add SkyboxController component to a GameObject in `Assets/Scenes/GameScene.unity`, reference GameSceneSkybox.asset config. Verify ambient lighting matches nebula.
 
 **Checkpoint**: GameScene loads with high-res nebula skybox, slow rotation visible, ambient lighting matches nebula palette, fallback works when material is null. US1 independently testable.
 
@@ -75,7 +75,7 @@
 #### Asteroid Visual Mapping (FR-006, FR-007, FR-008)
 
 - [X] T013 [P] [US2] Create `AsteroidVisualMappingConfig` ScriptableObject class in `Assets/Features/Procedural/Data/AsteroidVisualMappingConfig.cs` — contains array of `AsteroidVisualEntry` (OreId string, MeshVariantA Mesh, MeshVariantB Mesh, TintColor Color) and a `MinScaleFraction` float field (default 0.3, range 0.1–0.5). Per data-model.md.
-- [ ] T014 [US2] Create `AsteroidVisualMapping.asset` config instance in `Assets/Features/Procedural/Data/` — map Veldspar→Mineral_asteroid-01+02 (tint tan/gold 0.82,0.71,0.55), Scordite→Mineral_asteroid-03+04 (tint from Scordite.BeamColor), Pyroxeres→Mineral_asteroid-05+06 (tint from Pyroxeres.BeamColor).
+- [X] T014 [US2] Create `AsteroidVisualMapping.asset` config instance in `Assets/Features/Procedural/Data/` — map Veldspar→Mineral_asteroid-01+02 (tint tan/gold 0.82,0.71,0.55), Scordite→Mineral_asteroid-03+04 (tint from Scordite.BeamColor), Pyroxeres→Mineral_asteroid-05+06 (tint from Pyroxeres.BeamColor).
 - [X] T015 [US2] Modify `AsteroidPrefabAuthoring` in `Assets/Features/Procedural/Views/AsteroidPrefabAuthoring.cs` — support referencing multiple mesh prefabs (one per ore-mesh pair) instead of a single prefab. Baker creates prefab entities for each variant.
 - [X] T016 [US2] Modify `AsteroidFieldSystem` in `Assets/Features/Procedural/Systems/AsteroidFieldSystem.cs` — read AsteroidVisualMappingConfig to select correct mesh variant per ore type during instantiation. Apply tint color to AsteroidBaseColorOverride as multiplicative layer over pristine gray. Set AsteroidComponent.PristineTintedColor = pristineGray × oreTintColor for use by depletion system. Enforce FR-007 cluster variety via position-hash-based mesh assignment (hash asteroid world position to deterministically select variant A or B, ensuring spatial variety without neighbor queries in Burst job). If a mesh reference is null, skip that variant and use the remaining variant for the ore type (EC3 fallback).
 
@@ -131,8 +131,8 @@
 - [X] T031 [P] [US4] Create `StationPresetConfig` ScriptableObject class in `Assets/Features/Base/Data/StationPresetConfig.cs` — fields: PresetName (string), PresetId (string), Description (string), Modules array of StationModuleEntry (ModulePrefab GameObject, LocalPosition Vector3, LocalRotation Quaternion, ModuleRole string). Per data-model.md.
 - [ ] T032 [US4] Assemble `SmallMiningRelay.prefab` in `Assets/Features/Base/Prefabs/` — compose from Station_MS2 grey variants: MS2_Control_grey + MS2_Storage_grey ×2 + MS2_Antennas_grey + MS2_Connect_grey connectors. Snap-align all modules on a consistent grid. Compact layout (3-5 functional modules).
 - [ ] T033 [US4] Assemble `MediumRefineryHub.prefab` in `Assets/Features/Base/Prefabs/` — compose from Station_MS2 grey variants: MS2_Bridge_grey + MS2_Hangars_grey + MS2_Modules_grey ×2 + MS2_Storage_grey ×2 + MS2_Energy_grey + MS2_Habitat_grey + MS2_Tower_grey + MS2_Connect_grey connectors. Larger, more complex layout (8-12 functional modules).
-- [ ] T034 [P] [US4] Create `SmallMiningRelay.asset` StationPresetConfig instance in `Assets/Features/Base/Data/` — document the module composition, positions, and rotations matching the assembled prefab.
-- [ ] T035 [P] [US4] Create `MediumRefineryHub.asset` StationPresetConfig instance in `Assets/Features/Base/Data/` — document the module composition, positions, and rotations matching the assembled prefab.
+- [X] T034 [P] [US4] Create `SmallMiningRelay.asset` StationPresetConfig instance in `Assets/Features/Base/Data/` — document the module composition, positions, and rotations matching the assembled prefab.
+- [X] T035 [P] [US4] Create `MediumRefineryHub.asset` StationPresetConfig instance in `Assets/Features/Base/Data/` — document the module composition, positions, and rotations matching the assembled prefab.
 - [ ] T036 [US4] Create `TestScene_Station.unity` in `Assets/Scenes/` — place both station presets in scene with a nebula skybox (reuse SkyboxConfig from US1). Add a simple camera for inspection.
 
 **Checkpoint**: Both station presets render correctly with no visual artifacts. Modules snap-aligned, no gaps. Materials correct under nebula lighting. Rendering within 5 ms budget.
