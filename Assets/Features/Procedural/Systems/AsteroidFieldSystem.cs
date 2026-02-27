@@ -13,7 +13,8 @@ namespace VoidHarvest.Features.Procedural.Systems
     /// <summary>
     /// Orchestrates asteroid field generation on scene load.
     /// Instantiates prefab entities with AsteroidComponent + AsteroidOreComponent.
-    /// See MVP-07: Procedural asteroid field.
+    /// Supports multi-prefab mode (premium visual mapping) and single-prefab (backward compatible).
+    /// See MVP-07: Procedural asteroid field, FR-006: Ore-to-mesh mapping, FR-008: Ore tint.
     /// </summary>
     [UpdateInGroup(typeof(InitializationSystemGroup))]
     public partial struct AsteroidFieldSystem : ISystem
@@ -30,7 +31,8 @@ namespace VoidHarvest.Features.Procedural.Systems
         }
 
         /// <summary>
-        /// Generate asteroid field on first update, then disable. See MVP-07: Procedural asteroid field.
+        /// Generate asteroid field on first update, then disable.
+        /// See MVP-07: Procedural asteroid field, FR-006: Visual mapping.
         /// </summary>
         public void OnUpdate(ref SystemState state)
         {
@@ -40,9 +42,10 @@ namespace VoidHarvest.Features.Procedural.Systems
                 return;
             }
 
-            // Get prefab entity
+            // Get prefab singleton
             var prefabSingleton = SystemAPI.GetSingleton<AsteroidPrefabComponent>();
-            var prefab = prefabSingleton.Prefab;
+            var defaultPrefab = prefabSingleton.Prefab;
+            var prefabSingletonEntity = SystemAPI.GetSingletonEntity<AsteroidPrefabComponent>();
 
             var config = AsteroidFieldConfig.MvpDefault;
             int count = config.MaxAsteroids;
@@ -67,12 +70,59 @@ namespace VoidHarvest.Features.Procedural.Systems
             };
             job.Schedule(count, 64).Complete();
 
+            // Check for multi-prefab mode
+            var em = state.EntityManager;
+            bool hasVariants = em.HasBuffer<AsteroidMeshPrefabElement>(prefabSingletonEntity);
+            bool hasMapping = em.HasBuffer<AsteroidVisualMappingElement>(prefabSingletonEntity);
+
+            DynamicBuffer<AsteroidMeshPrefabElement> prefabBuffer = default;
+            DynamicBuffer<AsteroidVisualMappingElement> mappingBuffer = default;
+
+            if (hasVariants)
+                prefabBuffer = em.GetBuffer<AsteroidMeshPrefabElement>(prefabSingletonEntity);
+            if (hasMapping)
+                mappingBuffer = em.GetBuffer<AsteroidVisualMappingElement>(prefabSingletonEntity);
+
+            bool useVisualMapping = hasVariants && hasMapping && prefabBuffer.Length > 0 && mappingBuffer.Length > 0;
+
             // Instantiate prefab entities
             var rng = new Unity.Mathematics.Random(config.Seed);
-            var em = state.EntityManager;
 
             for (int i = 0; i < count; i++)
             {
+                int oreTypeId = oreTypeIds[i];
+                Entity prefab = defaultPrefab;
+                float4 pristineTintedColor = new float4(0.314f, 0.314f, 0.314f, 1f);
+
+                if (useVisualMapping && oreTypeId >= 0 && oreTypeId < mappingBuffer.Length)
+                {
+                    var mapping = mappingBuffer[oreTypeId];
+
+                    // Select mesh variant via position hash (FR-007 cluster variety)
+                    int variantChoice = AsteroidVisualMappingHelper.SelectMeshVariant(positions[i]);
+
+                    int primaryIdx = variantChoice == 0 ? mapping.MeshVariantAIndex : mapping.MeshVariantBIndex;
+                    int fallbackIdx = variantChoice == 0 ? mapping.MeshVariantBIndex : mapping.MeshVariantAIndex;
+
+                    // EC3: null mesh fallback — try primary, then fallback, then default
+                    Entity variantPrefab = Entity.Null;
+                    if (primaryIdx >= 0 && primaryIdx < prefabBuffer.Length)
+                        variantPrefab = prefabBuffer[primaryIdx].Prefab;
+
+                    if (variantPrefab == Entity.Null && fallbackIdx >= 0 && fallbackIdx < prefabBuffer.Length)
+                        variantPrefab = prefabBuffer[fallbackIdx].Prefab;
+
+                    if (variantPrefab != Entity.Null)
+                        prefab = variantPrefab;
+
+                    // Calculate PristineTintedColor from ore tint (FR-008)
+                    pristineTintedColor = new float4(
+                        AsteroidVisualMappingHelper.PristineGray * mapping.TintColor.x,
+                        AsteroidVisualMappingHelper.PristineGray * mapping.TintColor.y,
+                        AsteroidVisualMappingHelper.PristineGray * mapping.TintColor.z,
+                        1f);
+                }
+
                 var entity = em.Instantiate(prefab);
 
                 float radius = rng.NextFloat(3f, 5f);
@@ -85,20 +135,34 @@ namespace VoidHarvest.Features.Procedural.Systems
                     em.AddComponentData(entity, LocalTransform.FromPositionRotationScale(
                         positions[i], quaternion.identity, radius));
 
+                // Set asteroid data with new depletion visual fields initialized (T018, T022)
                 em.SetComponentData(entity, new AsteroidComponent
                 {
                     Radius = radius,
                     InitialMass = mass,
                     RemainingMass = mass,
-                    Depletion = 0f
+                    Depletion = 0f,
+                    PristineTintedColor = pristineTintedColor,
+                    CrumbleThresholdsPassed = 0,
+                    CrumblePauseTimer = 0f,
+                    FadeOutTimer = 0f
                 });
 
                 em.SetComponentData(entity, new AsteroidOreComponent
                 {
-                    OreTypeId = oreTypeIds[i],
+                    OreTypeId = oreTypeId,
                     Quantity = mass,
                     Depth = rng.NextFloat(0f, 2f)
                 });
+
+                // Set initial base color to the pristine tinted color
+                if (em.HasComponent<AsteroidBaseColorOverride>(entity))
+                {
+                    em.SetComponentData(entity, new AsteroidBaseColorOverride
+                    {
+                        Value = pristineTintedColor
+                    });
+                }
             }
 
             // Cleanup
@@ -108,7 +172,9 @@ namespace VoidHarvest.Features.Procedural.Systems
 
             _generated = true;
             state.Enabled = false;
-            Debug.Log($"[VoidHarvest] AsteroidFieldSystem: Generated {count} asteroids in {config.FieldRadius}m radius.");
+
+            string mode = useVisualMapping ? "visual mapping" : "single-prefab";
+            Debug.Log($"[VoidHarvest] AsteroidFieldSystem: Generated {count} asteroids in {config.FieldRadius}m radius ({mode} mode).");
         }
     }
 }

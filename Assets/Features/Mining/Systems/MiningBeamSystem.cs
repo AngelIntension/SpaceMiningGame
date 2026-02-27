@@ -132,14 +132,12 @@ namespace VoidHarvest.Features.Mining.Systems
                     ? 1f - (newMass / asteroid.InitialMass)
                     : 1f;
 
-                // Write back asteroid state
-                SystemAPI.SetComponent(targetEntity, new AsteroidComponent
-                {
-                    Radius = asteroid.Radius,
-                    InitialMass = asteroid.InitialMass,
-                    RemainingMass = newMass,
-                    Depletion = newDepletion
-                });
+                // Write back asteroid state — preserve new fields (PristineTintedColor,
+                // CrumbleThresholdsPassed, CrumblePauseTimer, FadeOutTimer) set at spawn
+                var updatedAsteroid = asteroid;
+                updatedAsteroid.RemainingMass = newMass;
+                updatedAsteroid.Depletion = newDepletion;
+                SystemAPI.SetComponent(targetEntity, updatedAsteroid);
 
                 // Enqueue yield
                 if (yieldAmount > 0f)
