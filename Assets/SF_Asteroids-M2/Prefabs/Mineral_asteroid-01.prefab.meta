@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 2fc477bb9a781e54da94e1bfc5517296
+timeCreated: 1481286732
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 77957
+  packageName: SF MINING Asteroids M2
+  packageVersion: 1.0
+  assetPath: Assets/SF_Asteroids-M2/Prefabs/Mineral_asteroid-01.prefab
+  uploadId: 150527

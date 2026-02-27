@@ -60,6 +60,8 @@ OcclusionCullingData.asset lfs-file
 *.dds   lfs-file
 *.webp  lfs-file
 *.hdr   lfs-file
+*.tif   lfs-file
+*.tiff  lfs-file
 
 # 3D models
 *.fbx   lfs-file
