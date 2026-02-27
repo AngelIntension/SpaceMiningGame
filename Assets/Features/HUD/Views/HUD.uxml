@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <Style src="HUD.uss" />
+    <ui:VisualElement name="hud-root" class="hud-root">
+        <!-- Top-left: Resource counts -->
+        <ui:VisualElement name="resource-panel" class="hud-panel resource-panel">
+            <ui:Label name="resource-title" text="CARGO" class="panel-title" />
+            <ui:VisualElement name="resource-list" class="resource-list" />
+        </ui:VisualElement>
+
+        <!-- Top-right: Ship info -->
+        <ui:VisualElement name="ship-info-panel" class="hud-panel ship-info-panel">
+            <ui:Label name="velocity-label" text="VEL: 0 m/s" class="hud-label" />
+            <ui:VisualElement name="hull-bar-container" class="bar-container">
+                <ui:Label text="HULL" class="bar-label" />
+                <ui:VisualElement name="hull-bar-bg" class="bar-bg">
+                    <ui:VisualElement name="hull-bar-fill" class="bar-fill hull-fill" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <!-- Bottom-center: Module hotbar -->
+        <ui:VisualElement name="hotbar-panel" class="hud-panel hotbar-panel">
+            <ui:Button name="hotbar-1" text="1" class="hotbar-slot" />
+            <ui:Button name="hotbar-2" text="2" class="hotbar-slot" />
+            <ui:Button name="hotbar-3" text="3" class="hotbar-slot" />
+            <ui:Button name="hotbar-4" text="4" class="hotbar-slot" />
+            <ui:Button name="hotbar-5" text="5" class="hotbar-slot" />
+            <ui:Button name="hotbar-6" text="6" class="hotbar-slot" />
+            <ui:Button name="hotbar-7" text="7" class="hotbar-slot" />
+            <ui:Button name="hotbar-8" text="8" class="hotbar-slot" />
+        </ui:VisualElement>
+
+        <!-- Center-right: Target info panel -->
+        <ui:VisualElement name="target-info-panel" class="hud-panel target-info-panel">
+            <ui:Label name="target-name" text="" class="target-label" />
+            <ui:Label name="target-ore-type" text="" class="target-sublabel" />
+            <ui:Label name="target-distance" text="" class="target-sublabel" />
+            <ui:Label name="target-mass" text="" class="target-sublabel" />
+        </ui:VisualElement>
+
+        <!-- Center: Warning panel -->
+        <ui:VisualElement name="warning-panel" class="warning-panel">
+            <ui:Label name="warning-text" text="" class="warning-text" />
+        </ui:VisualElement>
+
+        <!-- Center: Mining info -->
+        <ui:VisualElement name="mining-info-panel" class="hud-panel mining-info-panel">
+            <ui:Label name="mining-ore-label" text="" class="hud-label" />
+            <ui:Label name="mining-yield-label" text="" class="hud-label" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

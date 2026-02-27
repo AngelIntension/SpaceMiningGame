@@ -1,0 +1,5 @@
+<linker>
+  <assembly fullname="System.Collections.Immutable" preserve="all" />
+  <assembly fullname="System.Memory" preserve="all" />
+  <assembly fullname="System.Runtime.CompilerServices.Unsafe" preserve="all" />
+</linker>

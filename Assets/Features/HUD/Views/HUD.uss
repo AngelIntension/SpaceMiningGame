@@ -1,0 +1,148 @@
+.hud-root {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.hud-panel {
+    background-color: rgba(8, 12, 24, 0.75);
+    border-color: rgba(0, 200, 255, 0.3);
+    border-width: 1px;
+    border-radius: 4px;
+    padding: 8px;
+}
+
+.resource-panel {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    min-width: 180px;
+}
+
+.ship-info-panel {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    min-width: 200px;
+}
+
+.hotbar-panel {
+    position: absolute;
+    bottom: 16px;
+    left: 50%;
+    translate: -50% 0;
+    flex-direction: row;
+    padding: 4px;
+}
+
+.hotbar-slot {
+    width: 48px;
+    height: 48px;
+    margin: 2px;
+    background-color: rgba(20, 30, 50, 0.8);
+    border-color: rgba(0, 200, 255, 0.4);
+    border-width: 1px;
+    color: rgba(180, 220, 255, 0.8);
+    font-size: 14px;
+    -unity-font-style: bold;
+}
+
+.hotbar-slot:hover {
+    background-color: rgba(30, 50, 80, 0.9);
+    border-color: rgba(0, 220, 255, 0.7);
+}
+
+.target-info-panel {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    translate: 0 -50%;
+    min-width: 200px;
+    display: none;
+}
+
+.mining-info-panel {
+    position: absolute;
+    bottom: 80px;
+    left: 50%;
+    translate: -50% 0;
+    display: none;
+}
+
+.warning-panel {
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    translate: -50% -50%;
+    background-color: rgba(180, 20, 20, 0.85);
+    border-color: rgba(255, 60, 60, 0.8);
+    border-width: 2px;
+    border-radius: 6px;
+    padding: 12px 24px;
+    display: none;
+}
+
+.warning-text {
+    color: rgb(255, 220, 220);
+    font-size: 18px;
+    -unity-font-style: bold;
+    letter-spacing: 2px;
+}
+
+.panel-title {
+    color: rgba(0, 200, 255, 0.9);
+    font-size: 12px;
+    -unity-font-style: bold;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+}
+
+.hud-label {
+    color: rgba(180, 220, 255, 0.9);
+    font-size: 13px;
+    margin: 2px 0;
+}
+
+.target-label {
+    color: rgb(255, 255, 255);
+    font-size: 14px;
+    -unity-font-style: bold;
+}
+
+.target-sublabel {
+    color: rgba(180, 220, 255, 0.8);
+    font-size: 12px;
+}
+
+.bar-container {
+    flex-direction: row;
+    align-items: center;
+    margin-top: 4px;
+}
+
+.bar-label {
+    color: rgba(180, 220, 255, 0.7);
+    font-size: 11px;
+    width: 40px;
+}
+
+.bar-bg {
+    flex-grow: 1;
+    height: 8px;
+    background-color: rgba(40, 40, 60, 0.8);
+    border-radius: 2px;
+}
+
+.bar-fill {
+    height: 100%;
+    border-radius: 2px;
+}
+
+.hull-fill {
+    background-color: rgb(40, 200, 80);
+    width: 100%;
+}
+
+.resource-list {
+    flex-direction: column;
+}

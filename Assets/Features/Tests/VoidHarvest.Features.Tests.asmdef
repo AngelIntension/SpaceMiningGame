@@ -1,0 +1,38 @@
+{
+    "name": "VoidHarvest.Features.Tests",
+    "rootNamespace": "VoidHarvest.Features.Tests",
+    "references": [
+        "VoidHarvest.Features.Camera",
+        "VoidHarvest.Features.Input",
+        "VoidHarvest.Features.Ship",
+        "VoidHarvest.Features.Mining",
+        "VoidHarvest.Features.Resources",
+        "VoidHarvest.Features.Procedural",
+        "VoidHarvest.Features.HUD",
+        "VoidHarvest.Core.Extensions",
+        "VoidHarvest.Core.State",
+        "VoidHarvest.Core.EventBus",
+        "Unity.Mathematics",
+        "Unity.Entities",
+        "Unity.Collections",
+        "UniTask",
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll",
+        "System.Collections.Immutable.dll"
+    ],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

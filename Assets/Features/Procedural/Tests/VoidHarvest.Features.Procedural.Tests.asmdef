@@ -1,0 +1,29 @@
+{
+    "name": "VoidHarvest.Features.Procedural.Tests",
+    "rootNamespace": "VoidHarvest.Features.Procedural.Tests",
+    "references": [
+        "VoidHarvest.Features.Procedural",
+        "VoidHarvest.Core.Extensions",
+        "Unity.Mathematics",
+        "Unity.Burst",
+        "Unity.Collections",
+        "Unity.PerformanceTesting",
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -1,0 +1,221 @@
+/* =============================================================
+ * RadialMenu.uss — Space-themed radial context menu styling
+ * VoidHarvest T046: Radial Context Menu UI (UI Toolkit)
+ * ============================================================= */
+
+/* ---- Root container ---- */
+.radial-menu-root {
+    position: absolute;
+    display: none;
+    width: 300px;
+    height: 300px;
+    align-items: center;
+    justify-content: center;
+    /* Centered on screen by default; controller repositions at mouse */
+}
+
+/* ---- Central hub ---- */
+.radial-center {
+    position: absolute;
+    width: 70px;
+    height: 70px;
+    border-radius: 35px;
+    background-color: rgba(10, 14, 28, 0.92);
+    border-width: 2px;
+    border-color: rgba(60, 180, 255, 0.6);
+    align-items: center;
+    justify-content: center;
+    /* Centered within radial-menu-root */
+    left: 115px;
+    top: 115px;
+}
+
+.center-label {
+    color: rgba(140, 210, 255, 0.8);
+    font-size: 10px;
+    -unity-text-align: middle-center;
+    -unity-font-style: bold;
+    letter-spacing: 2px;
+}
+
+/* ---- Shared pie segment styling ---- */
+.radial-segment {
+    position: absolute;
+    width: 100px;
+    height: 50px;
+    background-color: rgba(12, 18, 36, 0.88);
+    border-width: 1px;
+    border-color: rgba(60, 180, 255, 0.35);
+    border-radius: 6px;
+    color: rgba(180, 220, 255, 0.9);
+    font-size: 13px;
+    -unity-text-align: middle-center;
+    -unity-font-style: bold;
+    /* Transition for hover glow */
+    transition-property: border-color, background-color;
+    transition-duration: 0.15s;
+}
+
+.radial-segment:hover {
+    background-color: rgba(20, 50, 90, 0.95);
+    border-color: rgba(80, 200, 255, 0.85);
+    /* Glow effect via box-shadow-like border trick */
+    border-width: 2px;
+    color: rgb(220, 240, 255);
+}
+
+.radial-segment:active {
+    background-color: rgba(30, 70, 120, 0.95);
+    border-color: rgba(100, 220, 255, 1.0);
+}
+
+/* ---- Cardinal direction placement ---- */
+/* Top: Approach */
+.segment-top {
+    left: 100px;
+    top: 15px;
+}
+
+/* Right: Orbit */
+.segment-right {
+    left: 190px;
+    top: 125px;
+}
+
+/* Bottom: Mine */
+.segment-bottom {
+    left: 100px;
+    top: 235px;
+}
+
+/* Left: Keep at Range */
+.segment-left {
+    left: 10px;
+    top: 125px;
+}
+
+/* ---- Selected segment highlight ---- */
+.radial-segment--selected {
+    background-color: rgba(25, 60, 110, 0.95);
+    border-color: rgba(100, 220, 255, 0.9);
+    border-width: 2px;
+    color: rgb(230, 245, 255);
+}
+
+/* ---- Distance sub-menu panel ---- */
+.distance-submenu {
+    display: none;
+    position: absolute;
+    left: 310px;
+    top: 30px;
+    width: 220px;
+    padding: 14px;
+    background-color: rgba(8, 12, 24, 0.94);
+    border-width: 1px;
+    border-color: rgba(60, 180, 255, 0.45);
+    border-radius: 8px;
+    flex-direction: column;
+    align-items: stretch;
+}
+
+.distance-title {
+    color: rgba(140, 210, 255, 0.9);
+    font-size: 13px;
+    -unity-text-align: middle-center;
+    -unity-font-style: bold;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+}
+
+/* ---- Distance slider ---- */
+.distance-slider {
+    margin-bottom: 10px;
+}
+
+.distance-slider .unity-base-slider__dragger {
+    background-color: rgba(60, 180, 255, 0.8);
+    border-radius: 4px;
+    width: 14px;
+    height: 14px;
+}
+
+.distance-slider .unity-base-slider__tracker {
+    background-color: rgba(30, 60, 100, 0.7);
+    border-color: rgba(60, 180, 255, 0.3);
+    border-width: 1px;
+    border-radius: 2px;
+    height: 6px;
+}
+
+.distance-slider .unity-base-text-field__input {
+    background-color: rgba(10, 16, 32, 0.9);
+    border-color: rgba(60, 180, 255, 0.3);
+    border-width: 1px;
+    border-radius: 3px;
+    color: rgba(180, 220, 255, 0.9);
+    font-size: 12px;
+    width: 50px;
+}
+
+/* ---- Preset distance buttons row ---- */
+.preset-row {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+
+.preset-button {
+    width: 56px;
+    height: 28px;
+    margin: 2px;
+    background-color: rgba(14, 22, 44, 0.9);
+    border-width: 1px;
+    border-color: rgba(60, 180, 255, 0.3);
+    border-radius: 4px;
+    color: rgba(160, 210, 255, 0.85);
+    font-size: 11px;
+    -unity-text-align: middle-center;
+    -unity-font-style: bold;
+    transition-property: border-color, background-color;
+    transition-duration: 0.12s;
+}
+
+.preset-button:hover {
+    background-color: rgba(20, 45, 80, 0.95);
+    border-color: rgba(80, 200, 255, 0.8);
+    color: rgb(220, 240, 255);
+}
+
+.preset-button:active {
+    background-color: rgba(30, 60, 100, 0.95);
+    border-color: rgba(100, 220, 255, 1.0);
+}
+
+/* ---- Confirm button ---- */
+.confirm-button {
+    height: 34px;
+    background-color: rgba(15, 60, 110, 0.9);
+    border-width: 1px;
+    border-color: rgba(80, 200, 255, 0.6);
+    border-radius: 5px;
+    color: rgb(200, 235, 255);
+    font-size: 13px;
+    -unity-text-align: middle-center;
+    -unity-font-style: bold;
+    letter-spacing: 2px;
+    transition-property: border-color, background-color;
+    transition-duration: 0.15s;
+}
+
+.confirm-button:hover {
+    background-color: rgba(20, 80, 140, 0.95);
+    border-color: rgba(100, 220, 255, 0.9);
+    border-width: 2px;
+    color: rgb(230, 245, 255);
+}
+
+.confirm-button:active {
+    background-color: rgba(30, 100, 170, 0.95);
+    border-color: rgba(120, 235, 255, 1.0);
+}

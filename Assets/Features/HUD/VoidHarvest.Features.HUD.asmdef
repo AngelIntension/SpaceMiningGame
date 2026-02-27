@@ -1,0 +1,28 @@
+{
+    "name": "VoidHarvest.Features.HUD",
+    "rootNamespace": "VoidHarvest.Features.HUD",
+    "references": [
+        "VoidHarvest.Core.Extensions",
+        "VoidHarvest.Core.State",
+        "VoidHarvest.Core.EventBus",
+        "VoidHarvest.Features.Mining",
+        "VoidHarvest.Features.Resources",
+        "VoidHarvest.Features.Ship",
+        "VoidHarvest.Features.Input",
+        "UniTask",
+        "VContainer",
+        "Unity.InputSystem",
+        "Unity.Mathematics",
+        "Unity.RenderPipelines.Universal.Runtime",
+        "Unity.RenderPipelines.Core.Runtime"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

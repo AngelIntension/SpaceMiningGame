@@ -1,0 +1,14 @@
+{
+    "name": "VoidHarvest.Core.Pools",
+    "rootNamespace": "VoidHarvest.Core.Pools",
+    "references": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

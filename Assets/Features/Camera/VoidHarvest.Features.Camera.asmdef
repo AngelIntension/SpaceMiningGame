@@ -1,0 +1,21 @@
+{
+    "name": "VoidHarvest.Features.Camera",
+    "rootNamespace": "VoidHarvest.Features.Camera",
+    "references": [
+        "VoidHarvest.Core.Extensions",
+        "VoidHarvest.Core.State",
+        "VoidHarvest.Core.EventBus",
+        "Unity.Cinemachine",
+        "Unity.Mathematics",
+        "VContainer"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

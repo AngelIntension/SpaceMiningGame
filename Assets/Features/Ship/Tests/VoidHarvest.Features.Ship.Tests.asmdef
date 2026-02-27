@@ -1,0 +1,30 @@
+{
+    "name": "VoidHarvest.Features.Ship.Tests",
+    "rootNamespace": "VoidHarvest.Features.Ship.Tests",
+    "references": [
+        "VoidHarvest.Features.Ship",
+        "VoidHarvest.Core.Extensions",
+        "VoidHarvest.Core.State",
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner",
+        "Unity.Mathematics",
+        "Unity.Entities",
+        "Unity.Burst",
+        "Unity.Collections"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
