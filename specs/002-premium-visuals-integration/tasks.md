@@ -19,10 +19,10 @@
 
 **Purpose**: Verify all premium asset packs are URP-compatible. This unblocks all subsequent work.
 
-- [ ] T001 Verify SF_Asteroids-M2 materials render correctly under URP 17.3.0 — open `Assets/SF_Asteroids-M2/Prefabs/Mineral_asteroid-01.prefab` through `06` in scene, check for pink/magenta. Run Render Pipeline Converter on `Assets/SF_Asteroids-M2/Materials/` if any materials are broken.
-- [ ] T002 [P] Verify Nebula Skybox Pack materials render correctly — open `Assets/Nebula Skybox Pack Vol. II – 12x 8K HDRI Space Environments/HDRI/Materials/HDR_Nebula_2_Pro_1.mat` through `12`, apply to scene skybox, check for correct rendering.
-- [ ] T003 [P] Verify Retora Modular Space Ship Pack materials render correctly — open `Assets/Retora - Modular Space Ship Pack/Prefabs/Ship1.prefab` through `Ship5.prefab` in scene, check for pink/magenta. Run Render Pipeline Converter on `Assets/Retora - Modular Space Ship Pack/Materials/` if needed.
-- [ ] T004 [P] Verify Station_MS2 materials render correctly — open sample prefabs from `Assets/Station_MS2/Prefabs/` (e.g., MS2_Control_grey, MS2_Hangars_grey, MS2_Bridge_grey) in scene, check for pink/magenta. Run Render Pipeline Converter on `Assets/Station_MS2/Meshes/Materials/` if needed.
+- [X] T001 Verify SF_Asteroids-M2 materials render correctly under URP 17.3.0 — open `Assets/SF_Asteroids-M2/Prefabs/Mineral_asteroid-01.prefab` through `06` in scene, check for pink/magenta. Run Render Pipeline Converter on `Assets/SF_Asteroids-M2/Materials/` if any materials are broken.
+- [X] T002 [P] Verify Nebula Skybox Pack materials render correctly — open `Assets/Nebula Skybox Pack Vol. II – 12x 8K HDRI Space Environments/HDRI/Materials/HDR_Nebula_2_Pro_1.mat` through `12`, apply to scene skybox, check for correct rendering.
+- [X] T003 [P] Verify Retora Modular Space Ship Pack materials render correctly — open `Assets/Retora - Modular Space Ship Pack/Prefabs/Ship1.prefab` through `Ship5.prefab` in scene, check for pink/magenta. Run Render Pipeline Converter on `Assets/Retora - Modular Space Ship Pack/Materials/` if needed.
+- [X] T004 [P] Verify Station_MS2 materials render correctly — open sample prefabs from `Assets/Station_MS2/Prefabs/` (e.g., MS2_Control_grey, MS2_Hangars_grey, MS2_Bridge_grey) in scene, check for pink/magenta. Run Render Pipeline Converter on `Assets/Station_MS2/Meshes/Materials/` if needed.
 
 **Checkpoint**: All four asset packs render correctly under URP 17.3.0. Zero pink/magenta materials. All subsequent phases unblocked.
 
@@ -93,7 +93,7 @@
 
 #### Asteroid Material Configuration (FR-020 fade-out support)
 
-- [ ] T043 [US2] Configure Alpha Clipping on all 6 asteroid materials in `Assets/SF_Asteroids-M2/Materials/` — enable Alpha Clipping in URP Lit material settings, set `_Cutoff` = 0.5. This allows AsteroidDestroySystem (T021) to fade asteroids via `_BaseColor.a` interpolation. Verify asteroids still render identically at full alpha (alpha 1.0 > cutoff 0.5, so all pixels pass). Smooth dissolve effects deferred to Phase 1.2 VFX.
+- [X] T043 [US2] Configure Alpha Clipping on all 6 asteroid materials in `Assets/SF_Asteroids-M2/Materials/` — enable Alpha Clipping in URP Lit material settings, set `_Cutoff` = 0.5. This allows AsteroidDestroySystem (T021) to fade asteroids via `_BaseColor.a` interpolation. Verify asteroids still render identically at full alpha (alpha 1.0 > cutoff 0.5, so all pixels pass). Smooth dissolve effects deferred to Phase 1.2 VFX.
 
 **Checkpoint**: Asteroid field renders with 6 mesh variants, ore-specific tinting, varied distribution. Mining causes continuous shrink with crumble pauses at 75/50/25%. Depleted asteroids crumble, fade via alpha clip, and are removed. 300 asteroids within 2 ms. All existing mining tests pass.
 
