@@ -189,8 +189,8 @@ Central State Store (immutable records)        ECS World (mutable components)
 
 ```
 [1] Input System (Unity Input callbacks)
-[2] PilotCommand construction (MonoBehaviour)
-[3] ShipStateReducer (pure function) → central state store
+[2] InputBridge (MonoBehaviour) constructs PilotCommand, writes to ECS PilotCommandComponent via EntityManager
+[3] InputBridge dispatches ICameraAction to StateStore → CameraReducer
 [4] StoreToEcsSync (ISystem, OrderFirst) → pushes player intent into ECS
 [5] ECS Simulation (SimulationSystemGroup) — Burst-compiled, pure ECS
 [6] EcsToStoreSync (ISystem, OrderLast) → drains NativeQueue into store

@@ -29,7 +29,7 @@ The technical approach uses C# 9.0 `record` types for immutable domain state, `r
 **Project Type**: Unity game (3D space mining simulator)
 **Performance Goals**: 60 FPS minimum on mid-range PC (GTX 1060 / RX 580); zero GC in hot loops; <2ms per reducer; field gen <100ms
 **Constraints**: <500 asteroids in MVP; single-player only; C# 9.0 (no `record struct`)
-**Scale/Scope**: Phase 0 MVP — 7 feature systems, ~50 source files, ~30 test files
+**Scale/Scope**: Phase 0 MVP — 7 feature systems, ~80 source files, ~20 test files (91 tasks total)
 
 ## Constitution Check
 
@@ -56,6 +56,7 @@ The technical approach uses C# 9.0 `record` types for immutable domain state, `r
 | ECS components are mutable structs | Unity DOTS requirement — IComponentData cannot be readonly. Reducer logic remains pure; ISystem is the only write point. | `// CONSTITUTION DEVIATION: ECS mutable shell` |
 | EventBus bridge uses static reference | DOTS SystemBase cannot use constructor injection. Bridge singleton is the only practical way to access managed EventBus from ECS boundary. | `// CONSTITUTION DEVIATION: DOTS SystemBase cannot use constructor injection` |
 | `record struct` unavailable | C# 9.0 limitation. Using `readonly struct` with manual equality for value types. `record` (reference type) for domain state. | No code comment needed — architectural decision |
+| Direct `[SerializeField]` asset references in Phases 3-7 | `[SerializeField]` is NOT `Resources.Load`; constitution prohibits `Resources.Load`, not inspector references. T086 migrates to Addressables for runtime-loaded assets. | No code comment needed |
 
 ### Post-Design Re-Check
 

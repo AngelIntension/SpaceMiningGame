@@ -46,39 +46,17 @@ Each stage of the core loop MUST deliver tactile feedback (visual, audio, UI con
 |-------|--------------|----------------|----------------|
 | **Explore** | Warp/fly to asteroid field | Field populates visually; scanner overlay shows ore composition | Field renders at 60 FPS with <500 asteroids within 1s |
 | **Mine** | Target asteroid, activate mining beam | Beam particle connects; yield numbers stream; asteroid surface erodes | First yield number appears <500ms after beam activation |
-| **Refine** | Dock at station, initiate refining | Progress bar + particle effect; refined material count increments | Refining feedback begins <200ms after initiation |
-| **Expand** | Research tech node / place base module | Tech tree node lights up; base module materializes with placement SFX | Visual confirmation <300ms after confirmation input |
-| **Survive** | Evade hazard / manage hull integrity | Warning indicators, screen shake, hull bar updates | Hazard warning appears >2s before impact |
+| **Refine** (Phase 2+) | Dock at station, initiate refining | Progress bar + particle effect; refined material count increments | Refining feedback begins <200ms after initiation |
+| **Expand** (Phase 1+) | Research tech node / place base module | Tech tree node lights up; base module materializes with placement SFX | Visual confirmation <300ms after confirmation input |
+| **Survive** (Phase 1+) | Evade hazard / manage hull integrity | Warning indicators, screen shake, hull bar updates | Hazard warning appears >2s before impact |
 
 ### Immutable Loop State
 
-```csharp
-public sealed record GameLoopState(
-    ExploreState Explore,
-    MiningSessionState Mining,
-    InventoryState Inventory,
-    RefiningState Refining,
-    TechTreeState TechTree,
-    FleetState Fleet,
-    BaseState Base,
-    MarketState Market
-);
-```
+> **Canonical definitions**: See `data-model.md` § Root State for all record definitions (GameState, GameLoopState, ExploreState, WorldState, StationData). See `contracts/reducer-interfaces.md` § GameStateReducer for the root routing logic.
 
-All loop transitions are pure reducers:
-```csharp
-// Top-level game reducer composes sub-reducers
-public static GameLoopState Reduce(GameLoopState state, IGameAction action)
-    => action switch
-    {
-        IMiningAction a    => state with { Mining = MiningReducer.Reduce(state.Mining, a) },
-        IInventoryAction a => state with { Inventory = InventoryReducer.Reduce(state.Inventory, a) },
-        IShipAction a      => state with { Fleet = FleetReducer.Reduce(state.Fleet, a) },
-        ITechAction a      => state with { TechTree = TechTreeReducer.Reduce(state.TechTree, a) },
-        IMarketAction a    => state with { Market = MarketReducer.Reduce(state.Market, a) },
-        _ => state
-    };
-```
+All state transitions are pure reducers. The **root** reducer operates on `GameState` (not `GameLoopState`) so it can route actions to all state slices — Camera and ShipState live at root level alongside the loop state. The root reducer delegates `IShipAction` to `ShipStateReducer`, `ICameraAction` to `CameraReducer`, and loop sub-actions to their respective sub-reducers.
+
+> **MVP Note**: Only the **Explore** (field generation) and **Mine** (yield + inventory) stages are functional in Phase 0. `ExploreState.ScannerActive` is a non-functional stub; scanner mechanics are deferred to Phase 1. Refine, Expand, and Survive stages are placeholder entries for the full vision — see § 11 Full Development Phases.
 
 ### TDD Strategy — Core Loop
 
@@ -98,16 +76,20 @@ Per Constitution Vision Pillars § Perspective & Camera and § Controls.
 
 #### Immutable Camera Data
 
+> **Canonical definition**: See `data-model.md` § Camera. Reproduced here for reducer context.
+
 ```csharp
 public sealed record CameraState(
     float OrbitYaw,           // Horizontal orbit angle (degrees)
     float OrbitPitch,         // Vertical orbit angle, clamped [-80, 80]
-    float Distance,           // Current distance from ship
     float TargetDistance,     // Desired distance (speed-based zoom)
     bool FreeLookActive,      // Free-look toggle state
     float FreeLookYaw,        // Free-look offset yaw
     float FreeLookPitch       // Free-look offset pitch
 );
+// Note: Actual camera distance (Cinemachine Radius) is NOT stored in state.
+// CameraView handles smooth interpolation from current Cinemachine radius
+// toward TargetDistance locally via Mathf.SmoothDamp (view-layer concern).
 ```
 
 #### Camera Reducer
@@ -127,6 +109,7 @@ public static class CameraReducer
             {
                 TargetDistance = Math.Clamp(state.TargetDistance + a.Delta, 5f, 50f)
             },
+            // Speed-zoom uses narrower band [10, 40] to preserve manual zoom extremes [5, 50]
             SpeedZoomAction a => state with
             {
                 TargetDistance = Mathf.Lerp(10f, 40f, a.NormalizedSpeed)
@@ -154,6 +137,7 @@ public static class CameraReducer
 - `CinemachineOrbitalFollow` for orbit behavior; `CinemachineRotationComposer` for look-at.
 - A `CameraView` MonoBehaviour reads the immutable `CameraState` each frame and applies values to Cinemachine parameters. **CameraView NEVER mutates CameraState** — it only reads.
 - Speed-based zoom: `CameraView` dispatches `SpeedZoomAction` with `ship.Velocity.magnitude / ship.MaxSpeed` each frame.
+- **Zoom priority**: `SpeedZoomAction` is dispatched every frame as a baseline. Manual `ZoomAction` (scroll wheel) overrides by writing directly to `TargetDistance` within the full [5, 50] range. Since both write to the same field, the last-dispatched action wins per frame. In practice, `CameraView` dispatches `SpeedZoomAction` in `LateUpdate`; `InputBridge` dispatches `ZoomAction` in `Update` — so manual zoom is immediately overridden by speed-zoom next frame. To preserve manual zoom, `CameraView` MUST skip `SpeedZoomAction` dispatch for a **2.0 second cooldown** after a manual `ZoomAction` is detected. Implementation detail in T037; PlayMode test must verify cooldown behavior.
 - Free-look toggle MUST NOT affect ship heading (Constitution requirement).
 
 #### Input Actions (New Input System)
@@ -168,20 +152,26 @@ public static class CameraReducer
 
 #### Immutable Command Data
 
+> **Canonical definition**: See `data-model.md` § Input Commands. Reproduced here for controls context.
+
 ```csharp
 public sealed record PilotCommand(
     Option<EntityId> SelectedTarget,      // Left-click selected entity
-    Option<Vector3> AlignPoint,           // Double-click point in 3D space
+    Option<float3> AlignPoint,            // Double-click point in 3D space
     Option<RadialMenuChoice> RadialChoice,  // Right-click menu selection (with player-set distance)
     ThrustInput ManualThrust,             // WASD/QE keyboard input
     ImmutableArray<int> ActivatedModules  // Hotbar slots activated this frame
 );
 
-public readonly record struct ThrustInput(
-    float Forward,   // W/S: [-1, 1]
-    float Strafe,    // A/D: [-1, 1]
-    float Roll       // Q/E: [-1, 1]
-);
+// C# 9.0 readonly struct (record struct unavailable)
+public readonly struct ThrustInput
+{
+    public readonly float Forward;   // W/S: [-1, 1]
+    public readonly float Strafe;    // A/D: [-1, 1]
+    public readonly float Roll;      // Q/E: [-1, 1]
+    public ThrustInput(float forward, float strafe, float roll)
+    { Forward = forward; Strafe = strafe; Roll = roll; }
+}
 
 public enum RadialMenuAction
 {
@@ -189,24 +179,30 @@ public enum RadialMenuAction
     Orbit,
     Mine,
     KeepAtRange,
-    Dock,
-    Warp
+    Dock,          // Phase 1+ — not shown in MVP radial menu
+    Warp           // Phase 1+ — not shown in MVP radial menu
 }
 
 // Radial menu selection carries a player-specified distance for
 // Approach, Orbit, and KeepAtRange (set via radial sub-menu slider).
-public readonly record struct RadialMenuChoice(
-    RadialMenuAction Action,
-    Option<float> DistanceMeters   // Player-configured; required for Approach/Orbit/KeepAtRange
-);
+// C# 9.0 readonly struct (record struct unavailable)
+public readonly struct RadialMenuChoice
+{
+    public readonly RadialMenuAction Action;
+    public readonly float DistanceMeters;  // Player-configured; required for Approach/Orbit/KeepAtRange
+    public RadialMenuChoice(RadialMenuAction action, float distanceMeters)
+    { Action = action; DistanceMeters = distanceMeters; }
+}
 ```
 
 #### Input → PilotCommand Flow
 
 1. `InputBridge` (MonoBehaviour) reads Unity Input System callbacks.
 2. `InputBridge` constructs an immutable `PilotCommand` record each tick.
-3. `PilotCommand` is dispatched to the `ShipStateReducer` (pure function).
-4. **No direct state mutation from input handlers** (Constitution requirement).
+3. `InputBridge` writes `PilotCommand` fields to the ECS `PilotCommandComponent` singleton via `EntityManager` (documented ECS mutable shell deviation).
+4. `ShipPhysicsSystem` (Burst) reads `PilotCommandComponent`, calls `ShipPhysicsMath` pure functions, writes physics results to ECS components.
+5. `EcsToStoreSyncSystem` dispatches `SyncShipPhysicsAction` to `ShipStateReducer` (pure) for HUD/view consumption.
+6. **No game-state mutation from input handlers** — `InputBridge` only writes to the ECS input component (thin mutable shell). All physics logic is pure via `ShipPhysicsMath`.
 
 #### Input Actions (New Input System)
 
@@ -224,8 +220,8 @@ public readonly record struct RadialMenuChoice(
 #### Radial Context Menu
 
 - Right-click on a target entity opens a radial pie menu.
-- Menu options are contextual: asteroid shows (Approach, Orbit, Mine, Keep-at-Range); station shows (Approach, Dock).
-- Selecting Approach, Orbit, or Keep-at-Range opens a distance sub-menu (slider or preset buttons) where the player sets the desired range in meters before confirming.
+- Menu options are contextual: asteroid shows (Approach, Orbit, Mine, Keep-at-Range); station shows (Approach, Dock). **MVP Note**: No station entities are spawned in Phase 0 — only asteroid radial options are functional. Station interactions are Phase 1+.
+- Selecting Approach, Orbit, or Keep-at-Range opens a distance sub-menu (slider or preset buttons) where the player sets the desired range in meters before confirming. Distance sub-menu range: **10m–500m** with 10m step increments. **Initial slider position** (not hardcoded physics defaults — player always explicitly confirms): 50m for Approach, 100m for Orbit, 50m for Keep-at-Range. Slider is continuous; preset buttons at 25m, 50m, 100m, 250m, 500m. The ship uses whatever distance the player confirms; there are no hardcoded distances at the physics/flight layer.
 - Selection produces a `RadialMenuChoice` (action + player-specified distance) in the `PilotCommand`.
 - HUD renders the radial menu and distance sub-menu via **UI Toolkit** — **view layer only**.
 
@@ -243,19 +239,22 @@ Per Constitution Principles § I, III, IV — functional state, DOTS performance
 
 ### Immutable Ship Data
 
+> **Canonical definition**: See `data-model.md` § Ship. Reproduced here for reducer context.
+
 ```csharp
 public sealed record ShipState(
-    Vector3 Position,
-    Quaternion Rotation,
-    Vector3 Velocity,
-    Vector3 AngularVelocity,
+    float3 Position,
+    quaternion Rotation,
+    float3 Velocity,
+    float3 AngularVelocity,
     float Mass,
     float MaxThrust,
     float MaxSpeed,
     float RotationTorque,
     float LinearDamping,     // Simulates drag for game-feel
     float AngularDamping,
-    ShipFlightMode FlightMode
+    ShipFlightMode FlightMode,
+    float HullIntegrity      // 0-1, 1.0 = full health
 );
 
 public enum ShipFlightMode
@@ -266,55 +265,53 @@ public enum ShipFlightMode
     Approach,
     Orbit,
     KeepAtRange,
-    Warp
+    Warp           // Phase 1+ — not implemented in MVP
 }
 ```
 
-### Ship State Reducer
+### Ship Physics — Architecture
+
+> **Architecture note**: The pure physics functions below are defined in `ShipPhysicsMath` — a static class with all methods operating on unmanaged types (`float3`, `quaternion`, `float`) for Burst compatibility. The store-level `ShipStateReducer` only handles `SyncShipPhysicsAction` (projecting ECS results into the store). Unit tests call `ShipPhysicsMath` directly. See `contracts/reducer-interfaces.md` § ShipPhysicsMath for the full function table.
 
 ```csharp
+// ShipPhysicsMath — pure static class, all methods operate on unmanaged types
+// Called by both ShipPhysicsSystem (ECS/Burst) and unit tests
+public static class ShipPhysicsMath
+{
+    public static ShipFlightMode DetermineFlightMode(
+        ShipFlightMode current, ThrustInput thrust,
+        bool hasAlignPoint, bool hasRadialChoice) => ...;
+    public static float3 ComputeThrust(
+        float3 localForward, float3 localRight, float3 localUp,
+        ThrustInput input, float maxThrust, ShipFlightMode mode) => ...;
+    public static float3 ComputeTorque(
+        float3 localForward, float3 localUp,
+        ThrustInput input, float rotationTorque, ShipFlightMode mode) => ...;
+    public static float3 ApplyForce(
+        float3 vel, float3 force, float mass, float dt) => ...;
+    public static float3 ApplyDamping(
+        float3 vel, float damping, float dt) => ...;
+    public static float3 ClampSpeed(float3 vel, float max) => ...;
+    public static quaternion IntegrateRotation(
+        quaternion rot, float3 angVel, float dt) => ...;
+}
+
+// ShipStateReducer — store-level, handles only SyncShipPhysicsAction
 public static class ShipStateReducer
 {
-    public static ShipState Reduce(
-        ShipState state, PilotCommand cmd, float deltaTime)
-    {
-        var mode = DetermineFlightMode(state, cmd);
-        var thrustForce = ComputeThrust(state, cmd, mode);
-        var torque = ComputeTorque(state, cmd, mode);
-
-        var newVelocity = ApplyForce(
-            state.Velocity, thrustForce, state.Mass, deltaTime);
-        newVelocity = ApplyDamping(newVelocity, state.LinearDamping, deltaTime);
-        newVelocity = ClampSpeed(newVelocity, state.MaxSpeed);
-
-        var newAngVel = ApplyTorque(
-            state.AngularVelocity, torque, state.Mass, deltaTime);
-        newAngVel = ApplyDamping(newAngVel, state.AngularDamping, deltaTime);
-
-        return state with
+    public static ShipState Reduce(ShipState state, IShipAction action)
+        => action switch
         {
-            Position = state.Position + newVelocity * deltaTime,
-            Rotation = IntegrateRotation(state.Rotation, newAngVel, deltaTime),
-            Velocity = newVelocity,
-            AngularVelocity = newAngVel,
-            FlightMode = mode
+            SyncShipPhysicsAction a => state with
+            {
+                Position = a.Position,
+                Rotation = a.Rotation,
+                Velocity = a.Velocity,
+                AngularVelocity = a.AngularVelocity,
+                FlightMode = a.FlightMode
+            },
+            _ => state
         };
-    }
-
-    // All helper methods are pure static functions
-    private static ShipFlightMode DetermineFlightMode(
-        ShipState s, PilotCommand cmd) => ...;
-    private static Vector3 ComputeThrust(
-        ShipState s, PilotCommand cmd, ShipFlightMode mode) => ...;
-    private static Vector3 ComputeTorque(
-        ShipState s, PilotCommand cmd, ShipFlightMode mode) => ...;
-    private static Vector3 ApplyForce(
-        Vector3 vel, Vector3 force, float mass, float dt) => ...;
-    private static Vector3 ApplyDamping(
-        Vector3 vel, float damping, float dt) => ...;
-    private static Vector3 ClampSpeed(Vector3 vel, float max) => ...;
-    private static Quaternion IntegrateRotation(
-        Quaternion rot, Vector3 angVel, float dt) => ...;
 }
 ```
 
@@ -341,8 +338,9 @@ public static class ShipStateReducer
 
 ### TDD Strategy — Ship Movement
 
-- **Unit tests**: `ShipStateReducer.Reduce` — forward thrust increases velocity; damping reduces velocity over time; max speed clamp; align-to-point rotates toward target; orbit maintains distance.
-- **Unit tests**: Edge cases — zero mass (guard), NaN velocity (guard), simultaneous manual + auto-pilot (manual overrides).
+- **Unit tests**: `ShipPhysicsMath` — ComputeThrust with forward input produces force along local Z; ApplyForce increases velocity proportional to force/mass; ApplyDamping reduces velocity over time; ClampSpeed enforces max speed; ComputeTorque produces angular velocity from roll input; IntegrateRotation normalizes output; DetermineFlightMode resolves AlignToPoint, Approach, Orbit, KeepAtRange correctly.
+- **Unit tests**: `ShipPhysicsMath` edge cases — zero mass guard (ApplyForce returns unchanged); NaN velocity guard (clamp to zero); simultaneous manual + auto-pilot (manual overrides via DetermineFlightMode).
+- **Unit tests**: `ShipStateReducer` — SyncShipPhysicsAction copies all fields correctly; unknown action returns unchanged state.
 - **Performance tests**: 500 ships simulated via Burst job — assert <2ms total frame time.
 
 ---
@@ -352,6 +350,8 @@ public static class ShipStateReducer
 Per Constitution Principles § I (immutable), § III (Burst), § IV (data-oriented).
 
 ### Ore Types & Asteroid Data
+
+> **Canonical definitions**: See `data-model.md` § Mining, § Asteroids, § Inventory, § Asteroid Field Generation for all record/struct definitions. Reproduced here for reducer context.
 
 ```csharp
 // ScriptableObject — designer-authored, single source of truth
@@ -365,6 +365,7 @@ public class OreTypeDefinition : ScriptableObject
     public float Hardness;          // Affects mining time
     public int Tier;                // Tech tier required to mine
     public float Rarity;            // 0-1, affects procedural placement
+    public float VolumePerUnit;     // Cargo volume consumed per unit of ore
 }
 
 // MVP ore set (3 ScriptableObject assets):
@@ -372,20 +373,24 @@ public class OreTypeDefinition : ScriptableObject
 //   Scordite  — uncommon, Rarity=0.3, Hardness=1.5, Tier=1, BeamColor=amber
 //   Pyroxeres — rare,     Rarity=0.1, Hardness=2.5, Tier=1, BeamColor=crimson
 
-// Runtime immutable data
+// Runtime immutable data (float3 for Burst/DOTS compatibility)
 public sealed record AsteroidData(
     EntityId Id,
-    Vector3 Position,
+    float3 Position,
     float Radius,
     ImmutableArray<OreDeposit> Deposits,
     float RemainingMass          // 0 = fully depleted
 );
 
-public readonly record struct OreDeposit(
-    string OreId,
-    float Quantity,
-    float Depth              // Distance from surface — affects yield
-);
+// C# 9.0 readonly struct (record struct unavailable)
+public readonly struct OreDeposit
+{
+    public readonly string OreId;
+    public readonly float Quantity;
+    public readonly float Depth;  // Distance from surface — affects yield
+    public OreDeposit(string oreId, float quantity, float depth)
+    { OreId = oreId; Quantity = quantity; Depth = depth; }
+}
 ```
 
 ### Mining Session
@@ -399,6 +404,11 @@ public sealed record MiningSessionState(
     float MiningDuration,        // Time mining current target
     float BeamMaxRange           // Module-dependent: 50m (T1) to 250m (T4)
 );
+
+// MVP Mining Power: In Phase 0, the ship has a fixed MiningPower of 1.0f
+// (hardcoded in ShipArchetypeConfig for the MiningBarge starter ship).
+// MiningBeamSystem reads this from ShipConfigComponent. In Phase 1+,
+// MiningPower becomes a computed stat from OwnedShip (base + module bonuses).
 
 public sealed record MiningYieldResult(
     string OreId,
@@ -425,13 +435,17 @@ public static class MiningReducer
                 MiningDuration = 0f
             },
             MiningTickAction a => ComputeMiningTick(
-                state, a.DeltaTime, a.OreDefinition, a.ShipMiningPower),
+                state, a.DeltaTime, a.BaseYield, a.Hardness, a.Depth, a.ShipMiningPower),
+            // Note: MiningTickAction.BaseYield is populated from OreTypeDefinition.BaseYieldPerSecond
+            // (or equivalently, OreTypeBlob.BaseYieldPerSecond in Burst context).
+            // MiningTickAction.ShipMiningPower comes from ShipConfigComponent.MiningPower (MVP: 1.0f).
             StopMiningAction => MiningSessionState.Empty,
             _ => state
         };
 
     // Pure yield calculation
     public static MiningYieldResult CalculateYield(
+        string oreId,
         float miningPower,
         float baseYield,
         float hardness,
@@ -442,12 +456,14 @@ public static class MiningReducer
             / (hardness * (1f + depth));
         var rawYield = effectiveYield * deltaTime;
         var whole = (int)Math.Floor(rawYield);
-        return new MiningYieldResult("", whole, rawYield - whole);
+        return new MiningYieldResult(oreId, whole, rawYield - whole);
     }
 }
 ```
 
 ### Inventory (Immutable Stacks)
+
+> **Canonical definition**: See `data-model.md` § Inventory. Reproduced here for reducer context.
 
 ```csharp
 public sealed record InventoryState(
@@ -457,11 +473,15 @@ public sealed record InventoryState(
     float CurrentVolume
 );
 
-public readonly record struct ResourceStack(
-    string ResourceId,
-    int Quantity,
-    float VolumePerUnit
-);
+// C# 9.0 readonly struct (record struct unavailable)
+public readonly struct ResourceStack
+{
+    public readonly string ResourceId;
+    public readonly int Quantity;
+    public readonly float VolumePerUnit;
+    public ResourceStack(string resourceId, int quantity, float volumePerUnit)
+    { ResourceId = resourceId; Quantity = quantity; VolumePerUnit = volumePerUnit; }
+}
 
 public static class InventoryReducer
 {
@@ -473,8 +493,7 @@ public static class InventoryReducer
                 state, a.ResourceId, a.Quantity, a.VolumePerUnit),
             RemoveResourceAction a => RemoveResource(
                 state, a.ResourceId, a.Quantity),
-            TransferAction a => Transfer(
-                state, a.TargetInventory, a.ResourceId, a.Quantity),
+            // TransferAction deferred to Phase 2 (hauling roles)
             _ => state
         };
 
@@ -484,8 +503,18 @@ public static class InventoryReducer
         var newVolume = state.CurrentVolume + (qty * volPerUnit);
         if (newVolume > state.MaxVolume) return state; // Over capacity
 
-        var existing = state.Stacks.GetValueOrDefault(id);
-        var newStack = existing with { Quantity = existing.Quantity + qty };
+        // C# 9: readonly struct doesn't support `with` — use constructor
+        ResourceStack newStack;
+        if (state.Stacks.TryGetValue(id, out var existing))
+        {
+            newStack = new ResourceStack(id, existing.Quantity + qty, volPerUnit);
+        }
+        else
+        {
+            if (state.Stacks.Count >= state.MaxSlots) return state; // Slot limit
+            newStack = new ResourceStack(id, qty, volPerUnit);
+        }
+
         return state with
         {
             Stacks = state.Stacks.SetItem(id, newStack),
@@ -501,9 +530,11 @@ public static class InventoryReducer
             return state; // Insufficient quantity
 
         var newQty = stack.Quantity - qty;
+        // C# 9: readonly struct doesn't support `with` — use constructor
         var newStacks = newQty == 0
             ? state.Stacks.Remove(id)
-            : state.Stacks.SetItem(id, stack with { Quantity = newQty });
+            : state.Stacks.SetItem(id,
+                new ResourceStack(id, newQty, stack.VolumePerUnit));
 
         return state with
         {
@@ -516,6 +547,8 @@ public static class InventoryReducer
 
 ### Procedural Asteroid Field (Burst)
 
+> **Canonical definition**: See `data-model.md` § Asteroid Field Generation. Reproduced here for generation context.
+
 ```csharp
 public sealed record AsteroidFieldConfig(
     int Seed,
@@ -524,12 +557,16 @@ public sealed record AsteroidFieldConfig(
     ImmutableArray<OreDistribution> OreDistributions
 );
 
-public readonly record struct OreDistribution(
-    string OreId,
-    float Weight,              // Relative spawn probability
-    float MinDepositSize,
-    float MaxDepositSize
-);
+// C# 9.0 readonly struct (record struct unavailable)
+public readonly struct OreDistribution
+{
+    public readonly string OreId;
+    public readonly float Weight;           // Relative spawn probability
+    public readonly float MinDepositSize;
+    public readonly float MaxDepositSize;
+    public OreDistribution(string oreId, float weight, float minDepositSize, float maxDepositSize)
+    { OreId = oreId; Weight = weight; MinDepositSize = minDepositSize; MaxDepositSize = maxDepositSize; }
+}
 ```
 
 - **Generation**: `AsteroidFieldGeneratorJob` (IJobParallelFor, Burst-compiled) generates positions via Poisson disc sampling with seeded RNG (`Unity.Mathematics.Random`).
@@ -572,14 +609,23 @@ public enum TechCategory
     Hulls, Mining, Refining, Modules, Economy, Base
 }
 
-public readonly record struct TechCost(
-    string ResourceId, int Quantity);
+// C# 9.0 readonly structs (record struct unavailable)
+public readonly struct TechCost
+{
+    public readonly string ResourceId;
+    public readonly int Quantity;
+    public TechCost(string resourceId, int quantity)
+    { ResourceId = resourceId; Quantity = quantity; }
+}
 
-public readonly record struct TechReward(
-    TechRewardType Type,
-    string TargetId,       // e.g., ShipArchetype ID, OreType ID
-    float Value            // e.g., +15% mining yield
-);
+public readonly struct TechReward
+{
+    public readonly TechRewardType Type;
+    public readonly string TargetId;  // e.g., ShipArchetype ID, OreType ID
+    public readonly float Value;      // e.g., +15% mining yield
+    public TechReward(TechRewardType type, string targetId, float value)
+    { Type = type; TargetId = targetId; Value = value; }
+}
 
 public enum TechRewardType
 {
@@ -656,7 +702,13 @@ public class ShipArchetypeConfig : ScriptableObject
     public string ArchetypeId;
     public string DisplayName;
     public ShipRole Role;
-    public ShipStatsBase BaseStats;
+    public float Mass;
+    public float MaxThrust;
+    public float MaxSpeed;
+    public float RotationTorque;
+    public float LinearDamping;
+    public float AngularDamping;
+    public float MiningPower;      // MVP: 1.0f for MiningBarge
     public int ModuleSlots;
     public float CargoCapacity;
     public Mesh HullMesh;
@@ -673,16 +725,22 @@ public sealed record OwnedShip(
     string ShipId,            // Unique instance ID
     string ArchetypeId,
     ImmutableArray<ModuleSlot> EquippedModules,
-    ShipStats CurrentStats,   // Base + module bonuses
+    float MaxThrust,          // Base + module bonuses (computed)
+    float MaxSpeed,           // Base + module bonuses (computed)
+    float MiningPower,        // Base + module bonuses (computed)
     float HullIntegrity,      // 0-1
     InventoryState Cargo
 );
 
-public readonly record struct ModuleSlot(
-    int SlotIndex,
-    Option<string> ModuleId,
-    ModuleType Type
-);
+// C# 9.0 readonly struct (record struct unavailable)
+public readonly struct ModuleSlot
+{
+    public readonly int SlotIndex;
+    public readonly Option<string> ModuleId;
+    public readonly ModuleType Type;
+    public ModuleSlot(int slotIndex, Option<string> moduleId, ModuleType type)
+    { SlotIndex = slotIndex; ModuleId = moduleId; Type = type; }
+}
 
 public enum ModuleType
 {
@@ -759,8 +817,8 @@ public sealed record BaseState(
 
 public sealed record PlacedModule(
     string ModuleId,
-    Vector3 Position,
-    Quaternion Rotation,
+    float3 Position,
+    quaternion Rotation,
     string ModuleTypeId
 );
 ```
@@ -877,37 +935,36 @@ using EntityId = System.Int32;
 
 ### Root Game State
 
-```csharp
-public sealed record GameState(
-    GameLoopState Loop,
-    ShipState ActiveShipPhysics,
-    CameraState Camera,
-    WorldState World
-);
-
-public sealed record WorldState(
-    ImmutableArray<AsteroidData> AsteroidField,
-    ImmutableArray<StationData> Stations,
-    float WorldTime
-);
-```
+> **Canonical definitions**: See `data-model.md` § Root State for all record definitions (GameState, GameLoopState, ExploreState, WorldState, StationData). Definitions are not repeated here to avoid drift.
 
 ### Reducer Architecture
+
+The root `GameStateReducer` operates on `GameState` (not `GameLoopState`), routing actions to the correct state slice. Camera and Ship physics live at the root level; loop sub-systems (mining, inventory, fleet, tech, market) are nested under `GameLoopState`.
 
 ```
 InputBridge (MonoBehaviour — thin mutable shell)
   │
-  ▼ PilotCommand (immutable record)
+  ├──→ PilotCommand (immutable record)
+  │      │
+  │      ▼ ECS PilotCommandComponent (via EntityManager — documented ECS deviation)
+  │      │
+  │      ▼ ShipPhysicsSystem (Burst) → calls ShipPhysicsMath (pure static)
+  │      │
+  │      ▼ EcsToStoreSyncSystem → dispatches SyncShipPhysicsAction
   │
-GameStateReducer (pure static function)
-  ├── ShipStateReducer
-  ├── CameraReducer
-  ├── MiningReducer
-  ├── InventoryReducer
-  ├── FleetReducer (Phase 1+)
-  ├── TechTreeReducer (Phase 1+)
-  ├── MarketReducer (Phase 3)
-  └── BaseReducer (Phase 2+)
+  ├──→ ICameraAction (dispatched to StateStore)
+  │
+  └──→ IMiningAction / IInventoryAction (via ECS NativeQueue → ActionDispatchSystem)
+
+GameStateReducer (pure static — operates on GameState root)
+  ├── CameraReducer           → state.Camera
+  ├── ShipStateReducer        → state.ActiveShipPhysics (SyncShipPhysicsAction only)
+  ├── MiningReducer           → state.Loop.Mining
+  ├── InventoryReducer        → state.Loop.Inventory
+  ├── FleetReducer (Phase 1+) → state.Loop.Fleet
+  ├── TechTreeReducer (Phase 1+) → state.Loop.TechTree
+  ├── MarketReducer (Phase 3) → state.Loop.Market
+  └── BaseReducer (Phase 2+)  → state.Loop.Base  [IBaseAction/BaseReducer TBD in Phase 2 spec]
   │
   ▼ GameState (new immutable record)
   │
@@ -925,7 +982,7 @@ Views (MonoBehaviours — read-only, render state)
 | `ShipPhysicsSystem` | DOTS | Yes | 6DOF movement, velocity integration |
 | `AsteroidFieldSystem` | DOTS | Yes | Procedural generation, LOD management |
 | `MiningBeamSystem` | DOTS | Yes | Beam targeting, yield calculation per tick |
-| `ResourceEntitySystem` | DOTS | Yes | Floating resource pickup entities |
+| `ResourceEntitySystem` | DOTS | Yes | Floating resource pickup entities (Phase 1+ — not in MVP scope) |
 | `AsteroidDepletionSystem` | DOTS | Yes | Mass tracking, visual depletion |
 | `CameraSystem` | Hybrid | No | Reads CameraState, writes Cinemachine |
 | `HUDSystem` | Hybrid | No | Reads GameState, writes UI |
@@ -933,26 +990,13 @@ Views (MonoBehaviours — read-only, render state)
 
 ### EventBus (UniTask)
 
-```csharp
-public interface IEventBus
-{
-    void Publish<T>(T evt) where T : struct;
-    IUniTaskAsyncEnumerable<T> Subscribe<T>() where T : struct;
-}
+> See `contracts/eventbus-interface.md` for the canonical `IEventBus` interface definition, guarantees, and DOTS-to-Managed bridge contract. See `data-model.md` § Event Types for all event struct definitions.
 
-// Events are immutable structs — no heap allocation
-public readonly record struct MiningStartedEvent(
-    EntityId AsteroidId, string OreId);
-public readonly record struct MiningYieldEvent(
-    string OreId, int Quantity);
-public readonly record struct ShipSwappedEvent(
-    string OldShipId, string NewShipId);
-public readonly record struct TechUnlockedEvent(string NodeId);
-```
-
-- EventBus bridges DOTS and MonoBehaviour layers.
+Key architectural points:
+- EventBus bridges DOTS and MonoBehaviour layers via NativeQueue drain pattern.
 - Systems publish events; Views subscribe and update visuals.
-- UniTask provides allocation-free async enumeration.
+- UniTask `Channel<T>` provides allocation-free async enumeration for `struct` events.
+- All events are `readonly struct` — no heap allocation, no boxing.
 
 ### Package Manifest (Required Installations)
 
@@ -969,30 +1013,36 @@ public readonly record struct TechUnlockedEvent(string NodeId);
 | `jp.hadashikick.vcontainer` | OpenUPM / git | Lightweight DI container |
 | `System.Collections.Immutable` | NuGetForUnity | ImmutableArray, ImmutableDictionary |
 
-### C# Language Level
+### C# Language Level (Confirmed: C# 9.0)
 
-The constitution and CLAUDE.md currently state C# 9.0 / .NET Framework 4.7.1. This spec recommends bumping to **C# 12** (or the highest level Unity 6 supports) to unlock:
-- `record struct` (C# 10) — critical for zero-alloc value-type records in hot paths
-- Primary constructors (C# 12) — cleaner reducer signatures
-- Collection expressions (C# 12) — cleaner immutable collection initialization
-
-**Action required**: Verify Unity 6 (6000.3.10f1) maximum supported C# level. Set via `csc.rsp` file containing `-langversion:12` or via Editor scripting backend settings. Update CLAUDE.md and constitution accordingly.
+Unity 6 (6000.3.10f1) supports **C# 9.0** / .NET Framework 4.7.1 (Mono runtime). `record struct` (C# 10+) is NOT available. Architectural adaptations:
+- Use `sealed record` (reference type) for domain state in the reducer layer
+- Use `readonly struct` with manual constructors for Burst-compatible value types
+- Use `readonly struct` for event types (zero-alloc, no boxing)
 
 ### Dependency Injection (VContainer)
 
 ```csharp
-public class GameLifetimeScope : LifetimeScope
+// RootLifetimeScope — DontDestroyOnLoad, core infrastructure only
+public class RootLifetimeScope : LifetimeScope
 {
     protected override void Configure(IContainerBuilder builder)
     {
         // Core infrastructure
         builder.Register<IEventBus, UniTaskEventBus>(Lifetime.Singleton);
-        builder.Register<GameStateStore>(Lifetime.Singleton);
+        builder.Register<IStateStore, StateStore>(Lifetime.Singleton);
 
         // Reducers (stateless — singleton is fine)
         builder.Register<GameStateReducer>(Lifetime.Singleton);
+    }
+}
 
-        // Views (MonoBehaviour — resolved via scene injection)
+// SceneLifetimeScope — child of Root, per-scene view bindings
+public class SceneLifetimeScope : LifetimeScope
+{
+    protected override void Configure(IContainerBuilder builder)
+    {
+        // Views (MonoBehaviour — resolved from scene hierarchy)
         builder.RegisterComponentInHierarchy<ShipView>();
         builder.RegisterComponentInHierarchy<CameraView>();
         builder.RegisterComponentInHierarchy<HUDView>();
@@ -1052,7 +1102,7 @@ The player can left-click an asteroid to select it (highlighted), double-click t
 **Acceptance Scenarios**:
 1. **Given** asteroid in view, **When** left-click, **Then** highlighted with target info on HUD
 2. **Given** selected asteroid, **When** double-click, **Then** ship rotates toward it and accelerates
-3. **Given** selected asteroid, **When** right-click, **Then** radial menu with Approach, Orbit, Mine
+3. **Given** selected asteroid, **When** right-click, **Then** radial menu with Approach, Orbit, Mine, Keep-at-Range
 
 ---
 
@@ -1087,7 +1137,7 @@ The player enters a procedurally generated asteroid field with varied ore compos
 ### Edge Cases
 
 - **Mining at max distance**: Beam disconnects when ship exceeds `BeamMaxRange` (50–250m by module tier; MVP default 50m). Mining stops with "Out of Range" HUD feedback.
-- **Inventory full**: Mining continues but yield discarded with "Cargo Full" warning.
+- **Inventory full**: Mining stops when cargo is full. InventoryReducer returns unchanged state (rejection), MiningActionDispatchSystem detects the rejection (state unchanged after AddResourceAction), dispatches `StopMiningAction` to reset `MiningSessionState` to Empty, and publishes `MiningStoppedEvent(StopReason.CargoFull)` via EventBus. HUDView subscribes and displays a "Cargo Full" warning indicator.
 - **Zero-mass asteroid**: Guard against division by zero in depletion calculations.
 - **Rapid target switching**: PilotCommand handles rapid clicks without race conditions (immutable by design).
 - **Camera at orbit limits**: Pitch clamped [-80, 80]; zoom clamped [5, 50].
@@ -1145,15 +1195,16 @@ Edit `Packages/manifest.json` or use Package Manager:
       "name": "OpenUPM",
       "url": "https://package.openupm.com",
       "scopes": [
-        "com.cysharp.unitask",
-        "jp.hadashikick.vcontainer"
+        "jp.hadashikick",
+        "com.cysharp",
+        "com.github-glitchenzo"
       ]
     }
   ]
 }
 ```
 
-Install `System.Collections.Immutable` via NuGetForUnity or manual DLL in `Assets/Plugins/`.
+Install NuGetForUnity (`com.github-glitchenzo.nugetforunity`) via the OpenUPM scoped registry above, then install `System.Collections.Immutable` via NuGetForUnity UI.
 
 ### 2. Create InputSystem_Actions Asset
 
@@ -1162,17 +1213,14 @@ Replace or update `InputSystem_Actions.inputactions` at project root:
 - **Camera** map: Orbit, Zoom, FreeLookToggle
 - **UI** map: Navigate, Submit, Cancel (default Unity UI)
 
-### 3. Bump C# Language Level
+### 3. C# Language Level (Confirmed: C# 9.0)
 
-Verify Unity 6 maximum C# version. If C# 12 available:
-1. Set Api Compatibility Level in Player Settings
-2. Add `csc.rsp` with `-langversion:12`
-3. Update CLAUDE.md and constitution to reflect new version
+Unity 6 (6000.3.10f1) supports C# 9.0 / .NET Framework 4.7.1. `record struct` (C# 10+) is NOT available. Use `readonly struct` with manual equality for value types. `record` (reference type) for domain state. No `csc.rsp` changes needed.
 
 ### 4. Initial Scene Setup
 
 1. Create `Assets/Scenes/GameScene.unity`
-2. Add: `GameManager` (LifetimeScope), `InputBridge`, `CameraRig` (Cinemachine), `HUDCanvas`
+2. Add: `GameManager` (LifetimeScope), `InputBridge`, `CameraRig` (Cinemachine), `HUDDocument` (UIDocument for UI Toolkit)
 3. Create empty feature folders per constitution project structure
 4. Add `.asmdef` files for each feature folder
 5. Configure URP for space (dark skybox, bloom post-processing)
@@ -1184,3 +1232,6 @@ Verify Unity 6 maximum C# version. If C# 12 available:
 - Placeholder audio in MVP
 - VR/console scalability is future concern, not actively targeted in MVP
 - NPC traders in Phase 3 are simple scripted agents, not ML-driven
+- Warp flight mode mechanics deferred to Phase 1 (enum value present for forward compatibility)
+- Dock interaction and station docking deferred to Phase 1 (enum value present for forward compatibility)
+- ResourceEntitySystem (floating resource pickups) deferred to Phase 1

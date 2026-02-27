@@ -40,7 +40,8 @@ public interface IStateStore
 2. **Atomicity**: Each `Dispatch` produces exactly one new state. No partial updates visible.
 3. **Ordering**: Dispatches are processed sequentially in call order. No batching or deferred execution.
 4. **Version monotonicity**: `Version` strictly increases by 1 per dispatch. Never resets.
-5. **Notification**: `OnStateChanged` fires exactly once per dispatch, after `Current` is updated.
+5. **Notification (OnStateChanged)**: `OnStateChanged` fires exactly once per dispatch, after `Current` is updated. Fires even if the reducer returned the same state reference (identity unchanged).
+6. **Notification (StateChangedEvent via EventBus)**: `StateChangedEvent<GameState>` is published via `IEventBus` only when the dispatch produces a **new state reference** (i.e., `!ReferenceEquals(oldState, newState)`). This is an optimization for view subscribers that only care about actual changes. Both notification mechanisms coexist — `OnStateChanged` for sync systems needing every dispatch, `StateChangedEvent` for views needing change-only updates.
 
 ## Reducer Pipeline
 
