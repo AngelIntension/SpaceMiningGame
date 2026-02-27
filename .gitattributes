@@ -55,6 +55,7 @@ OcclusionCullingData.asset lfs-file
 *.hdr   lfs-file
 *.tif   lfs-file
 *.tiff  lfs-file
+
 # 3D models
 *.fbx   lfs-file
 *.FBX filter=lfs diff=lfs merge=lfs -text
