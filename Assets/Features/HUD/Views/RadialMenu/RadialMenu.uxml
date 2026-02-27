@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements"
+         xsi="http://www.w3.org/2001/XMLSchema-instance"
+         engine="UnityEngine.UIElements"
+         editor="UnityEditor.UIElements"
+         noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd"
+         editor-extension-mode="False">
+
+    <Style src="RadialMenu.uss" />
+
+    <!-- Root container: centered, hidden by default -->
+    <ui:VisualElement name="radial-menu-root" class="radial-menu-root">
+
+        <!-- Central hub indicator -->
+        <ui:VisualElement name="radial-center" class="radial-center">
+            <ui:Label name="center-label" class="center-label" text="SELECT" />
+        </ui:VisualElement>
+
+        <!-- Pie segment buttons arranged in cardinal directions -->
+        <!-- Top: Approach -->
+        <ui:Button name="segment-approach" class="radial-segment segment-top" text="Approach" />
+
+        <!-- Right: Orbit -->
+        <ui:Button name="segment-orbit" class="radial-segment segment-right" text="Orbit" />
+
+        <!-- Bottom: Mine -->
+        <ui:Button name="segment-mine" class="radial-segment segment-bottom" text="Mine" />
+
+        <!-- Left: Keep at Range -->
+        <ui:Button name="segment-keep-at-range" class="radial-segment segment-left" text="Keep at&#10;Range" />
+
+        <!-- Distance sub-menu panel (shown for Approach, Orbit, KeepAtRange) -->
+        <ui:VisualElement name="distance-submenu" class="distance-submenu">
+            <ui:Label name="distance-title" class="distance-title" text="Set Distance" />
+
+            <!-- Slider for fine-grained distance control -->
+            <ui:SliderInt name="distance-slider"
+                          class="distance-slider"
+                          low-value="10"
+                          high-value="500"
+                          value="50"
+                          show-input-field="true" />
+
+            <!-- Preset distance buttons -->
+            <ui:VisualElement name="preset-row" class="preset-row">
+                <ui:Button name="preset-25" class="preset-button" text="25m" />
+                <ui:Button name="preset-50" class="preset-button" text="50m" />
+                <ui:Button name="preset-100" class="preset-button" text="100m" />
+                <ui:Button name="preset-250" class="preset-button" text="250m" />
+                <ui:Button name="preset-500" class="preset-button" text="500m" />
+            </ui:VisualElement>
+
+            <!-- Confirm button -->
+            <ui:Button name="confirm-button" class="confirm-button" text="CONFIRM" />
+        </ui:VisualElement>
+
+    </ui:VisualElement>
+
+</ui:UXML>

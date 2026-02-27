@@ -1,0 +1,29 @@
+{
+    "name": "VoidHarvest.Core.State.Tests",
+    "rootNamespace": "VoidHarvest.Core.State.Tests",
+    "references": [
+        "VoidHarvest.Core.State",
+        "VoidHarvest.Core.Extensions",
+        "VoidHarvest.Core.EventBus",
+        "Unity.Mathematics",
+        "UniTask",
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll",
+        "System.Collections.Immutable.dll"
+    ],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

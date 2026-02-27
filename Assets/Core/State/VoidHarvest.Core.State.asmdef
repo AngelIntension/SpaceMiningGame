@@ -1,0 +1,21 @@
+{
+    "name": "VoidHarvest.Core.State",
+    "rootNamespace": "VoidHarvest.Core.State",
+    "references": [
+        "VoidHarvest.Core.Extensions",
+        "VoidHarvest.Core.EventBus",
+        "Unity.Mathematics",
+        "Unity.Entities",
+        "Unity.Collections",
+        "UniTask"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

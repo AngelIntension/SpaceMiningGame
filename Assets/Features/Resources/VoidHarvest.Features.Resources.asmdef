@@ -1,0 +1,18 @@
+{
+    "name": "VoidHarvest.Features.Resources",
+    "rootNamespace": "VoidHarvest.Features.Resources",
+    "references": [
+        "VoidHarvest.Core.Extensions",
+        "VoidHarvest.Core.State",
+        "VoidHarvest.Core.EventBus"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

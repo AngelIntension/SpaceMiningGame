@@ -1,0 +1,27 @@
+{
+    "name": "VoidHarvest.Features.Input",
+    "rootNamespace": "VoidHarvest.Features.Input",
+    "references": [
+        "VoidHarvest.Core.Extensions",
+        "VoidHarvest.Core.State",
+        "VoidHarvest.Core.EventBus",
+        "VoidHarvest.Features.Camera",
+        "VoidHarvest.Features.Ship",
+        "VoidHarvest.Features.Mining",
+        "Unity.InputSystem",
+        "Unity.Entities",
+        "Unity.Collections",
+        "Unity.Mathematics",
+        "Unity.Transforms",
+        "VContainer"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

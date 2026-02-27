@@ -1,0 +1,17 @@
+{
+    "name": "VoidHarvest.Features.TechTree",
+    "rootNamespace": "VoidHarvest.Features.TechTree",
+    "references": [
+        "VoidHarvest.Core.Extensions",
+        "VoidHarvest.Core.State"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

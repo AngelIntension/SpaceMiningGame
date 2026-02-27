@@ -47,17 +47,19 @@
     - .specify/templates/commands/:                 ✅ N/A (no files)
 
   Carried-forward TODOs (from v1.0.0):
-    - TODO(C#_VERSION): Verify Unity 6 actual C# language level.
-      `record struct` requires C# 10+; CLAUDE.md states C# 9.0.
-    - TODO(PACKAGES): Install required packages (Addressables,
-      UniTask, DI framework, System.Collections.Immutable, DOTS).
-    - TODO(ROSLYN): Configure Roslyn analyzers for immutability.
+    - RESOLVED(C#_VERSION): C# 9.0 confirmed. `record struct` unavailable;
+      use `sealed record` for reference types, `readonly struct` for value types.
+    - RESOLVED(PACKAGES): VContainer, UniTask, Entities, Cinemachine,
+      Addressables, NuGetForUnity installed via manifest.json (T001).
+      System.Collections.Immutable pending NuGetForUnity UI install (T002).
+    - RESOLVED(ROSLYN): .editorconfig with CA1051/CA2227/CA2211 rules
+      configured (T008b).
 
   New TODOs (v1.1.0):
-    - TODO(INPUT_ACTIONS): Update InputSystem_Actions.inputactions
-      to reflect EVE-style control scheme (mouse targeting,
-      click-to-align, radial context menu trigger, hotbar slots)
-      once the Input feature spec is created.
+    - RESOLVED(INPUT_ACTIONS): InputSystem_Actions.inputactions updated
+      with EVE-style controls: Player (Select, DoubleClickAlign, RadialMenu,
+      Thrust, Strafe, Roll, Hotbar1-8), Camera (Orbit, Zoom, FreeLookToggle),
+      UI (Navigate, Submit, Cancel). Done in T006.
   ========================================
 -->
 
@@ -78,8 +80,8 @@ changes occur ONLY via pure reducers that return new state. Side
 effects MUST be isolated to the absolute minimum boundary (Unity
 lifecycle hooks, I/O, rendering).
 
-- All domain data types MUST use `record` (or `record struct` once
-  C# 10+ is confirmed — see TODO) to enforce value semantics and
+- All domain data types MUST use `sealed record` for reference types
+  and `readonly struct` for value types (C# 9.0) to enforce value semantics and
   immutability.
 - Prefer `readonly struct`, `in` parameters, and
   `return new ...` patterns for all state transitions.
@@ -273,7 +275,7 @@ These practices apply to ALL code outside Unity engine boundaries
 
 | Practice | Rule |
 |----------|------|
-| Data types | `record` / `record struct` for all domain data |
+| Data types | `sealed record` / `readonly struct` for all domain data |
 | Structs | `readonly struct` with `in` parameters |
 | Collections | `ImmutableArray<T>`, `ImmutableDictionary<K,V>`, or `NativeArray`/`BlobAsset` (DOTS) |
 | State changes | Reducer pattern: `(State, Action) → State` |

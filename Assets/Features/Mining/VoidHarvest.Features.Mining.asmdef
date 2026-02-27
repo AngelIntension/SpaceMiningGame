@@ -1,0 +1,26 @@
+{
+    "name": "VoidHarvest.Features.Mining",
+    "rootNamespace": "VoidHarvest.Features.Mining",
+    "references": [
+        "VoidHarvest.Core.Extensions",
+        "VoidHarvest.Core.State",
+        "VoidHarvest.Core.EventBus",
+        "VoidHarvest.Features.Ship",
+        "Unity.Entities",
+        "Unity.Entities.Graphics",
+        "Unity.Mathematics",
+        "Unity.Burst",
+        "Unity.Collections",
+        "Unity.Transforms",
+        "VContainer"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

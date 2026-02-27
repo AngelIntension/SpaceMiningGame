@@ -1,0 +1,30 @@
+{
+    "name": "VoidHarvest.Features.Input.Tests",
+    "rootNamespace": "VoidHarvest.Features.Input.Tests",
+    "references": [
+        "VoidHarvest.Features.Input",
+        "VoidHarvest.Core.Extensions",
+        "VoidHarvest.Core.State",
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner",
+        "Unity.InputSystem",
+        "Unity.InputSystem.TestFramework",
+        "Unity.Mathematics"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll",
+        "System.Collections.Immutable.dll"
+    ],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

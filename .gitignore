@@ -98,5 +98,41 @@ InitTestScene*.unity*
 # Auto-generated scenes by play mode tests
 /[Aa]ssets/[Ii]nit[Tt]est[Ss]cene*.unity*
 
+# OS generated files
+.DS_Store
+Thumbs.db
+*.swp
+
+# IDE
+.idea/
+.vscode/
+
+# Environment
+.env*
+
+# NuGetForUnity restore cache and non-essential NuGet artifacts
+/[Aa]ssets/Packages/*/analyzers/
+/[Aa]ssets/Packages/*/.signature.p7s
+/[Aa]ssets/Packages/*/buildTransitive/
+/[Aa]ssets/Packages/*/buildTransitive.meta
+/[Aa]ssets/Packages/*/Icon.png
+/[Aa]ssets/Packages/*/Icon.png.meta
+/[Aa]ssets/Packages/*/*.nuspec
+/[Aa]ssets/Packages/*/*.nuspec.meta
+/[Aa]ssets/Packages/*/PACKAGE.md
+/[Aa]ssets/Packages/*/PACKAGE.md.meta
+/[Aa]ssets/Packages/*/THIRD-PARTY-NOTICES.TXT
+/[Aa]ssets/Packages/*/THIRD-PARTY-NOTICES.TXT.meta
+/[Aa]ssets/Packages/*/useSharedDesignerContext.txt
+/[Aa]ssets/Packages/*/useSharedDesignerContext.txt.meta
+
+# DOTS scene dependency cache (regenerated on build)
+/[Aa]ssets/SceneDependencyCache/
+/[Aa]ssets/SceneDependencyCache.meta
+
+# UI Toolkit auto-generated themes
+/[Aa]ssets/UI Toolkit/UnityThemes/
+/[Aa]ssets/UI Toolkit/UnityThemes.meta
+
 # Claude Code
 .claude/settings.local.json

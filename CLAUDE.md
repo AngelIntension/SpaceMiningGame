@@ -32,7 +32,7 @@ Unity -runTests -batchmode -projectPath . -testResults results.xml -testPlatform
 All game logic follows a strict functional/immutable pattern. This is non-negotiable.
 
 - **State management:** Pure reducer pattern — `(State, Action) → State`. No direct mutation.
-- **Domain data:** Use `record` types (or `record struct` if C# 10+ confirmed). All data immutable.
+- **Domain data:** Use `record` types for reference types and `readonly struct` for value types. C# 9.0 confirmed — `record struct` is unavailable. All data immutable.
 - **Collections:** `ImmutableArray<T>`, `ImmutableDictionary<K,V>`, or `NativeArray`/`BlobAsset` for DOTS. Never mutable `List<T>` or `Dictionary<K,V>` for domain state.
 - **Side effects:** Isolated to Unity lifecycle hooks, I/O, and rendering only.
 - **No mutable globals**, no static singletons for game logic, no service locators.

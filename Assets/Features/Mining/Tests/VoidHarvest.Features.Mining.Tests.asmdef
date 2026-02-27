@@ -1,0 +1,29 @@
+{
+    "name": "VoidHarvest.Features.Mining.Tests",
+    "rootNamespace": "VoidHarvest.Features.Mining.Tests",
+    "references": [
+        "VoidHarvest.Features.Mining",
+        "VoidHarvest.Core.Extensions",
+        "VoidHarvest.Core.State",
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner",
+        "Unity.Mathematics",
+        "Unity.Entities",
+        "Unity.Collections"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

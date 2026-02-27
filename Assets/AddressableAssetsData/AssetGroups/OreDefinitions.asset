@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: OreDefinitions
+  m_EditorClassIdentifier: Unity.Addressables.Editor::UnityEditor.AddressableAssets.Settings.AddressableAssetGroup
+  m_GroupName: OreDefinitions
+  m_GUID: 10624356ddd2b414288efc93675d59d6
+  m_SerializeEntries:
+  - m_GUID: a38b33bc6a9d4b549b92a1be4ae9abe1
+    m_Address: Pyroxeres
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b13ece92bd6a1194d8593ef563b3554d
+    m_Address: Veldspar
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: eacade31c0b879a4197db7fde183fb0d
+    m_Address: Scordite
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 5533d038dee2bfb4c955d3a2d92aaba5, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 29c95efc98ec1f64fa33ee57b46da442, type: 2}
+    - {fileID: 11400000, guid: a88b5f77b6df61949a5762b9253ede89, type: 2}

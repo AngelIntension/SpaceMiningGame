@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a6f05ff5f0da4e49a96439081561d22, type: 3}
+  m_Name: StarterMiningBarge
+  m_EditorClassIdentifier: VoidHarvest.Features.Ship::VoidHarvest.Features.Ship.Data.ShipArchetypeConfig
+  ArchetypeId: starter-mining-barge
+  DisplayName: Starter Mining Barge
+  Role: 0
+  Mass: 1000
+  MaxThrust: 5000
+  MaxSpeed: 100
+  RotationTorque: 50
+  LinearDamping: 0.5
+  AngularDamping: 2
+  MiningPower: 1
+  ModuleSlots: 4
+  CargoCapacity: 100
+  HullMesh: {fileID: 0}
+  HullMaterial: {fileID: 0}
