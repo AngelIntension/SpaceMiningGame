@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 6673a87e5d81a3340a422e34d75ed29a
+timeCreated: 1481285590
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 77957
+  packageName: SF MINING Asteroids M2
+  packageVersion: 1.0
+  assetPath: Assets/SF_Asteroids-M2/Meshes/Materials/Mineral_asteroid-05.mat
+  uploadId: 150527

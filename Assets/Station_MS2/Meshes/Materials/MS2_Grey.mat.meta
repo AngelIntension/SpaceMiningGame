@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 773982a88715ca74082c3c22f7b48803
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 117505
+  packageName: MODULAR Space Station MS2
+  packageVersion: 1.0
+  assetPath: Assets/Station_MS2/Meshes/Materials/MS2_Grey.mat
+  uploadId: 401353

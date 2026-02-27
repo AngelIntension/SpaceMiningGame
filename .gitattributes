@@ -1,19 +1,14 @@
 # .gitattributes for Unity + Git (2026 - GameCI style)
 # Place this file at the ROOT of your Unity project
-
 # Normalize line endings for all text files
 * text=auto eol=lf
-
 # C# files get proper diff
 *.cs diff=csharp
-
 # ========================
 # MACRO: Unity YAML files → Smart Merge + text handling
 [attr]unity-yaml-file -text merge=unityyamlmerge linguist-generated
-
 # MACRO: Large binary files → Git LFS
 [attr]lfs-file filter=lfs diff=lfs merge=lfs -text
-
 # ========================
 # Unity text/YAML files (use Smart Merge)
 *.asmdef             unity-yaml-file
@@ -40,14 +35,12 @@
 *.spriteatlas        unity-yaml-file
 *.terrainlayer       unity-yaml-file
 *.unity              unity-yaml-file
-
 # ========================
 # Big Unity-generated data files → LFS
 *-[Nn]av[Mm]esh.asset      lfs-file
 *-[Tt]errain.asset         lfs-file
 LightingData.asset         lfs-file
 OcclusionCullingData.asset lfs-file
-
 # ========================
 # Common large/binary files → LFS
 # Images
@@ -59,23 +52,23 @@ OcclusionCullingData.asset lfs-file
 *.tga   lfs-file
 *.dds   lfs-file
 *.webp  lfs-file
-
+*.hdr   lfs-file
+*.tif   lfs-file
+*.tiff  lfs-file
 # 3D models
 *.fbx   lfs-file
-*.FBX   lfs-file
+*.FBX filter=lfs diff=lfs merge=lfs -text
 *.blend lfs-file
 *.obj   lfs-file
 *.glb   lfs-file
 *.gltf  lfs-file
 *.ma    lfs-file
 *.mb    lfs-file
-
 # Audio
 *.wav   lfs-file
 *.mp3   lfs-file
 *.ogg   lfs-file
 *.aiff  lfs-file
-
 # Video & others
 *.mp4   lfs-file
 *.mov   lfs-file

@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 001c30e1eaec8de4bb49744c2e95ade7
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 117505
+  packageName: MODULAR Space Station MS2
+  packageVersion: 1.0
+  assetPath: Assets/Station_MS2/Prefabs/MS2_Control_red Variant.prefab
+  uploadId: 401353
