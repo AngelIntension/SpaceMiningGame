@@ -16,6 +16,7 @@ namespace VoidHarvest.Features.Mining.Systems
     {
         private static string[] _oreIdLookup;
         private bool _initialized;
+        private BlobAssetReference<OreTypeBlobDatabase> _blobRef;
 
         /// <summary>
         /// Set the OreTypeDefinition array to bake. Called from managed code during setup.
@@ -74,16 +75,22 @@ namespace VoidHarvest.Features.Mining.Systems
                 };
             }
 
-            var blobRef = builder.CreateBlobAssetReference<OreTypeBlobDatabase>(Allocator.Persistent);
+            _blobRef = builder.CreateBlobAssetReference<OreTypeBlobDatabase>(Allocator.Persistent);
 
             // Create singleton entity
             var entity = EntityManager.CreateEntity();
-            EntityManager.AddComponentData(entity, new OreTypeDatabaseComponent { Database = blobRef });
+            EntityManager.AddComponentData(entity, new OreTypeDatabaseComponent { Database = _blobRef });
             EntityManager.AddComponentData(entity, new MiningActionBufferSingleton());
 
             _initialized = true;
             Enabled = false;
 
+        }
+
+        protected override void OnDestroy()
+        {
+            if (_blobRef.IsCreated)
+                _blobRef.Dispose();
         }
     }
 }

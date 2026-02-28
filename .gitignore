@@ -134,5 +134,8 @@ Thumbs.db
 /[Aa]ssets/UI Toolkit/UnityThemes/
 /[Aa]ssets/UI Toolkit/UnityThemes.meta
 
+# Screenshots (diagnostic/MCP captures)
+/[Aa]ssets/Screenshots/
+
 # Claude Code
 .claude/settings.local.json

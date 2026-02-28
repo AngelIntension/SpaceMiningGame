@@ -118,8 +118,8 @@ namespace VoidHarvest.Features.Procedural.Systems
                             meshNormFactor = 1f / maxExtent;
                     }
                 }
-                if (rma.Materials != null && rma.Materials.Length > 0)
-                    defaultMaterial = rma.Materials[0];
+                if (rma.MaterialReferences != null && rma.MaterialReferences.Length > 0)
+                    defaultMaterial = rma.MaterialReferences[0].Value;
             }
 
             // Extract variant meshes/materials for multi-prefab mode
@@ -141,8 +141,8 @@ namespace VoidHarvest.Features.Procedural.Systems
                             int meshIdx = rma.MeshReferences.Length > 1 ? 1 : 0;
                             variantMeshes[i] = rma.MeshReferences[meshIdx].Value;
                         }
-                        if (rma.Materials != null && rma.Materials.Length > 0)
-                            variantMaterials[i] = rma.Materials[0];
+                        if (rma.MaterialReferences != null && rma.MaterialReferences.Length > 0)
+                            variantMaterials[i] = rma.MaterialReferences[0].Value;
                     }
                 }
             }
