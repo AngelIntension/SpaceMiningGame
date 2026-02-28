@@ -90,10 +90,10 @@ None → Approaching → Snapping → Docked → Undocking → None
 | TargetId | int | Existing |
 | TargetType | TargetType | **NEW** — type of the targeted object |
 
-## ECS Components (Features/Docking/Data/)
+## Station Components (Features/Docking/Data/)
 
-### DockingPortComponent : IComponentData
-*Attached to station GameObjects (baked or runtime-added)*
+### DockingPortComponent : MonoBehaviour
+*Attached to station prefab GameObjects. Read by InputBridge when targeting; data is copied into DockingStateComponent on the ship entity to initiate docking. NOT an ECS component — stations are regular GameObjects, not entities.*
 
 | Field | Type | Description |
 |-------|------|-------------|
@@ -102,6 +102,8 @@ None → Approaching → Snapping → Docked → Undocking → None
 | DockingRange | float | Maximum range to initiate docking (default 500m) |
 | SnapRange | float | Range where magnetic snap begins (default 30m) |
 | StationId | int | Matches WorldState.StationData.Id |
+
+## ECS Components (Features/Docking/Data/)
 
 ### DockingStateComponent : IComponentData
 *Added to ship entity when docking starts, removed when undocking completes*
@@ -115,6 +117,15 @@ None → Approaching → Snapping → Docked → Undocking → None
 | SnapTimer | float | Elapsed time during snap animation |
 | StartPosition | float3 | Ship position when snap began |
 | StartRotation | quaternion | Ship rotation when snap began |
+
+### DockingEventFlags : IComponentData
+*Singleton component for Burst↔managed bridging. Written by DockingSystem (Burst), read and cleared by DockingEventBridgeSystem (managed). Preserves zero-GC guarantee in Burst hot path.*
+
+| Field | Type | Description |
+|-------|------|-------------|
+| DockCompleted | bool | Set when Snapping→Docked transition completes |
+| DockStationId | int | StationId for the completed dock |
+| UndockCompleted | bool | Set when Undocking→None transition completes |
 
 ## ScriptableObject Configs (Features/Docking/Data/)
 
@@ -172,6 +183,7 @@ WorldState.StationData (Id) ←→ DockingPortComponent.StationId
                                ←→ FleetState.DockedAtStation
                                ←→ DockingStateComponent.TargetStationId
 
-Station prefab (scene) → has DockingPortComponent (baked/runtime)
-Ship entity (ECS) → has DockingStateComponent (transient, added/removed)
+Station prefab (scene) → has DockingPortComponent (MonoBehaviour, permanent)
+Ship entity (ECS) → has DockingStateComponent (IComponentData, transient, added/removed)
+Singleton entity (ECS) → has DockingEventFlags (Burst→managed bridge, cleared each frame)
 ```

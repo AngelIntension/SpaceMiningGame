@@ -58,7 +58,8 @@ Assets/
 │   │   ├── IDockingAction.cs            # NEW: IDockingAction : IGameAction
 │   │   ├── GameLoopState.cs             # MODIFIED: add DockingState field
 │   │   ├── ShipFlightMode.cs            # MODIFIED: add Docking, Docked enum values
-│   │   └── FleetState.cs               # MODIFIED: FleetReducer handles DockAtStationAction
+│   │   ├── FleetActions.cs             # NEW: DockAtStationAction, UndockFromStationAction
+│   │   └── GameStateReducer.cs        # MODIFIED: FleetReducer handles DockAtStation/UndockFromStation
 │   ├── EventBus/Events/
 │   │   ├── DockingEvents.cs             # NEW: DockingStarted/Completed/UndockCompleted events
 │   │   └── RadialMenuRequestedEvent.cs  # MODIFIED: add TargetType field
@@ -69,14 +70,16 @@ Assets/
 │   ├── Docking/                          # NEW FEATURE MODULE
 │   │   ├── Data/
 │   │   │   ├── DockingActions.cs         # Concrete action records (BeginDocking, Complete, Cancel, Undock)
-│   │   │   ├── DockingComponents.cs      # ECS: DockingPortComponent, DockingStateComponent
-│   │   │   ├── DockingConfig.cs          # ScriptableObject: ranges, speeds, timings
+│   │   │   ├── DockingPortComponent.cs   # MonoBehaviour: station docking port data (on station prefabs)
+│   │   │   ├── DockingComponents.cs      # ECS: DockingStateComponent, DockingEventFlags (on ship entity)
+│   │   │   ├── DockingConfig.cs          # ScriptableObject: ranges, timings
 │   │   │   ├── DockingVFXConfig.cs       # ScriptableObject: VFX references + params
 │   │   │   └── DockingAudioConfig.cs     # ScriptableObject: audio clips + params
 │   │   ├── Systems/
 │   │   │   ├── DockingReducer.cs         # Pure reducer (DockingState, IDockingAction) → DockingState
 │   │   │   ├── DockingMath.cs            # Pure math: approach interpolation, snap curves, clearance
-│   │   │   └── DockingSystem.cs          # Burst ISystem: docking state machine (approach/snap/hold/undock)
+│   │   │   ├── DockingSystem.cs          # Burst ISystem: docking state machine (approach/snap/hold/undock)
+│   │   │   └── DockingEventBridgeSystem.cs # Managed ISystem: reads DockingEventFlags, dispatches actions/events
 │   │   ├── Views/
 │   │   │   ├── StationServicesMenuController.cs  # Canvas UI: auto-open on dock, placeholder tabs
 │   │   │   └── DockingFeedbackView.cs    # MonoBehaviour: VFX + audio playback
@@ -178,9 +181,9 @@ Assets/
   - `IsWithinSnapRange(shipPos, portPos, snapRange) → bool`
 - **MCP**: Run EditMode tests, verify all pass
 
-#### 2.2 DockingComponents (ECS)
-- Create `DockingPortComponent : IComponentData` — PortPosition, PortRotation, DockingRange, SnapRange, StationId
-- Create `DockingStateComponent : IComponentData` — Phase, TargetPortPosition, TargetPortRotation, TargetStationId, SnapTimer
+#### 2.2 DockingComponents
+- Create `DockingPortComponent : MonoBehaviour` — PortPosition (float3), PortRotation (quaternion), DockingRange (float), SnapRange (float), StationId (int). Lives on station prefab GameObjects (not ECS entities). InputBridge reads this MonoBehaviour when targeting and copies data into DockingStateComponent on the ship entity.
+- Create `DockingStateComponent : IComponentData` — Phase, TargetPortPosition, TargetPortRotation, TargetStationId, SnapTimer, StartPosition, StartRotation. Added to ship entity when docking starts, removed on undock completion. // CONSTITUTION DEVIATION: ECS mutable shell
 - **MCP**: Compile check
 
 #### 2.3 ShipPhysics Extension
@@ -198,12 +201,13 @@ Assets/
 - State machine logic per frame:
   - **Approaching**: DockingSystem sets `PilotCommandComponent.AlignPoint` to port position, `RadialAction` to Approach. ShipPhysicsSystem handles approach thrust. DockingSystem checks `IsWithinSnapRange()` → transition to Snapping.
   - **Snapping**: DockingSystem takes over position/rotation directly. Lerps ship pose via `InterpolateSnapPose()` over `SnapDuration`. On completion → transition to Docked.
-  - **Docked**: DockingSystem locks ship position/rotation to docking port. Sets `ShipFlightModeComponent.Mode = Docked`. Dispatches `CompleteDockingAction` + `DockAtStationAction` (via static callback to StateStore).
-  - **Undocking**: DockingSystem moves ship along clearance vector via lerp. On reaching clearance distance → complete, set `ShipFlightModeComponent.Mode = Idle`. Remove `DockingStateComponent`.
+  - **Docked**: DockingSystem locks ship position/rotation to docking port. Sets `ShipFlightModeComponent.Mode = Docked`. Writes completion flags to a `DockingEventFlags` singleton component.
+  - **Undocking**: DockingSystem moves ship along clearance vector via lerp. On reaching clearance distance → complete, set `ShipFlightModeComponent.Mode = Idle`. Remove `DockingStateComponent`. Writes undock-complete flag.
+- **Burst↔Managed bridging**: A companion `DockingEventBridgeSystem` (managed, non-Burst, `[UpdateAfter(typeof(DockingSystem))]`) reads the `DockingEventFlags` singleton each frame. When flags are set, it dispatches managed actions (`CompleteDockingAction` + `DockAtStationAction`, or `CompleteUndockingAction` + `UndockFromStationAction`) via `IStateStore` and publishes events via `IEventBus`, then clears the flags. This preserves zero-GC in the Burst hot path while allowing managed interop.
 - **MCP**: Compile check
 
 #### 2.5 DockingConfig
-- Create `DockingConfig : ScriptableObject` with: MaxDockingRange (500f), SnapRange (30f), ApproachSpeed (50f), SnapDuration (1.5f), UndockClearanceDistance (100f), UndockDuration (2f)
+- Create `DockingConfig : ScriptableObject` with: MaxDockingRange (500f), SnapRange (30f), SnapDuration (1.5f), UndockClearanceDistance (100f), UndockDuration (2f)
 - Create asset instance, register in `SceneLifetimeScope`
 - **MCP**: Verify asset exists, compile check
 
@@ -233,7 +237,7 @@ Assets/
   - Content area: "Coming Soon" placeholder text per tab
   - Close/Undock button
 - Controller subscribes to `DockingCompletedEvent` → open menu, query `WorldState.Stations` for station name/type
-- Controller subscribes to `UndockCompletedEvent` → close menu
+- Controller subscribes to `UndockingStartedEvent` → close menu (spec US3.3: menu closes "before or as undock begins")
 - Undock button dispatches `BeginUndockingAction` + publishes `UndockingStartedEvent`
 - Register in `SceneLifetimeScope`
 - **MCP**: Create Canvas hierarchy, verify layout, compile check
@@ -260,7 +264,7 @@ Assets/
 - `DockingReducer` transitions: Docked → Undocking
 - `DockingSystem` handles Undocking phase: move ship along clearance vector, restore `ShipFlightModeComponent.Mode = Idle`
 - On clearance complete: dispatch `CompleteUndockingAction` → `DockingReducer` transitions: Undocking → None
-- Dispatch `UndockFleetAction` → `FleetReducer` clears `DockedAtStation`
+- Dispatch `UndockFromStationAction` → `FleetReducer` clears `DockedAtStation`
 - Publish `UndockCompletedEvent`
 - **MCP**: Compile check, run all tests
 

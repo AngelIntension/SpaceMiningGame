@@ -56,7 +56,10 @@ After every script creation or modification:
 
 ## Common Gotchas
 
+- **DockingPortComponent is a MonoBehaviour, not IComponentData**: Stations are regular GameObjects (not ECS entities). `DockingPortComponent` is a MonoBehaviour on station prefabs. InputBridge reads it when targeting and copies data into `DockingStateComponent` (IComponentData) on the ship entity. Do NOT try to use `SystemAPI.GetComponent<DockingPortComponent>()`.
+- **Burst↔managed bridge**: `DockingSystem` is `[BurstCompile]` and cannot call managed code (`IStateStore.Dispatch`, `IEventBus.Publish`). Use the companion `DockingEventBridgeSystem` (managed, `[UpdateAfter]`) that reads `DockingEventFlags` singleton and dispatches actions/events on the main thread.
 - **ECS mutable shell**: All ECS `IComponentData` structs use mutable fields (existing Constitution deviation). Follow the `// CONSTITUTION DEVIATION: ECS mutable shell` pattern.
 - **GameLoopState modification**: Adding `DockingState` field changes the record constructor. Update `RootLifetimeScope.CreateDefaultGameState()` and any test code that creates `GameLoopState`.
+- **Menu close timing**: Station Services Menu closes on `UndockingStartedEvent` (when undock begins), NOT on `UndockCompletedEvent` (per spec US3.3).
 - **Selectable layer**: Verify the `Selectable` layer exists in Unity's Tag Manager before assigning it to station prefabs. Use `manage_editor(action="add_layer", layer_name="Selectable")` if needed.
 - **asmdef references**: New `VoidHarvest.Features.Docking.asmdef` must be referenced by HUD and Input asmdefs for them to access docking types.
