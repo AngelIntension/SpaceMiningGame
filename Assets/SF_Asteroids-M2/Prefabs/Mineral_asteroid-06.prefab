@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 4000014015209862}
   - component: {fileID: 33000012724512130}
   - component: {fileID: 23000012968855514}
+  - component: {fileID: 4588045094279492093}
   m_Layer: 0
   m_Name: Mineral_asteroid-06
   m_TagString: Untagged
@@ -90,3 +91,30 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!205 &4588045094279492093
+LODGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1000013168232486}
+  serializedVersion: 2
+  m_LocalReferencePoint: {x: 0, y: 0, z: 0}
+  m_Size: 1
+  m_FadeMode: 0
+  m_AnimateCrossFading: 0
+  m_LastLODIsBillboard: 0
+  m_LODs:
+  - screenRelativeHeight: 0.7
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 2300000, guid: f6bf47d730765ee4bbebd0633e702e66, type: 3}
+  - screenRelativeHeight: 0.4
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 2300000, guid: f6bf47d730765ee4bbebd0633e702e66, type: 3}
+  - screenRelativeHeight: 0
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 2300000, guid: f6bf47d730765ee4bbebd0633e702e66, type: 3}
+  m_Enabled: 1

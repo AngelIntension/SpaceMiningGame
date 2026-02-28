@@ -1,5 +1,6 @@
 using Unity.Entities;
 using Unity.Mathematics;
+using Unity.Rendering;
 using UnityEngine;
 using VoidHarvest.Features.Mining.Data;
 using VoidHarvest.Features.Procedural.Data;
@@ -71,34 +72,6 @@ namespace VoidHarvest.Features.Procedural.Views
         public int MeshVariantBIndex;
     }
 
-    /// <summary>
-    /// Place on each mesh variant GameObject in the SubScene to mark it as an asteroid
-    /// prefab variant. The baker adds the Prefab tag and asteroid ECS components.
-    /// See FR-006: Ore-to-mesh mapping.
-    /// </summary>
-    public class AsteroidVariantAuthoring : MonoBehaviour
-    {
-    }
-
-    public class AsteroidVariantBaker : Baker<AsteroidVariantAuthoring>
-    {
-        public override void Bake(AsteroidVariantAuthoring authoring)
-        {
-            var entity = GetEntity(TransformUsageFlags.Renderable);
-
-            // Mark as prefab — excluded from queries and rendering until instantiated
-            AddComponent<Prefab>(entity);
-
-            // Add asteroid-specific components with defaults (overwritten at spawn time)
-            AddComponent(entity, new AsteroidComponent());
-            AddComponent(entity, new AsteroidOreComponent());
-
-            // Material property override for depletion visual
-            AddComponent(entity, new AsteroidBaseColorOverride
-                { Value = new float4(0.314f, 0.314f, 0.314f, 1f) });
-        }
-    }
-
     public class AsteroidPrefabBaker : Baker<AsteroidPrefabAuthoring>
     {
         public override void Bake(AsteroidPrefabAuthoring authoring)
@@ -129,8 +102,8 @@ namespace VoidHarvest.Features.Procedural.Views
 
             // Material property override for depletion visual — must be on prefab archetype
             // so Entities Graphics sets up per-instance property uploads (MVP-07)
-            AddComponent(prefabEntity, new AsteroidBaseColorOverride
-                { Value = new float4(0.314f, 0.314f, 0.314f, 1f) });
+            AddComponent(prefabEntity, new URPMaterialPropertyBaseColor
+                { Value = new float4(1f, 1f, 1f, 1f) });
 
             // Create a singleton entity to hold the prefab reference
             var singletonEntity = CreateAdditionalEntity(TransformUsageFlags.None, entityName: "AsteroidPrefabSingleton");
@@ -161,7 +134,7 @@ namespace VoidHarvest.Features.Procedural.Views
 
                 if (go != null)
                 {
-                    prefabEntity = GetEntity(go, TransformUsageFlags.Renderable);
+                    prefabEntity = GetEntity(go, TransformUsageFlags.Dynamic);
                     if (firstValidPrefab == Entity.Null)
                         firstValidPrefab = prefabEntity;
                 }

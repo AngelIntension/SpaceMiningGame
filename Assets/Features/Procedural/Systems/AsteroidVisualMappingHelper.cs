@@ -44,7 +44,8 @@ namespace VoidHarvest.Features.Procedural.Systems
                 1f);
         }
 
-        /// <summary>Pristine gray value used by the depletion color system.</summary>
-        public const float PristineGray = 0.314f;
+        /// <summary>Pristine brightness multiplier for ore tint colors.
+        /// At 1.0 the full tint color is applied, showing clear ore differentiation.</summary>
+        public const float PristineGray = 1.0f;
     }
 }

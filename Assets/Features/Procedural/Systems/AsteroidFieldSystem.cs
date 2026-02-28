@@ -2,8 +2,10 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
 using Unity.Mathematics;
+using Unity.Rendering;
 using Unity.Transforms;
 using UnityEngine;
+using UnityEngine.Rendering;
 using VoidHarvest.Features.Mining.Data;
 using VoidHarvest.Features.Procedural.Data;
 using VoidHarvest.Features.Procedural.Views;
@@ -12,7 +14,8 @@ namespace VoidHarvest.Features.Procedural.Systems
 {
     /// <summary>
     /// Orchestrates asteroid field generation on scene load.
-    /// Instantiates prefab entities with AsteroidComponent + AsteroidOreComponent.
+    /// Creates entities from scratch with RenderMeshUtility to ensure per-instance
+    /// material property overrides (URPMaterialPropertyBaseColor) work correctly.
     /// Supports multi-prefab mode (premium visual mapping) and single-prefab (backward compatible).
     /// See MVP-07: Procedural asteroid field, FR-006: Ore-to-mesh mapping, FR-008: Ore tint.
     /// </summary>
@@ -21,19 +24,12 @@ namespace VoidHarvest.Features.Procedural.Systems
     {
         private bool _generated;
 
-        /// <summary>
-        /// Initialize field generation flag. See MVP-07: Procedural asteroid field.
-        /// </summary>
         public void OnCreate(ref SystemState state)
         {
             _generated = false;
             state.RequireForUpdate<AsteroidPrefabComponent>();
         }
 
-        /// <summary>
-        /// Generate asteroid field on first update, then disable.
-        /// See MVP-07: Procedural asteroid field, FR-006: Visual mapping.
-        /// </summary>
         public void OnUpdate(ref SystemState state)
         {
             if (_generated)
@@ -42,7 +38,6 @@ namespace VoidHarvest.Features.Procedural.Systems
                 return;
             }
 
-            // Get prefab singleton
             var prefabSingleton = SystemAPI.GetSingleton<AsteroidPrefabComponent>();
             var defaultPrefab = prefabSingleton.Prefab;
             var prefabSingletonEntity = SystemAPI.GetSingletonEntity<AsteroidPrefabComponent>();
@@ -70,52 +65,126 @@ namespace VoidHarvest.Features.Procedural.Systems
             };
             job.Schedule(count, 64).Complete();
 
-            // Check for multi-prefab mode
+            // Check for multi-prefab mode — copy buffer data into NativeArrays before
+            // the instantiation loop, since structural changes invalidate DynamicBuffer handles.
             var em = state.EntityManager;
             bool hasVariants = em.HasBuffer<AsteroidMeshPrefabElement>(prefabSingletonEntity);
             bool hasMapping = em.HasBuffer<AsteroidVisualMappingElement>(prefabSingletonEntity);
 
-            DynamicBuffer<AsteroidMeshPrefabElement> prefabBuffer = default;
-            DynamicBuffer<AsteroidVisualMappingElement> mappingBuffer = default;
+            var prefabArray = new NativeArray<AsteroidMeshPrefabElement>(0, Allocator.Temp);
+            var mappingArray = new NativeArray<AsteroidVisualMappingElement>(0, Allocator.Temp);
 
             if (hasVariants)
-                prefabBuffer = em.GetBuffer<AsteroidMeshPrefabElement>(prefabSingletonEntity);
+            {
+                var buf = em.GetBuffer<AsteroidMeshPrefabElement>(prefabSingletonEntity);
+                prefabArray = new NativeArray<AsteroidMeshPrefabElement>(buf.Length, Allocator.Temp);
+                for (int i = 0; i < buf.Length; i++)
+                    prefabArray[i] = buf[i];
+            }
             if (hasMapping)
-                mappingBuffer = em.GetBuffer<AsteroidVisualMappingElement>(prefabSingletonEntity);
+            {
+                var buf = em.GetBuffer<AsteroidVisualMappingElement>(prefabSingletonEntity);
+                mappingArray = new NativeArray<AsteroidVisualMappingElement>(buf.Length, Allocator.Temp);
+                for (int i = 0; i < buf.Length; i++)
+                    mappingArray[i] = buf[i];
+            }
 
-            bool useVisualMapping = hasVariants && hasMapping && prefabBuffer.Length > 0 && mappingBuffer.Length > 0;
+            bool useVisualMapping = hasVariants && hasMapping && prefabArray.Length > 0 && mappingArray.Length > 0;
 
-            // Instantiate prefab entities
+            // Pre-extract mesh/material from each variant prefab's RenderMeshArray.
+            // We create entities from scratch via RenderMeshUtility.AddComponents (not em.Instantiate)
+            // because SubScene-baked prefab instantiation does not support per-instance material
+            // property overrides (URPMaterialPropertyBaseColor) — the batch metadata from baking
+            // doesn't register the override component for GPU upload.
+            var renderMeshDesc = new RenderMeshDescription(ShadowCastingMode.On);
+
+            // Extract default prefab's mesh and material
+            Mesh defaultMesh = null;
+            Material defaultMaterial = null;
+            float meshNormFactor = 1f;
+
+            if (em.HasComponent<RenderMeshArray>(defaultPrefab))
+            {
+                var rma = em.GetSharedComponentManaged<RenderMeshArray>(defaultPrefab);
+                if (rma.MeshReferences != null && rma.MeshReferences.Length > 0)
+                {
+                    int meshIdx = rma.MeshReferences.Length > 1 ? 1 : 0;
+                    defaultMesh = rma.MeshReferences[meshIdx].Value;
+                    if (defaultMesh != null)
+                    {
+                        var ext = defaultMesh.bounds.extents;
+                        float maxExtent = math.max(ext.x, math.max(ext.y, ext.z));
+                        if (maxExtent > 0.001f)
+                            meshNormFactor = 1f / maxExtent;
+                    }
+                }
+                if (rma.Materials != null && rma.Materials.Length > 0)
+                    defaultMaterial = rma.Materials[0];
+            }
+
+            // Extract variant meshes/materials for multi-prefab mode
+            Mesh[] variantMeshes = null;
+            Material[] variantMaterials = null;
+
+            if (useVisualMapping)
+            {
+                variantMeshes = new Mesh[prefabArray.Length];
+                variantMaterials = new Material[prefabArray.Length];
+                for (int i = 0; i < prefabArray.Length; i++)
+                {
+                    var prefabE = prefabArray[i].Prefab;
+                    if (prefabE != Entity.Null && em.HasComponent<RenderMeshArray>(prefabE))
+                    {
+                        var rma = em.GetSharedComponentManaged<RenderMeshArray>(prefabE);
+                        if (rma.MeshReferences != null && rma.MeshReferences.Length > 0)
+                        {
+                            int meshIdx = rma.MeshReferences.Length > 1 ? 1 : 0;
+                            variantMeshes[i] = rma.MeshReferences[meshIdx].Value;
+                        }
+                        if (rma.Materials != null && rma.Materials.Length > 0)
+                            variantMaterials[i] = rma.Materials[0];
+                    }
+                }
+            }
+
+            // Pre-create RenderMeshArray per unique mesh+material combo for batch efficiency.
+            // Entities sharing the same RenderMeshArray are grouped into the same rendering batch.
+            var rmaCache = new System.Collections.Generic.Dictionary<(Mesh, Material), RenderMeshArray>();
+
+            Debug.Log($"[VoidHarvest] AsteroidFieldSystem: meshNormFactor={meshNormFactor:F4}, " +
+                $"useVisualMapping={useVisualMapping}");
+
             var rng = new Unity.Mathematics.Random(config.Seed);
 
             for (int i = 0; i < count; i++)
             {
                 int oreTypeId = oreTypeIds[i];
-                Entity prefab = defaultPrefab;
-                float4 pristineTintedColor = new float4(0.314f, 0.314f, 0.314f, 1f);
+                Mesh mesh = defaultMesh;
+                Material material = defaultMaterial;
+                float4 pristineTintedColor = new float4(1f, 1f, 1f, 1f);
 
-                if (useVisualMapping && oreTypeId >= 0 && oreTypeId < mappingBuffer.Length)
+                if (useVisualMapping && oreTypeId >= 0 && oreTypeId < mappingArray.Length)
                 {
-                    var mapping = mappingBuffer[oreTypeId];
+                    var mapping = mappingArray[oreTypeId];
 
-                    // Select mesh variant via position hash (FR-007 cluster variety)
                     int variantChoice = AsteroidVisualMappingHelper.SelectMeshVariant(positions[i]);
-
                     int primaryIdx = variantChoice == 0 ? mapping.MeshVariantAIndex : mapping.MeshVariantBIndex;
                     int fallbackIdx = variantChoice == 0 ? mapping.MeshVariantBIndex : mapping.MeshVariantAIndex;
 
                     // EC3: null mesh fallback — try primary, then fallback, then default
-                    Entity variantPrefab = Entity.Null;
-                    if (primaryIdx >= 0 && primaryIdx < prefabBuffer.Length)
-                        variantPrefab = prefabBuffer[primaryIdx].Prefab;
+                    if (primaryIdx >= 0 && primaryIdx < variantMeshes.Length &&
+                        variantMeshes[primaryIdx] != null)
+                    {
+                        mesh = variantMeshes[primaryIdx];
+                        material = variantMaterials[primaryIdx];
+                    }
+                    else if (fallbackIdx >= 0 && fallbackIdx < variantMeshes.Length &&
+                        variantMeshes[fallbackIdx] != null)
+                    {
+                        mesh = variantMeshes[fallbackIdx];
+                        material = variantMaterials[fallbackIdx];
+                    }
 
-                    if (variantPrefab == Entity.Null && fallbackIdx >= 0 && fallbackIdx < prefabBuffer.Length)
-                        variantPrefab = prefabBuffer[fallbackIdx].Prefab;
-
-                    if (variantPrefab != Entity.Null)
-                        prefab = variantPrefab;
-
-                    // Calculate PristineTintedColor from ore tint (FR-008)
                     pristineTintedColor = new float4(
                         AsteroidVisualMappingHelper.PristineGray * mapping.TintColor.x,
                         AsteroidVisualMappingHelper.PristineGray * mapping.TintColor.y,
@@ -123,20 +192,41 @@ namespace VoidHarvest.Features.Procedural.Systems
                         1f);
                 }
 
-                var entity = em.Instantiate(prefab);
+                if (mesh == null || material == null)
+                    continue;
+
+                // Get or create cached RenderMeshArray for this mesh+material combo
+                var key = (mesh, material);
+                if (!rmaCache.TryGetValue(key, out var entityRma))
+                {
+                    entityRma = new RenderMeshArray(new[] { material }, new[] { mesh });
+                    rmaCache[key] = entityRma;
+                }
+
+                // Create entity from scratch with RenderMeshUtility for proper per-instance
+                // material property override support
+                var entity = em.CreateEntity();
+                RenderMeshUtility.AddComponents(entity, em, renderMeshDesc, entityRma,
+                    MaterialMeshInfo.FromRenderMeshArrayIndices(0, 0));
 
                 float radius = rng.NextFloat(3f, 5f);
                 float mass = radius * radius * radius * 10f;
+                float entityScale = radius * meshNormFactor;
+
+                var localTransform = LocalTransform.FromPositionRotationScale(
+                    positions[i], quaternion.identity, entityScale);
 
                 if (em.HasComponent<LocalTransform>(entity))
-                    em.SetComponentData(entity, LocalTransform.FromPositionRotationScale(
-                        positions[i], quaternion.identity, radius));
+                    em.SetComponentData(entity, localTransform);
                 else
-                    em.AddComponentData(entity, LocalTransform.FromPositionRotationScale(
-                        positions[i], quaternion.identity, radius));
+                    em.AddComponentData(entity, localTransform);
 
-                // Set asteroid data with new depletion visual fields initialized (T018, T022)
-                em.SetComponentData(entity, new AsteroidComponent
+                em.SetComponentData(entity, new LocalToWorld
+                {
+                    Value = localTransform.ToMatrix()
+                });
+
+                em.AddComponentData(entity, new AsteroidComponent
                 {
                     Radius = radius,
                     InitialMass = mass,
@@ -145,30 +235,29 @@ namespace VoidHarvest.Features.Procedural.Systems
                     PristineTintedColor = pristineTintedColor,
                     CrumbleThresholdsPassed = 0,
                     CrumblePauseTimer = 0f,
-                    FadeOutTimer = 0f
+                    FadeOutTimer = 0f,
+                    MeshNormFactor = meshNormFactor
                 });
 
-                em.SetComponentData(entity, new AsteroidOreComponent
+                em.AddComponentData(entity, new AsteroidOreComponent
                 {
                     OreTypeId = oreTypeId,
                     Quantity = mass,
                     Depth = rng.NextFloat(0f, 2f)
                 });
 
-                // Set initial base color to the pristine tinted color
-                if (em.HasComponent<AsteroidBaseColorOverride>(entity))
+                em.AddComponentData(entity, new URPMaterialPropertyBaseColor
                 {
-                    em.SetComponentData(entity, new AsteroidBaseColorOverride
-                    {
-                        Value = pristineTintedColor
-                    });
-                }
+                    Value = pristineTintedColor
+                });
             }
 
             // Cleanup
             positions.Dispose();
             oreTypeIds.Dispose();
             oreWeights.Dispose();
+            prefabArray.Dispose();
+            mappingArray.Dispose();
 
             _generated = true;
             state.Enabled = false;

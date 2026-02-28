@@ -99,9 +99,9 @@ namespace VoidHarvest.Features.Procedural.Tests
                 AsteroidVisualMappingHelper.PristineGray, tint);
 
             // Expected: 0.314 * each channel
-            Assert.AreEqual(0.314f * 0.82f, result.x, 0.001f, "Red channel");
-            Assert.AreEqual(0.314f * 0.71f, result.y, 0.001f, "Green channel");
-            Assert.AreEqual(0.314f * 0.55f, result.z, 0.001f, "Blue channel");
+            Assert.AreEqual(AsteroidVisualMappingHelper.PristineGray * 0.82f, result.x, 0.001f, "Red channel");
+            Assert.AreEqual(AsteroidVisualMappingHelper.PristineGray * 0.71f, result.y, 0.001f, "Green channel");
+            Assert.AreEqual(AsteroidVisualMappingHelper.PristineGray * 0.55f, result.z, 0.001f, "Blue channel");
             Assert.AreEqual(1f, result.w, 0.001f, "Alpha channel should be 1.0");
         }
 
@@ -112,9 +112,9 @@ namespace VoidHarvest.Features.Procedural.Tests
             float4 result = AsteroidVisualMappingHelper.CalculatePristineTintedColor(
                 AsteroidVisualMappingHelper.PristineGray, tint);
 
-            Assert.AreEqual(0.314f * 1f, result.x, 0.001f, "Red channel");
-            Assert.AreEqual(0.314f * 0.749f, result.y, 0.001f, "Green channel");
-            Assert.AreEqual(0.314f * 0f, result.z, 0.001f, "Blue channel (should be 0)");
+            Assert.AreEqual(AsteroidVisualMappingHelper.PristineGray * 1f, result.x, 0.001f, "Red channel");
+            Assert.AreEqual(AsteroidVisualMappingHelper.PristineGray * 0.749f, result.y, 0.001f, "Green channel");
+            Assert.AreEqual(AsteroidVisualMappingHelper.PristineGray * 0f, result.z, 0.001f, "Blue channel (should be 0)");
             Assert.AreEqual(1f, result.w, 0.001f, "Alpha channel should be 1.0");
         }
 

@@ -1,13 +1,14 @@
 using Unity.Burst;
 using Unity.Entities;
 using Unity.Mathematics;
+using Unity.Rendering;
 using VoidHarvest.Features.Mining.Data;
 
 namespace VoidHarvest.Features.Mining.Systems
 {
     /// <summary>
     /// Updates AsteroidComponent.Depletion from RemainingMass/InitialMass,
-    /// then writes AsteroidBaseColorOverride to drive per-entity color via Entities Graphics.
+    /// then writes URPMaterialPropertyBaseColor to drive per-entity color via Entities Graphics.
     /// See MVP-07: Asteroid depletion visual.
     /// </summary>
     [BurstCompile]
@@ -20,7 +21,7 @@ namespace VoidHarvest.Features.Mining.Systems
         {
             var depleted = new float4(0.04f, 0.03f, 0.03f, 1f);
 
-            foreach (var (asteroid, baseColor) in SystemAPI.Query<RefRW<AsteroidComponent>, RefRW<AsteroidBaseColorOverride>>())
+            foreach (var (asteroid, baseColor) in SystemAPI.Query<RefRW<AsteroidComponent>, RefRW<URPMaterialPropertyBaseColor>>())
             {
                 if (asteroid.ValueRO.InitialMass > 0f)
                 {
@@ -36,7 +37,7 @@ namespace VoidHarvest.Features.Mining.Systems
                     if (pristine.w < 0.01f)
                     {
                         // Fallback for entities spawned without tint (backward compatibility)
-                        pristine = new float4(0.314f, 0.314f, 0.314f, 1f);
+                        pristine = new float4(1f, 1f, 1f, 1f);
                     }
 
                     baseColor.ValueRW.Value = math.lerp(pristine, depleted, visual);

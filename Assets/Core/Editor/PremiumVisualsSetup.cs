@@ -122,6 +122,9 @@ namespace VoidHarvest.Core.Editor
                 mat.SetFloat("_Cutoff", 0.5f);
                 mat.EnableKeyword("_ALPHATEST_ON");
 
+                // Enable GPU Instancing — required for Entities Graphics rendering
+                mat.enableInstancing = true;
+
                 EditorUtility.SetDirty(mat);
                 modified++;
                 Debug.Log($"  Enabled Alpha Clipping on: {mat.name} (_Cutoff = 0.5)");

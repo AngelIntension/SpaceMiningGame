@@ -1,13 +1,14 @@
 using Unity.Burst;
 using Unity.Entities;
 using Unity.Mathematics;
+using Unity.Rendering;
 using VoidHarvest.Features.Mining.Data;
 
 namespace VoidHarvest.Features.Mining.Systems
 {
     /// <summary>
     /// Burst-compiled system that handles asteroid fade-out and entity destruction.
-    /// When FadeOutTimer is active: interpolates alpha from 1→0 via AsteroidBaseColorOverride,
+    /// When FadeOutTimer is active: interpolates alpha from 1→0 via URPMaterialPropertyBaseColor,
     /// removes targeting components to prevent re-targeting during fade, and destroys the
     /// entity when the timer expires via EndSimulationEntityCommandBufferSystem.
     /// Runs after AsteroidScaleSystem in SimulationSystemGroup.
@@ -31,7 +32,7 @@ namespace VoidHarvest.Features.Mining.Systems
                 .CreateCommandBuffer(state.WorldUnmanaged);
 
             foreach (var (asteroid, baseColor, entity) in
-                SystemAPI.Query<RefRW<AsteroidComponent>, RefRW<AsteroidBaseColorOverride>>()
+                SystemAPI.Query<RefRW<AsteroidComponent>, RefRW<URPMaterialPropertyBaseColor>>()
                     .WithEntityAccess())
             {
                 // Only process entities with active fade-out (timer > 0) or expired (timer < 0)

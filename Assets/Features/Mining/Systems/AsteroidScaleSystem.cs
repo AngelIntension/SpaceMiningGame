@@ -81,6 +81,11 @@ namespace VoidHarvest.Features.Mining.Systems
                     asteroid.ValueRO.InitialMass,
                     minScale);
 
+                // Apply mesh normalization for non-unit-sized FBX meshes
+                float normFactor = asteroid.ValueRO.MeshNormFactor;
+                if (normFactor > 0f)
+                    scale *= normFactor;
+
                 transform.ValueRW = LocalTransform.FromPositionRotationScale(
                     transform.ValueRO.Position,
                     transform.ValueRO.Rotation,
