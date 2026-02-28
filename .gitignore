@@ -136,8 +136,12 @@ Thumbs.db
 
 # Screenshots (diagnostic/MCP captures)
 /[Aa]ssets/Screenshots/
+Assets/Screenshots.meta
+
+# Recovery Files
+/[Aa]ssets/_Recovery/
+_Recovery.meta
 
 # Claude Code
 .claude/settings.local.json
 
-Assets/Screenshots.meta
