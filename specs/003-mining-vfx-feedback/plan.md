@@ -5,7 +5,7 @@
 
 ## Summary
 
-Add high-impact visual effects, synchronized HUD feedback, and spatialized audio to the mining loop. Five priority tiers: P1 laser beam VFX (LineRenderer + ParticleSystem sparks + heat haze), P2 asteroid depletion feedback (ECS emission component + crumble bursts + fragment explosion), P3 continuous ore chunk collection (pooled MonoBehaviour chunks with bezier attraction), P4 HUD progress bar (UI Toolkit synced to depletion), P5 spatial audio (AudioSource-based with procedural placeholders). All new code follows immutable functional style with ScriptableObject configs. New ECS→managed bridge via NativeQueue for threshold crossing events.
+Add high-impact visual effects, synchronized HUD feedback, and spatialized audio to the mining loop. Five priority tiers: P1 laser beam VFX (LineRenderer + ParticleSystem sparks + heat shimmer), P2 asteroid depletion feedback (ECS emission component + crumble bursts + fragment explosion), P3 continuous ore chunk collection (pooled MonoBehaviour chunks with bezier attraction), P4 HUD progress bar (UI Toolkit synced to depletion), P5 spatial audio (AudioSource-based with procedural placeholders). All new code follows immutable functional style with ScriptableObject configs. New ECS→managed bridge via NativeQueue for threshold crossing events.
 
 ## Technical Context
 
@@ -82,6 +82,8 @@ Assets/Features/Mining/
 │   └── ProceduralAudioGenerator.cs    # NEW: Placeholder audio clip generation
 ├── Tests/
 │   ├── AsteroidEmissionTests.cs       # NEW: Emission formula tests
+│   ├── MiningBeamVFXTests.cs          # NEW: Beam pulse/spark pure logic tests
+│   ├── MiningAudioTests.cs            # NEW: Audio pitch/fade pure logic tests
 │   ├── OreChunkAttractionTests.cs     # NEW: Bezier attraction tests
 │   ├── ThresholdEventTests.cs         # NEW: Event bridge tests
 │   └── MiningDepletionReducerTests.cs # NEW: Reducer tests
@@ -91,17 +93,18 @@ Assets/Features/Mining/
 Assets/Features/HUD/
 ├── Views/
 │   ├── HUDView.cs                     # MODIFIED: Add progress bar + pulse + flash
-│   └── HUD.uxml                       # MODIFIED: Add progress bar elements
+│   ├── HUD.uxml                       # MODIFIED: Add progress bar elements
 │   └── HUD.uss                        # MODIFIED: Progress bar styles
 └── Tests/
     └── HUDMiningFeedbackTests.cs      # NEW: Progress bar sync tests
 
-Assets/Core/EventBus/
-└── Events/
-    ├── ThresholdCrossedEvent.cs        # NEW
-    └── OreChunkCollectedEvent.cs       # NEW
-
-Assets/Core/State/
+Assets/Core/
+├── SceneLifetimeScope.cs              # MODIFIED: +VFX config registrations
+├── EventBus/
+│   └── Events/
+│       ├── ThresholdCrossedEvent.cs    # NEW
+│       └── OreChunkCollectedEvent.cs   # NEW
+└── State/
 ├── MiningState.cs                     # MODIFIED: +DepletionFraction field
 └── MiningActions.cs                   # MODIFIED: +MiningDepletionTickAction
 ```
@@ -162,11 +165,25 @@ Add `DepletionFraction` (float) to `MiningSessionState` record. Add `MiningDeple
 
 **Files**: `MiningVFXConfig.cs`, `DepletionVFXConfig.cs`, `OreChunkConfig.cs`, `MiningAudioConfig.cs` under `Assets/Features/Mining/Data/`
 
-Create as ScriptableObjects with `[CreateAssetMenu]` attributes. Field definitions per data-model.md. All fields are serialized with sensible defaults.
+Create as ScriptableObjects with `[CreateAssetMenu]` attributes. Field definitions per data-model.md. All fields are serialized with sensible defaults. DepletionVFXConfig includes `VeinGlowPulseSpeed` and `VeinGlowPulseAmplitude` for the glow pulse effect.
 
 **MCP**: Create `.asset` instances via `manage_asset(action="create")` after scripts compile.
 
-#### 1.8 Tests: Reducer + Threshold Bridge
+#### 1.8 VContainer Registration
+
+**File**: `Assets/Core/SceneLifetimeScope.cs` (modify)
+
+Register all new ScriptableObject configs and MonoBehaviour view dependencies in `SceneLifetimeScope.Configure()`. Without this, all `[Inject]`-based injection for the new configs will fail at runtime.
+
+- `container.RegisterInstance(miningVFXConfig)` — serialized reference on the LifetimeScope component
+- `container.RegisterInstance(depletionVFXConfig)`
+- `container.RegisterInstance(oreChunkConfig)`
+- `container.RegisterInstance(miningAudioConfig)`
+- `container.RegisterInstance(asteroidVisualMappingConfig)` — existing SO, newly needed by OreChunkController
+
+ScriptableObject references added as `[SerializeField]` fields on the `SceneLifetimeScope` MonoBehaviour and assigned via Inspector/MCP.
+
+#### 1.9 Tests: Reducer + Threshold Bridge
 
 **Files**: `MiningDepletionReducerTests.cs`, `ThresholdEventTests.cs`
 
@@ -179,9 +196,19 @@ Create as ScriptableObjects with `[CreateAssetMenu]` attributes. Field definitio
 
 ### Phase 2: Mining Laser Beam VFX (P1)
 
-**Goal**: Replace basic LineRenderer beam with pulsing energy beam + ore-colored impact sparks + heat haze at mining arm. All effects track positions every frame and cease cleanly on stop.
+**Goal**: Replace basic LineRenderer beam with pulsing energy beam + ore-colored impact sparks + heat shimmer at mining arm. All effects track positions every frame and cease cleanly on stop.
 
-**Checkpoint**: Acceptance Scenarios US1.1-US1.6 pass. Beam pulses, sparks spray from asteroid, heat haze visible on arm.
+**Checkpoint**: Acceptance Scenarios US1.1-US1.6 pass. Beam pulses, sparks spray from asteroid, heat shimmer visible on arm.
+
+#### 2.0 Tests: Beam VFX Pure Logic (TDD)
+
+**File**: `Assets/Features/Mining/Tests/MiningBeamVFXTests.cs`
+
+Test pure-logic functions extracted from MiningBeamView:
+- Beam pulse width calculation: verify sinusoidal oscillation given time, speed, amplitude.
+- Spark color resolution: verify ore-type-to-color mapping returns correct `BeamColor`.
+- Heat shimmer opacity: verify config-driven intensity.
+- Clean shutdown state: verify all effect flags reset on mining stop.
 
 #### 2.1 Upgrade MiningBeamView
 
@@ -191,7 +218,7 @@ Retain LineRenderer for the beam core but add:
 - **Pulsing width**: Sinusoidal oscillation of `startWidth`/`endWidth` driven by `MiningVFXConfig.BeamPulseSpeed` and `BeamPulseAmplitude`.
 - **Trail overlay**: Second LineRenderer (or TrailRenderer child) with additive shader for glow trail effect.
 - **Impact ParticleSystem**: Child ParticleSystem at beam end position. Cone emission, ore-colored particles, `SparkEmissionRate` from config. Positioned at asteroid surface (entity position offset by radius toward ship).
-- **Heat haze ParticleSystem**: Child ParticleSystem at beam origin (mining arm transform). Single billboard quad with scrolling distortion texture, opacity from config.
+- **Heat shimmer ParticleSystem**: Child ParticleSystem at beam origin (mining arm transform). Single billboard quad with scrolling distortion texture, opacity from config.
 - **Clean shutdown**: On `MiningStoppedEvent`, stop all emission, clear particles, disable renderers.
 
 **New child transforms on barge prefabs**: Add `MiningArmOrigin` and `CollectorPoint` empty GameObjects to SmallMiningBarge, MediumMiningBarge, HeavyMiningBarge prefabs.
@@ -220,7 +247,7 @@ Create simple materials for beam effects:
 
 **File**: `Assets/Features/Mining/Systems/AsteroidEmissionSystem.cs`
 
-New Burst-compiled ISystem in SimulationSystemGroup, after AsteroidDepletionSystem. Queries all entities with `AsteroidComponent` + `AsteroidEmissionComponent`. Calculates emission intensity from depletion fraction using config values (lerp between min/max intensity, sqrt ease-in curve). Writes to `AsteroidEmissionComponent.Value` as HDR float4.
+New Burst-compiled ISystem in SimulationSystemGroup, after AsteroidDepletionSystem. Queries all entities with `AsteroidComponent` + `AsteroidEmissionComponent`. Calculates emission intensity from depletion fraction using config values (lerp between min/max intensity, sqrt ease-in curve), then applies a sinusoidal pulse modulation at `VeinGlowPulseSpeed` Hz with `VeinGlowPulseAmplitude` range to create a living glow effect. Writes to `AsteroidEmissionComponent.Value` as HDR float4.
 
 **Key**: Must add `AsteroidEmissionComponent` to asteroid entities at spawn time. Modify `AsteroidFieldSystem.cs` to include emission component in entity archetype (alongside existing `URPMaterialPropertyBaseColor`).
 
@@ -322,7 +349,7 @@ Add progress bar logic in `LateUpdate()`:
 - Read `gameState.Loop.Mining.DepletionFraction` (new field from Phase 1).
 - Set `mining-progress-fill` width as percentage of container.
 - Interpolate fill color: ore color → red/orange using `Color.Lerp` keyed on depletion.
-- Pulse effect: sinusoidal opacity modulation on fill bar, frequency matching vein glow.
+- Pulse effect: sinusoidal opacity modulation on fill bar at `DepletionVFXConfig.VeinGlowPulseSpeed` Hz, matching the vein glow pulse frequency for visual synchronization.
 - Subscribe to `ThresholdCrossedEvent` via EventBus: on event, set flash overlay visible with white background, fade over 0.3s using USS transitions.
 
 #### 5.3 Tests: HUD Sync
@@ -338,6 +365,15 @@ Test color interpolation formula (pure function). Test that progress bar percent
 **Goal**: 6 audio cues: laser hum (looped, pitch ramps), spark crackle (at impact), crumble rumble (at threshold), explosion (at destruction), collection clink (at barge), hum fade-out (on stop).
 
 **Checkpoint**: Acceptance Scenarios US5.1-US5.7 pass.
+
+#### 6.0 Tests: Audio Pure Logic (TDD)
+
+**File**: `Assets/Features/Mining/Tests/MiningAudioTests.cs`
+
+Test pure-logic functions extracted from MiningAudioController:
+- Pitch interpolation: verify `Lerp(PitchMin, PitchMax, depletion)` for boundary values (0.0, 0.5, 1.0).
+- Volume scaling: verify config-driven volume values.
+- Fade-out duration: verify fade calculation produces correct volume over time.
 
 #### 6.1 ProceduralAudioGenerator
 

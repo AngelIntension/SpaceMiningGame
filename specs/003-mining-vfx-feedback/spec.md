@@ -21,16 +21,16 @@ As a player activating my mining laser on a targeted asteroid, I see a glowing e
 
 **Why this priority**: The mining laser is the player's primary tool and the visual centerpiece of the core loop. Every mining session starts and ends with the beam — getting it right delivers the single biggest "game feel" upgrade. Without a satisfying beam, no amount of secondary polish matters.
 
-**Independent Test**: Can be fully tested by targeting any asteroid and activating the mining laser. Delivers immediate visual impact: the beam, impact sparks, and heat haze are all visible and responsive within a single mining session.
+**Independent Test**: Can be fully tested by targeting any asteroid and activating the mining laser. Delivers immediate visual impact: the beam, impact sparks, and heat shimmer are all visible and responsive within a single mining session.
 
 **Acceptance Scenarios**:
 
 1. **Given** the player has targeted an asteroid within range, **When** they activate the mining laser, **Then** a continuous glowing beam renders from the barge mining arm to the asteroid surface with no visible gaps or flickering.
 2. **Given** the mining laser is active, **When** the player observes the beam, **Then** it is colored to match the ore type being mined (Veldspar = yellowish, Scordite = reddish, Pyroxeres = bluish).
 3. **Given** the beam is hitting the asteroid, **When** the player looks at the impact point, **Then** sparks spray outward from the hit point in the ore's color palette.
-4. **Given** the mining laser is active, **When** the player observes the barge mining arm, **Then** a subtle heat haze distortion effect is visible near the beam origin.
-5. **Given** the ship is moving or orbiting while mining, **When** the beam is active, **Then** the beam, impact sparks, and heat haze all track the new positions every frame with no lag or discontinuity.
-6. **Given** the player deactivates the mining laser or the target goes out of range, **When** mining stops, **Then** the beam, sparks, and heat haze all cease immediately with no lingering artifacts.
+4. **Given** the mining laser is active, **When** the player observes the barge mining arm, **Then** a subtle heat shimmer visual effect is visible near the beam origin.
+5. **Given** the ship is moving or orbiting while mining, **When** the beam is active, **Then** the beam, impact sparks, and heat shimmer all track the new positions every frame with no lag or discontinuity.
+6. **Given** the player deactivates the mining laser or the target goes out of range, **When** mining stops, **Then** the beam, sparks, and heat shimmer all cease immediately with no lingering artifacts.
 
 ---
 
@@ -114,7 +114,7 @@ As a player mining an asteroid, I hear a continuous laser hum that increases in 
 
 ### Edge Cases
 
-- What happens when the player starts mining one asteroid and switches target mid-beam? All VFX (beam, sparks, heat haze) must cleanly transition to the new target within one frame. No lingering particles from the old target.
+- What happens when the player starts mining one asteroid and switches target mid-beam? All VFX (beam, sparks, heat shimmer) must cleanly transition to the new target within one frame. No lingering particles from the old target.
 - What happens when the asteroid is destroyed while ore chunks are still in flight? The chunks already spawned must continue their attraction trajectory toward the barge and be collected normally. No new chunks spawn after depletion.
 - What happens when the player moves out of range while ore chunks are in flight? The chunks must still complete their journey to the barge and be collected. Range only affects the beam and new chunk spawning, not chunks already in flight.
 - What happens when the player switches targets mid-mining? The chunk spawn timer resets for the new target. Any chunks already in flight from the previous asteroid continue to the barge normally.
@@ -132,13 +132,13 @@ As a player mining an asteroid, I hear a continuous laser hum that increases in 
 - **FR-001**: The mining laser MUST render as a continuous energy beam from the barge's mining arm origin point to the asteroid's surface hit point, updating position every frame.
 - **FR-002**: The beam MUST be colored to match the ore type of the targeted asteroid, using the existing `BeamColor` from the ore type configuration.
 - **FR-003**: Impact sparks MUST emit from the beam's hit point on the asteroid surface, colored to match the ore type.
-- **FR-004**: A heat haze distortion effect MUST be visible near the beam origin on the mining arm when the laser is active.
-- **FR-005**: All beam-related effects (beam, sparks, heat haze) MUST cease immediately when mining stops (target lost, out of range, player deactivation, or asteroid depleted).
-- **FR-006**: The beam MUST visually pulse or shimmer to convey energy flow, not appear as a static line.
+- **FR-004**: A heat shimmer visual effect MUST be visible near the beam origin on the mining arm when the laser is active.
+- **FR-005**: All beam-related effects (beam, sparks, heat shimmer) MUST cease immediately when mining stops (target lost, out of range, player deactivation, or asteroid depleted).
+- **FR-006**: The beam MUST visually pulse to convey energy flow, not appear as a static line.
 
 **Asteroid Depletion VFX**
 
-- **FR-007**: Asteroid surface vein glow intensity MUST ramp proportionally with the depletion fraction — faint at 0% depleted, intense at 100% depleted.
+- **FR-007**: Asteroid surface vein glow intensity MUST ramp proportionally with the depletion fraction — faint at 0% depleted, intense at 100% depleted. The glow MUST also pulse at a configurable frequency (default ~1.5 Hz) to create a living, active visual that the HUD progress bar can synchronize with.
 - **FR-008**: At each crumble pause threshold crossing (25%, 50%, 75% depleted), a bright flash and outward particle burst MUST emit from the asteroid surface.
 - **FR-009**: Crumble burst intensity MUST escalate with depletion — the 75% depletion burst is visibly stronger than the 25% depletion burst.
 - **FR-010**: On final depletion (100%), a burst of 8-15 small rocky fragment particles MUST explode outward from the asteroid's position.
@@ -153,7 +153,7 @@ As a player mining an asteroid, I hear a continuous laser hum that increases in 
 - **FR-016**: After a brief initial drift (0.5-1.0 seconds), ore chunks MUST be attracted toward the player's barge collector point with smooth, curved motion.
 - **FR-017**: When an ore chunk reaches the barge collector, it MUST disappear with a brief collection flash.
 - **FR-018**: Each ore chunk MUST complete its journey (spawn → drift → attract → collect) within 5 seconds.
-- **FR-018a**: The spawn interval MUST be randomized per event (not fixed) to produce an organic, non-metronomic cadence.
+- **FR-018a**: *(Clarifies FR-013 randomization)* The spawn interval MUST be randomized per event (not fixed) to produce an organic, non-metronomic cadence.
 - **FR-018b**: When mining stops, no new chunks MUST spawn, but any chunks already in flight MUST continue to the barge and be collected normally.
 
 **HUD Mining Feedback**
@@ -180,11 +180,11 @@ As a player mining an asteroid, I hear a continuous laser hum that increases in 
 - **FR-032**: The existing 2 ms asteroid field rendering budget MUST NOT be exceeded with new depletion VFX active.
 - **FR-033**: All new effects MUST be compatible with the existing DOTS/ECS asteroid and mining systems with zero regressions.
 - **FR-034**: Particle systems MUST cull when off-screen to save GPU budget.
-- **FR-035**: VFX MUST support simultaneous mining of multiple asteroids (future-proofing) without exceeding performance budgets.
+- **FR-035**: VFX architecture SHOULD support simultaneous mining of multiple asteroids (future-proofing). Multi-beam performance validation is deferred to a future NPC mining spec.
 
 ### Key Entities
 
-- **MiningVFXConfig**: Configuration for all mining laser visual effects — beam width, pulse speed, spark emission rate, heat haze intensity, and ore-type color overrides. Designer-editable.
+- **MiningVFXConfig**: Configuration for all mining laser visual effects — beam width, pulse speed, spark emission rate, heat shimmer intensity, and ore-type color overrides. Designer-editable.
 - **DepletionVFXConfig**: Configuration for asteroid depletion effects — vein glow ramp curve, crumble burst particle count per threshold, fragment count on final explosion, fragment lifetime. Designer-editable.
 - **OreChunkConfig**: Configuration for ore collection chunks — spawn interval range (3-7 seconds), chunks per spawn (2-5), chunk size variance range, initial drift duration, attraction speed curve, collection flash duration. Designer-editable.
 - **MiningAudioConfig**: Configuration for all mining audio cues — references to audio clips (laser hum, spark crackle, crumble rumble, explosion, collection clink), pitch ramp range for laser hum, fade-out duration. Designer-editable.
@@ -196,7 +196,7 @@ As a player mining an asteroid, I hear a continuous laser hum that increases in 
 - The barge prefab has (or will have) a "collector point" transform for ore chunk attraction targets. If not, a child transform will be added to each barge variant.
 - Audio clips for all sound effects (laser hum, spark crackle, rumble, explosion, clink) will be created as placeholder procedural sounds or sourced from Unity's built-in audio tools. No paid audio asset purchases are required for this spec.
 - The existing crumble pause bitmask (`CrumbleThresholdsPassed`) on `AsteroidComponent` provides sufficient event detection for triggering VFX bursts — no new ECS components are needed for threshold detection itself.
-- VFX Graph is preferred for particle effects where DOTS/Burst compatibility is beneficial. Fallback to legacy Particle System is acceptable where VFX Graph integration proves impractical.
+- Legacy ParticleSystem is used for all particle effects per research decision R1. VFX Graph is deferred until particle counts justify GPU compute simulation.
 - The ore chunk attraction system uses simple managed-code movement (MonoBehaviour `Update` or similar) rather than DOTS physics, since at most ~10 chunks are in flight simultaneously (2-5 spawn every 3-7 seconds, each lives ~5 seconds) and chunks are short-lived view-layer objects.
 - The vein glow effect will use emission intensity modulation on the asteroid's existing material (via `URPMaterialPropertyBaseColor` alpha channel or a new emission property), not a separate overlay mesh.
 - All new ScriptableObject configs will be created under `Assets/Features/Mining/Data/` following existing naming conventions.
@@ -215,7 +215,7 @@ As a player mining an asteroid, I hear a continuous laser hum that increases in 
 
 ### Measurable Outcomes
 
-- **SC-001**: Mining laser beam, impact sparks, and heat haze are all visible within 1 frame of mining activation — zero perceptible delay between action and visual response.
+- **SC-001**: Mining laser beam, impact sparks, and heat shimmer are all visible within 1 frame of mining activation — zero perceptible delay between action and visual response.
 - **SC-002**: Players can visually identify asteroid depletion state at a glance — vein glow intensity clearly distinguishes a 25%-depleted asteroid from a 75%-depleted one at mining range (under 50 units).
 - **SC-003**: Each crumble pause threshold crossing produces a visible flash-and-burst effect lasting 0.3-0.5 seconds, clearly noticeable without watching the HUD.
 - **SC-004**: Final asteroid destruction produces a satisfying fragment explosion of 8-15 particles that drift and fade within 3 seconds.

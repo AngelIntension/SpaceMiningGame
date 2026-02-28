@@ -57,7 +57,7 @@
 | `Mining/Systems/AsteroidScaleSystem.cs` | +Enqueue threshold events |
 | `Mining/Systems/MiningActionDispatchSystem.cs` | +Drain threshold queue, +dispatch depletion tick |
 | `Mining/Systems/MiningReducer.cs` | +MiningDepletionTickAction case |
-| `Mining/Views/MiningBeamView.cs` | Upgrade beam + add sparks + heat haze |
+| `Mining/Views/MiningBeamView.cs` | Upgrade beam + add sparks + heat shimmer |
 | `Core/State/MiningState.cs` | +DepletionFraction field |
 | `Core/State/MiningActions.cs` | +MiningDepletionTickAction record |
 | `HUD/Views/HUDView.cs` | +Progress bar logic |

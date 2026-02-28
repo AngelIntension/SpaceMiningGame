@@ -30,6 +30,8 @@
 | VeinGlowMinIntensity | float | 0.1 | Emission at 0% depletion |
 | VeinGlowMaxIntensity | float | 3.0 | Emission at 100% depletion |
 | VeinGlowColor | Color | (1, 0.8, 0.4, 1) | Base emission color (warm) |
+| VeinGlowPulseSpeed | float | 1.5 | Glow pulse cycles per second |
+| VeinGlowPulseAmplitude | float | 0.25 | Pulse intensity oscillation range [0,1] relative to current intensity |
 | CrumbleBurstCountBase | int | 8 | Particles at 25% threshold |
 | CrumbleBurstCountScale | float | 1.5 | Multiplier per threshold tier |
 | CrumbleBurstSpeed | float | 5.0 | Outward velocity m/s |

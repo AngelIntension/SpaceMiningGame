@@ -54,7 +54,7 @@
 - Custom Shader Graph: Over-engineering; URP Lit already supports emission.
 - Modifying `_BaseColor` alpha channel: Alpha is already used for fade-out by `AsteroidDestroySystem`.
 
-## R5: Heat Haze Effect
+## R5: Heat Shimmer Effect
 
 **Decision**: Use a simple particle-based approach with a transparent, UV-scrolling distortion texture on a ParticleSystem quad near the mining arm. Not screen-space post-processing.
 
