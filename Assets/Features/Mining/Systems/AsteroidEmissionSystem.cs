@@ -22,6 +22,7 @@ namespace VoidHarvest.Features.Mining.Systems
         public void OnUpdate(ref SystemState state)
         {
             float time = (float)SystemAPI.Time.ElapsedTime;
+            float dt = SystemAPI.Time.DeltaTime;
 
             // Config values — hardcoded for Burst compatibility
             // (ScriptableObject cannot be read from Burst; values match DepletionVFXConfig defaults)
@@ -32,14 +33,35 @@ namespace VoidHarvest.Features.Mining.Systems
             float3 glowColor = new float3(1f, 0.8f, 0.4f);
             float pulseSpeed = 1.5f;
             float pulseAmplitude = 0.15f;
+            float fadeInSpeed = 3f;   // ~0.3s ramp-up
+            float fadeOutSpeed = 0.5f; // ~2s decay
 
-            foreach (var (asteroid, emission) in
-                SystemAPI.Query<RefRO<AsteroidComponent>, RefRW<AsteroidEmissionComponent>>())
+            // Find the asteroid currently being mined (if any)
+            Entity activeTarget = Entity.Null;
+            foreach (var beam in SystemAPI.Query<RefRO<MiningBeamComponent>>())
+            {
+                if (beam.ValueRO.Active)
+                {
+                    activeTarget = beam.ValueRO.TargetAsteroid;
+                    break;
+                }
+            }
+
+            foreach (var (asteroid, emission, entity) in
+                SystemAPI.Query<RefRO<AsteroidComponent>, RefRW<AsteroidEmissionComponent>>()
+                    .WithEntityAccess())
             {
                 float depletion = asteroid.ValueRO.Depletion;
+                bool isBeingMined = (entity == activeTarget) && depletion > 0f;
 
-                // No emission at zero depletion
-                if (depletion <= 0f)
+                // Update glow fade: ramp up while mined, decay when not
+                float fade = emission.ValueRO.GlowFade;
+                fade = isBeingMined
+                    ? math.min(fade + fadeInSpeed * dt, 1f)
+                    : math.max(fade - fadeOutSpeed * dt, 0f);
+                emission.ValueRW.GlowFade = fade;
+
+                if (fade <= 0f || depletion <= 0f)
                 {
                     emission.ValueRW.Value = float4.zero;
                     continue;
@@ -52,6 +74,9 @@ namespace VoidHarvest.Features.Mining.Systems
                 // Sinusoidal pulse modulation
                 float pulse = math.sin(2f * math.PI * pulseSpeed * time);
                 intensity *= (1f + pulse * pulseAmplitude);
+
+                // Apply fade multiplier
+                intensity *= fade;
 
                 // HDR emission color = glow color * intensity
                 emission.ValueRW.Value = new float4(

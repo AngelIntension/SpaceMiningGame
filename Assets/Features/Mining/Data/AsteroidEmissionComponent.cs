@@ -14,5 +14,11 @@ namespace VoidHarvest.Features.Mining.Data
     public struct AsteroidEmissionComponent : IComponentData
     {
         public float4 Value;
+
+        /// <summary>
+        /// Fade multiplier [0,1]. Ramps to 1 while actively mined, decays to 0 when mining stops.
+        /// Prevents asteroids from glowing indefinitely after mining ceases.
+        /// </summary>
+        public float GlowFade;
     }
 }

@@ -85,6 +85,16 @@ namespace VoidHarvest.Features.Mining.Systems
 
                     if (ReferenceEquals(prevState.Loop.Inventory, newState.Loop.Inventory))
                     {
+                        // Deactivate ECS mining beam so depletion/scale/emission systems stop
+                        foreach (var beam in SystemAPI.Query<RefRW<MiningBeamComponent>>())
+                        {
+                            if (beam.ValueRO.Active)
+                            {
+                                beam.ValueRW.Active = false;
+                                break;
+                            }
+                        }
+
                         _stateStore.Dispatch(new StopMiningAction());
                         var stoppedEvt = new MiningStoppedEvent(yieldAction.SourceAsteroid.Index, StopReason.CargoFull);
                         _eventBus.Publish(in stoppedEvt);
