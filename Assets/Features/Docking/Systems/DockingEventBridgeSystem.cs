@@ -29,6 +29,8 @@ namespace VoidHarvest.Features.Docking.Systems
         {
             if (_stateStore == null || _eventBus == null) return;
 
+            bool shouldRemoveDocking = false;
+
             foreach (var flags in SystemAPI.Query<RefRW<DockingEventFlags>>())
             {
                 if (flags.ValueRO.DockCompleted)
@@ -59,17 +61,30 @@ namespace VoidHarvest.Features.Docking.Systems
                     // Publish event
                     _eventBus.Publish(new UndockCompletedEvent(stationId));
 
-                    // Remove DockingStateComponent from ship entity
-                    foreach (var (docking, entity)
-                        in SystemAPI.Query<RefRO<DockingStateComponent>>()
-                            .WithAll<PlayerControlledTag>()
-                            .WithEntityAccess())
-                    {
-                        EntityManager.RemoveComponent<DockingStateComponent>(entity);
-                    }
+                    // Defer structural change until after query iteration
+                    shouldRemoveDocking = true;
 
                     // Clear flag
                     flags.ValueRW.UndockCompleted = false;
+                }
+            }
+
+            // Structural changes must happen outside ALL query iterations
+            if (shouldRemoveDocking)
+            {
+                // Collect entity first, then remove after query completes
+                Entity shipToUndock = Entity.Null;
+                foreach (var (docking, entity)
+                    in SystemAPI.Query<RefRO<DockingStateComponent>>()
+                        .WithAll<PlayerControlledTag>()
+                        .WithEntityAccess())
+                {
+                    shipToUndock = entity;
+                }
+
+                if (shipToUndock != Entity.Null)
+                {
+                    EntityManager.RemoveComponent<DockingStateComponent>(shipToUndock);
                 }
             }
         }
