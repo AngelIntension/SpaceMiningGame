@@ -1,65 +1,47 @@
 <!--
   ========== Sync Impact Report ==========
-  Version change: 1.0.0 → 1.1.0
-  Bump rationale: MINOR — two new sections added with material
-    game design guidance (Game Vision Pillars) and phased
-    development roadmap (Development Roadmap). No existing
-    principles removed or redefined.
+  Version change: 1.1.0 → 1.2.0
+  Bump rationale: MINOR — new material guidance section added
+    (Editor Automation via Unity MCP) with mandatory quality gates
+    for compilation verification, console monitoring, and integrated
+    test execution. Existing Testing & Development Workflow sections
+    expanded with MCP-aware procedures.
 
   Modified principles: None renamed or removed.
 
   Modified sections:
-    - Initial Scope Guardrails (MVP): Refined to align with
-      EVE-style 3rd-person controls and vision pillars. Phase 0
-      description now references EVE controls paradigm.
-    - Project Structure: Added future feature folders (Camera,
-      Input, Fleet, TechTree, Economy, Base) as planned modules.
+    - Testing & Quality Standards: Added MCP-based test execution
+      mandate and console-clean gate.
+    - Development Workflow: Added Unity MCP verification loop and
+      scene validation requirements.
 
   Added sections:
-    - Game Vision Pillars (new §, between Core Principles and
-      Technical Standards):
-        · Perspective & Camera
-        · Controls (EVE Online-inspired)
-        · Ship Fleet System
-        · Progression (tech tree)
-        · Core Loop Satisfaction
-        · Endgame (economy + bases)
-    - Development Roadmap (new §, before Governance):
-        · Phase 0 (MVP)
-        · Phase 1 (fleet + tech tree)
-        · Phase 2 (refining + bases stub)
-        · Phase 3 (economy + deep customization)
+    - Editor Automation (Unity MCP) (new subsection under
+      Technical Standards & Coding Style):
+        · Compilation Verification Gate
+        · Console Monitoring
+        · Scene & Asset Validation
+        · Script Management
+        · Test Execution
 
   Removed sections: None
 
   Templates requiring updates:
     - .specify/templates/plan-template.md:         ✅ No update needed
-      (Constitution Check is dynamic; vision pillars provide
-      additional gates at plan time — e.g., camera must be
-      3rd-person, controls must follow EVE paradigm)
+      (Constitution Check is dynamic; MCP gates apply at
+      implementation time, not plan time)
     - .specify/templates/spec-template.md:          ✅ No update needed
-      (specs for camera/controls/fleet features will reference
-      vision pillars as requirements source)
+      (MCP is a development tool, not a spec concern)
     - .specify/templates/tasks-template.md:         ✅ No update needed
-      (phase structure in roadmap aligns with task phases)
+      (task structure unchanged; MCP verification is a
+      cross-cutting workflow concern, not a task type)
     - .specify/templates/checklist-template.md:     ✅ No update needed
     - .specify/templates/agent-file-template.md:    ✅ No update needed
     - .specify/templates/commands/:                 ✅ N/A (no files)
 
-  Carried-forward TODOs (from v1.0.0):
-    - RESOLVED(C#_VERSION): C# 9.0 confirmed. `record struct` unavailable;
-      use `sealed record` for reference types, `readonly struct` for value types.
-    - RESOLVED(PACKAGES): VContainer, UniTask, Entities, Cinemachine,
-      Addressables, NuGetForUnity installed via manifest.json (T001).
-      System.Collections.Immutable pending NuGetForUnity UI install (T002).
-    - RESOLVED(ROSLYN): .editorconfig with CA1051/CA2227/CA2211 rules
-      configured (T008b).
+  Carried-forward TODOs: None (all previous TODOs resolved).
 
-  New TODOs (v1.1.0):
-    - RESOLVED(INPUT_ACTIONS): InputSystem_Actions.inputactions updated
-      with EVE-style controls: Player (Select, DoubleClickAlign, RadialMenu,
-      Thrust, Strafe, Roll, Hotbar1-8), Camera (Orbit, Zoom, FreeLookToggle),
-      UI (Navigate, Submit, Cancel). Done in T006.
+  New TODOs (v1.2.0): None.
   ========================================
 -->
 
@@ -304,6 +286,58 @@ These practices apply to ALL code outside Unity engine boundaries
 - NO static singletons for game logic. Service locator pattern
   is prohibited.
 
+### Editor Automation (Unity MCP)
+
+The Unity MCP bridge provides programmatic access to the Unity
+Editor for automated verification, testing, and scene management.
+The following gates and practices are MANDATORY when Unity MCP is
+available during development.
+
+**Compilation Verification Gate**:
+- After ANY script creation or modification, the Unity console
+  MUST be checked for compilation errors before proceeding with
+  further work. This is a hard gate — no new scripts, components,
+  or scene modifications may proceed until the console is clean.
+- Poll the editor state's `isCompiling` field to confirm domain
+  reload is complete before reading console output.
+
+**Console Monitoring**:
+- The Unity console MUST be monitored after each significant
+  development action (script edits, asset imports, scene changes).
+- Console errors are blocking — they MUST be resolved before
+  moving to the next task.
+- Console warnings SHOULD be investigated and resolved unless
+  they originate from third-party packages outside project control.
+
+**Scene & Asset Validation**:
+- After structural scene changes (adding/removing GameObjects,
+  reparenting, component configuration), the scene hierarchy
+  MUST be verified via MCP to confirm the intended structure.
+- Screenshots MAY be captured via MCP for visual verification
+  of rendering changes, material assignments, and UI layout.
+
+**Script Management**:
+- Scripts created or edited via MCP tools MUST be validated
+  (`validate_script`) before relying on new types or components.
+- Prefer MCP structured edit operations (`script_apply_edits`)
+  over raw text edits for method-level changes, as they provide
+  safer boundary handling.
+
+**Test Execution**:
+- EditMode and PlayMode tests MUST be runnable via MCP
+  (`run_tests` / `get_test_job`) as part of the development loop.
+- Test results MUST be checked programmatically — a passing
+  test suite is a prerequisite for marking any task complete.
+- Failed tests MUST be reported with details (use
+  `include_failed_tests` flag) for diagnosis.
+
+**Rationale**: Automated editor verification via MCP eliminates
+the class of bugs where code compiles in an IDE but fails in Unity
+(assembly definition mismatches, missing references, serialization
+errors). Programmatic test execution reinforces TDD discipline by
+making the Red-Green-Refactor cycle executable without manual
+editor interaction.
+
 ### Project Structure
 
 ```text
@@ -366,6 +400,13 @@ Each feature folder follows the `Data/`, `Systems/`, `Views/`,
   2. Tests MUST fail (Red).
   3. Implementation makes tests pass (Green).
   4. Refactor while keeping tests green.
+- **Automated Test Execution**: When Unity MCP is available, tests
+  MUST be executed programmatically via MCP after each
+  implementation task. Manual Test Runner usage is acceptable as
+  a fallback but not preferred.
+- **Console-Clean Gate**: The Unity console MUST report zero errors
+  before any test execution or task completion. Warnings from
+  project code MUST also be resolved.
 - **Static Analysis**: Roslyn analyzers + Unity built-in analysis.
   Custom rules enforcing immutability (e.g., no public mutable
   fields on data types). Configure as errors, not warnings.
@@ -378,6 +419,15 @@ Each feature folder follows the `Data/`, `Systems/`, `Views/`,
 - Implementation follows:
   `/speckit.plan` → `/speckit.tasks` → `/speckit.implement`.
 - Every PR links to its spec + test results.
+- **Unity MCP verification loop**: During `/speckit.implement`,
+  each task that creates or modifies scripts MUST follow this
+  sequence:
+  1. Create/edit script(s).
+  2. Wait for compilation (poll `isCompiling`).
+  3. Check console for errors — resolve before continuing.
+  4. Run relevant tests via MCP.
+  5. Verify scene integrity if scene was modified.
+  6. Mark task complete only when console is clean and tests pass.
 - **Git conventions**:
   - Feature branches: `feature/<kebab-case-spec-name>`.
   - Conventional Commits (e.g., `feat:`, `fix:`, `refactor:`).
@@ -501,4 +551,4 @@ all other practices, conventions, or preferences.
   feature plan.
 - Per-milestone constitution review to incorporate lessons learned.
 
-**Version**: 1.1.0 | **Ratified**: 2026-02-26 | **Last Amended**: 2026-02-26
+**Version**: 1.2.0 | **Ratified**: 2026-02-26 | **Last Amended**: 2026-02-27

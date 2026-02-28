@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: StarterMiningBarge
   m_EditorClassIdentifier: VoidHarvest.Features.Ship::VoidHarvest.Features.Ship.Data.ShipArchetypeConfig
   ArchetypeId: starter-mining-barge
-  DisplayName: Starter Mining Barge
+  DisplayName: Small Mining Barge
   Role: 0
   Mass: 1000
   MaxThrust: 5000
