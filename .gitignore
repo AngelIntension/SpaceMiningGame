@@ -139,3 +139,5 @@ Thumbs.db
 
 # Claude Code
 .claude/settings.local.json
+
+Assets/Screenshots.meta
