@@ -139,6 +139,7 @@ namespace VoidHarvest.Features.Mining.Views
             _particleMaterial.renderQueue = 3000;
             _particleMaterial.enableInstancing = true;
             _particleMaterial.SetColor("_BaseColor", Color.white);
+            _particleMaterial.SetTexture("_BaseMap", ProceduralParticleTextures.SoftCircle);
             return _particleMaterial;
         }
 
