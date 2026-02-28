@@ -1,5 +1,7 @@
 # VoidHarvest
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 A relaxing-yet-engaging 3D space mining simulator built in Unity 6. Pilot customizable ships, harvest procedural asteroid fields, manage resources, upgrade your fleet, and survive cosmic hazards.
 
 **Core Loop**: Explore → Mine → Refine → Expand → Survive
@@ -115,4 +117,4 @@ All non-trivial work follows the Spec-Kit pipeline:
 
 ## License
 
-All rights reserved.
+This project is licensed under the [MIT License](LICENSE).
