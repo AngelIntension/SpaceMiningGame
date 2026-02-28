@@ -3,7 +3,8 @@
     "rootNamespace": "VoidHarvest.Core.EventBus",
     "references": [
         "VoidHarvest.Core.Extensions",
-        "UniTask"
+        "UniTask",
+        "Unity.Mathematics"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

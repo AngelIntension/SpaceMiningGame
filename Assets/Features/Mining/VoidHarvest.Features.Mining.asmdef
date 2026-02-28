@@ -12,7 +12,8 @@
         "Unity.Burst",
         "Unity.Collections",
         "Unity.Transforms",
-        "VContainer"
+        "VContainer",
+        "UniTask"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

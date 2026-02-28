@@ -384,11 +384,14 @@ namespace VoidHarvest.Features.Input.Views
             // Deactivate MiningBeamComponent
             if (!_entityManager.HasComponent<MiningBeamComponent>(_shipEntity)) return;
             var beam = _entityManager.GetComponentData<MiningBeamComponent>(_shipEntity);
+            var targetIndex = beam.TargetAsteroid.Index;
             beam.Active = false;
             _entityManager.SetComponentData(_shipEntity, beam);
 
             _isMining = false;
 
+            var evt = new MiningStoppedEvent(targetIndex, StopReason.PlayerStopped);
+            _eventBus?.Publish(in evt);
         }
 
         /// <summary>

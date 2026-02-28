@@ -1,14 +1,21 @@
 using UnityEngine;
 using UnityEngine.UIElements;
 using Unity.Mathematics;
+using Cysharp.Threading.Tasks;
 using VContainer;
+using VoidHarvest.Core.EventBus;
+using VoidHarvest.Core.EventBus.Events;
 using VoidHarvest.Core.State;
+using VoidHarvest.Features.Mining.Data;
+using VoidHarvest.Features.Mining.Systems;
 
 namespace VoidHarvest.Features.HUD.Views
 {
     /// <summary>
     /// Reads StateStore and updates HUD UI Toolkit elements.
     /// Subscribes to state changes for resource counts, velocity, hull integrity, mining info.
+    /// Progress bar shows depletion %, color transitions ore-to-red, pulses in sync with vein glow,
+    /// flashes white on threshold crossings.
     /// View layer only — no game state stored here.
     /// See MVP-09: HUD updates within 1 frame.
     /// </summary>
@@ -17,6 +24,8 @@ namespace VoidHarvest.Features.HUD.Views
         [SerializeField] private UIDocument uiDocument;
 
         private IStateStore _stateStore;
+        private IEventBus _eventBus;
+        private DepletionVFXConfig _depletionConfig;
         private int _lastVersion = -1;
 
         // UI elements
@@ -27,13 +36,24 @@ namespace VoidHarvest.Features.HUD.Views
         private Label _miningOreLabel;
         private Label _miningYieldLabel;
 
+        // Progress bar elements
+        private VisualElement _progressBar;
+        private VisualElement _progressFill;
+        private VisualElement _progressFlash;
+
+        // Flash state
+        private float _flashTimer;
+        private const float FlashDuration = 0.3f;
+
         /// <summary>
         /// DI injection point for the state store. See MVP-09: HUD updates within 1 frame.
         /// </summary>
         [Inject]
-        public void Construct(IStateStore stateStore)
+        public void Construct(IStateStore stateStore, IEventBus eventBus, DepletionVFXConfig depletionConfig)
         {
             _stateStore = stateStore;
+            _eventBus = eventBus;
+            _depletionConfig = depletionConfig;
         }
 
         private void OnEnable()
@@ -47,11 +67,41 @@ namespace VoidHarvest.Features.HUD.Views
             _miningPanel = root.Q<VisualElement>("mining-info-panel");
             _miningOreLabel = root.Q<Label>("mining-ore-label");
             _miningYieldLabel = root.Q<Label>("mining-yield-label");
+            _progressBar = root.Q<VisualElement>("mining-progress-bar");
+            _progressFill = root.Q<VisualElement>("mining-progress-fill");
+            _progressFlash = root.Q<VisualElement>("mining-progress-flash");
+        }
+
+        private void Start()
+        {
+            if (_eventBus != null)
+                SubscribeToThresholdEvents().Forget();
+        }
+
+        private async UniTaskVoid SubscribeToThresholdEvents()
+        {
+            var cts = this.GetCancellationTokenOnDestroy();
+            await foreach (var evt in _eventBus.Subscribe<ThresholdCrossedEvent>().WithCancellation(cts))
+            {
+                _flashTimer = FlashDuration;
+            }
         }
 
         private void LateUpdate()
         {
             if (_stateStore == null) return;
+
+            // Update flash timer (runs every frame regardless of version)
+            if (_flashTimer > 0f)
+            {
+                _flashTimer -= Time.deltaTime;
+                if (_progressFlash != null)
+                {
+                    float flashAlpha = Mathf.Clamp01(_flashTimer / FlashDuration);
+                    _progressFlash.style.backgroundColor = new Color(1f, 1f, 1f, flashAlpha);
+                }
+            }
+
             if (_stateStore.Version == _lastVersion) return;
             _lastVersion = _stateStore.Version;
 
@@ -89,7 +139,7 @@ namespace VoidHarvest.Features.HUD.Views
                 }
             }
 
-            // Mining info
+            // Mining info + progress bar
             if (_miningPanel != null)
             {
                 var mining = gameState.Loop.Mining;
@@ -100,12 +150,35 @@ namespace VoidHarvest.Features.HUD.Views
                         _miningOreLabel.text = $"Mining: {mining.ActiveOreId.GetValueOrDefault("Unknown")}";
                     if (_miningYieldLabel != null)
                         _miningYieldLabel.text = $"Yield: {mining.YieldAccumulator:F1} units";
+
+                    UpdateProgressBar(mining.DepletionFraction);
                 }
                 else
                 {
                     _miningPanel.style.display = DisplayStyle.None;
                 }
             }
+        }
+
+        private void UpdateProgressBar(float depletion)
+        {
+            if (_progressFill == null) return;
+
+            // Fill width from depletion fraction
+            float percent = depletion * 100f;
+            _progressFill.style.width = new StyleLength(new Length(percent, LengthUnit.Percent));
+
+            // Color lerp: ore color (green-ish) to red-orange via formula
+            var oreColor = new Color(0.3f, 0.8f, 0.2f, 1f);
+            var fillColor = MiningVFXFormulas.CalculateDepletionColor(oreColor, depletion);
+
+            // Pulse opacity synced with vein glow
+            float pulseSpeed = _depletionConfig != null ? _depletionConfig.VeinGlowPulseSpeed : 1.5f;
+            float pulseAmplitude = _depletionConfig != null ? _depletionConfig.VeinGlowPulseAmplitude : 0.25f;
+            float pulseAlpha = MiningVFXFormulas.ApplyPulseModulation(1f, pulseSpeed, pulseAmplitude, Time.time);
+            fillColor.a = Mathf.Clamp01(pulseAlpha);
+
+            _progressFill.style.backgroundColor = fillColor;
         }
     }
 }

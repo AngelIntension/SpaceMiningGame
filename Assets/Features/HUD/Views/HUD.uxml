@@ -48,6 +48,10 @@
         <ui:VisualElement name="mining-info-panel" class="hud-panel mining-info-panel">
             <ui:Label name="mining-ore-label" text="" class="hud-label" />
             <ui:Label name="mining-yield-label" text="" class="hud-label" />
+            <ui:VisualElement name="mining-progress-bar" class="mining-progress-bar">
+                <ui:VisualElement name="mining-progress-fill" class="mining-progress-fill" />
+                <ui:VisualElement name="mining-progress-flash" class="mining-progress-flash" />
+            </ui:VisualElement>
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

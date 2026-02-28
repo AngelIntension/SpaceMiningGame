@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 576b8ee101da08545b728b9bf9b93f3f, type: 3}
+  m_Name: DepletionVFXConfig
+  m_EditorClassIdentifier: VoidHarvest.Features.Mining::VoidHarvest.Features.Mining.Data.DepletionVFXConfig
+  VeinGlowMinIntensity: 0
+  VeinGlowMaxIntensity: 0.6
+  VeinGlowColor: {r: 1, g: 0.8, b: 0.4, a: 1}
+  VeinGlowPulseSpeed: 1.5
+  VeinGlowPulseAmplitude: 0.15
+  CrumbleBurstCountBase: 8
+  CrumbleBurstCountScale: 1.5
+  CrumbleBurstSpeed: 5
+  CrumbleBurstLifetime: 0.5
+  CrumbleFlashDuration: 0.3
+  FragmentCount: 12
+  FragmentSpeed: 4
+  FragmentLifetime: 3
+  FragmentScaleRange: {x: 0.05, y: 0.2}

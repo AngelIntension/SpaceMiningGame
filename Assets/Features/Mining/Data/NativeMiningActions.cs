@@ -1,4 +1,5 @@
 using Unity.Entities;
+using Unity.Mathematics;
 
 namespace VoidHarvest.Features.Mining.Data
 {
@@ -37,6 +38,18 @@ namespace VoidHarvest.Features.Mining.Data
         public Entity SourceAsteroid;
         /// <summary>Stop reason as int (cast from StopReason enum for Burst). See MVP-05.</summary>
         public int Reason;
+    }
+
+    /// <summary>
+    /// Carries threshold crossing data from Burst-compiled AsteroidScaleSystem
+    /// to managed MiningActionDispatchSystem via NativeQueue.
+    /// </summary>
+    public struct NativeThresholdCrossedAction
+    {
+        public Entity Asteroid;
+        public byte ThresholdIndex;
+        public float3 Position;
+        public float Radius;
     }
 
     /// <summary>

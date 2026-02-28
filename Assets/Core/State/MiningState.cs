@@ -11,11 +11,12 @@ namespace VoidHarvest.Core.State
         float BeamEnergy,
         float YieldAccumulator,
         float MiningDuration,
-        float BeamMaxRange
+        float BeamMaxRange,
+        float DepletionFraction
     )
     {
         public static readonly MiningSessionState Empty = new(
-            default, default, 0f, 0f, 0f, 50f
+            default, default, 0f, 0f, 0f, 50f, 0f
         );
     }
 

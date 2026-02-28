@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a526046247e8d44987db08a4160d3d8, type: 3}
+  m_Name: MiningVFXConfig
+  m_EditorClassIdentifier: VoidHarvest.Features.Mining::VoidHarvest.Features.Mining.Data.MiningVFXConfig
+  BeamWidth: 0.15
+  BeamPulseSpeed: 3
+  BeamPulseAmplitude: 0.3
+  SparkEmissionRate: 15
+  SparkLifetime: 0.4
+  SparkSpeed: 3
+  HeatHazeIntensity: 0.5
+  HeatHazeScale: 0.3
