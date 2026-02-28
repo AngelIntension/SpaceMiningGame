@@ -3,6 +3,7 @@ using VContainer;
 using VContainer.Unity;
 using VoidHarvest.Features.Mining.Data;
 using VoidHarvest.Features.Procedural.Data;
+using VoidHarvest.Features.Docking.Data;
 
 /// <summary>
 /// Per-scene DI scope. Child of RootLifetimeScope; registers scene-specific services.
@@ -18,6 +19,11 @@ public class SceneLifetimeScope : LifetimeScope
 
     [Header("Visual Mapping")]
     [SerializeField] private AsteroidVisualMappingConfig asteroidVisualMappingConfig;
+
+    [Header("Docking")]
+    [SerializeField] private DockingConfig dockingConfig;
+    [SerializeField] private DockingVFXConfig dockingVFXConfig;
+    [SerializeField] private DockingAudioConfig dockingAudioConfig;
 
     /// <summary>
     /// Configure scene-level DI bindings. Registers VFX ScriptableObject configs
@@ -35,5 +41,11 @@ public class SceneLifetimeScope : LifetimeScope
             builder.RegisterInstance(miningAudioConfig);
         if (asteroidVisualMappingConfig != null)
             builder.RegisterInstance(asteroidVisualMappingConfig);
+        if (dockingConfig != null)
+            builder.RegisterInstance(dockingConfig);
+        if (dockingVFXConfig != null)
+            builder.RegisterInstance(dockingVFXConfig);
+        if (dockingAudioConfig != null)
+            builder.RegisterInstance(dockingAudioConfig);
     }
 }

@@ -1,0 +1,28 @@
+{
+    "name": "VoidHarvest.Features.Docking",
+    "rootNamespace": "VoidHarvest.Features.Docking",
+    "references": [
+        "VoidHarvest.Core.Extensions",
+        "VoidHarvest.Core.State",
+        "VoidHarvest.Core.EventBus",
+        "VoidHarvest.Features.Ship",
+        "VoidHarvest.Features.Base",
+        "Unity.Entities",
+        "Unity.Entities.Hybrid",
+        "Unity.Mathematics",
+        "Unity.Burst",
+        "Unity.Collections",
+        "Unity.Transforms",
+        "VContainer",
+        "UniTask"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

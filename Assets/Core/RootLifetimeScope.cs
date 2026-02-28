@@ -10,6 +10,7 @@ using CameraReducerReal = VoidHarvest.Features.Camera.Systems.CameraReducer;
 using ShipStateReducerReal = VoidHarvest.Features.Ship.Systems.ShipStateReducer;
 using MiningReducerReal = VoidHarvest.Features.Mining.Systems.MiningReducer;
 using InventoryReducerReal = VoidHarvest.Features.Resources.Systems.InventoryReducer;
+using DockingReducerReal = VoidHarvest.Features.Docking.Systems.DockingReducer;
 
 /// <summary>
 /// Root DI scope. Registers core singletons: EventBus, StateStore, GameStateReducer.
@@ -43,6 +44,7 @@ public sealed class RootLifetimeScope : LifetimeScope
 
         EcsToStoreSyncSystem.SetStateStore(stateStore);
         MiningActionDispatchSystem.SetDependencies(stateStore, eventBus);
+        VoidHarvest.Features.Docking.Systems.DockingEventBridgeSystem.SetDependencies(stateStore, eventBus);
 
         Debug.Log("[VoidHarvest] RootLifetimeScope: ECS bridge systems wired.");
     }
@@ -58,6 +60,7 @@ public sealed class RootLifetimeScope : LifetimeScope
             IShipAction a      => state with { ActiveShipPhysics = ShipStateReducerReal.Reduce(state.ActiveShipPhysics, a) },
             IMiningAction a    => state with { Loop = state.Loop with { Mining = MiningReducerReal.Reduce(state.Loop.Mining, a) } },
             IInventoryAction a => state with { Loop = state.Loop with { Inventory = InventoryReducerReal.Reduce(state.Loop.Inventory, a) } },
+            IDockingAction a   => state with { Loop = state.Loop with { Docking = DockingReducerReal.Reduce(state.Loop.Docking, a) } },
             IFleetAction a     => state with { Loop = state.Loop with { Fleet = FleetReducer.Reduce(state.Loop.Fleet, a) } },
             ITechAction a      => state with { Loop = state.Loop with { TechTree = TechTreeReducer.Reduce(state.Loop.TechTree, a) } },
             IMarketAction a    => state with { Loop = state.Loop with { Market = MarketReducer.Reduce(state.Loop.Market, a) } },
@@ -76,12 +79,24 @@ public sealed class RootLifetimeScope : LifetimeScope
                 TechTreeState.Empty,
                 FleetState.Empty,
                 BaseState.Empty,
-                MarketState.Empty
+                MarketState.Empty,
+                DockingState.Empty
             ),
             ActiveShipPhysics: ShipState.Default,
             Camera: CameraState.Default,
             World: new WorldState(
-                ImmutableArray<StationData>.Empty,
+                ImmutableArray.Create(
+                    new StationData(
+                        1,
+                        new Unity.Mathematics.float3(0f, 0f, 200f),
+                        "Small Mining Relay",
+                        ImmutableArray.Create("Refinery", "Cargo")),
+                    new StationData(
+                        2,
+                        new Unity.Mathematics.float3(500f, 0f, 0f),
+                        "Medium Refinery Hub",
+                        ImmutableArray.Create("Refinery", "Market", "Repair", "Cargo"))
+                ),
                 0f
             )
         );

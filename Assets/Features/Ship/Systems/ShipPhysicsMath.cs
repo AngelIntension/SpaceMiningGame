@@ -23,6 +23,14 @@ namespace VoidHarvest.Features.Ship.Systems
                                   math.abs(strafe) > 0.01f ||
                                   math.abs(roll) > 0.01f;
 
+            // Docked mode: ship is locked until undock action
+            if (current == ShipFlightMode.Docked)
+                return ShipFlightMode.Docked;
+
+            // Docking mode: manual input cancels docking, no manual input stays
+            if (current == ShipFlightMode.Docking)
+                return hasManualInput ? ShipFlightMode.ManualThrust : ShipFlightMode.Docking;
+
             if (hasManualInput)
                 return ShipFlightMode.ManualThrust;
 

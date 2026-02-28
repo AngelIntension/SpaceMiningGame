@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <Style src="StationServicesMenu.uss" />
+    <ui:VisualElement name="services-root" class="services-root">
+        <!-- Header -->
+        <ui:VisualElement name="services-header" class="services-header">
+            <ui:Label name="station-name" text="STATION" class="station-name" />
+            <ui:Label name="station-type" text="Type" class="station-type" />
+        </ui:VisualElement>
+
+        <!-- Tab bar -->
+        <ui:VisualElement name="services-tab-bar" class="services-tab-bar">
+            <ui:Button name="tab-refinery" text="Refinery" class="services-tab" />
+            <ui:Button name="tab-market" text="Market" class="services-tab" />
+            <ui:Button name="tab-repair" text="Repair" class="services-tab" />
+            <ui:Button name="tab-cargo" text="Cargo" class="services-tab" />
+        </ui:VisualElement>
+
+        <!-- Content area -->
+        <ui:VisualElement name="services-content" class="services-content">
+            <ui:Label name="services-placeholder" text="Coming Soon" class="services-placeholder" />
+        </ui:VisualElement>
+
+        <!-- Footer with undock button -->
+        <ui:VisualElement name="services-footer" class="services-footer">
+            <ui:Button name="undock-button" text="UNDOCK" class="undock-button" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

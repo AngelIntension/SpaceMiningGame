@@ -5,14 +5,17 @@ namespace VoidHarvest.Core.State
     // This file only contains stub reducers for features not yet implemented.
 
     /// <summary>
-    /// Stub FleetReducer. Returns unchanged state. Phase 1+.
+    /// FleetReducer. Handles dock/undock station tracking. See spec 004.
     /// </summary>
     public static class FleetReducer
     {
-        /// <summary>
-        /// Stub: returns unchanged state. Phase 1+.
-        /// </summary>
-        public static FleetState Reduce(FleetState state, IFleetAction action) => state;
+        public static FleetState Reduce(FleetState state, IFleetAction action)
+            => action switch
+            {
+                DockAtStationAction a => state with { DockedAtStation = Extensions.Option<int>.Some(a.StationId) },
+                UndockFromStationAction => state with { DockedAtStation = default },
+                _ => state
+            };
     }
 
     /// <summary>

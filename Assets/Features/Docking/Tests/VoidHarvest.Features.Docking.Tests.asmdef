@@ -1,0 +1,30 @@
+{
+    "name": "VoidHarvest.Features.Docking.Tests",
+    "rootNamespace": "VoidHarvest.Features.Docking.Tests",
+    "references": [
+        "VoidHarvest.Features.Docking",
+        "VoidHarvest.Core.State",
+        "VoidHarvest.Core.EventBus",
+        "VoidHarvest.Core.Extensions",
+        "VoidHarvest.Features.Ship",
+        "Unity.Mathematics",
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll",
+        "System.Collections.Immutable.dll"
+    ],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

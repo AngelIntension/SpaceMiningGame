@@ -8,6 +8,7 @@
         "VoidHarvest.Features.Camera",
         "VoidHarvest.Features.Ship",
         "VoidHarvest.Features.Mining",
+        "VoidHarvest.Features.Docking",
         "Unity.InputSystem",
         "Unity.Entities",
         "Unity.Collections",
