@@ -85,7 +85,7 @@ namespace VoidHarvest.Features.Mining.Views
             }
 
             // Get target position from ECS
-            if (!_ecsReady || !TryGetTargetPosition(out var targetPos))
+            if (!_ecsReady || !TryGetTargetPosition(out var asteroidCenter, out var asteroidRadius))
             {
                 if (_effectsActive)
                     StopAllEffects();
@@ -112,11 +112,19 @@ namespace VoidHarvest.Features.Mining.Views
             _lineRenderer.endColor = beamColor;
 
             Vector3 beamOrigin = _miningArmOrigin != null ? _miningArmOrigin.position : transform.position;
+
+            // Compute surface impact point (beam hits asteroid surface, not center)
+            Vector3 toShip = beamOrigin - asteroidCenter;
+            float dist = toShip.magnitude;
+            Vector3 impactPoint = dist > 0.001f
+                ? asteroidCenter + (toShip / dist) * asteroidRadius
+                : asteroidCenter;
+
             _lineRenderer.SetPosition(0, beamOrigin);
-            _lineRenderer.SetPosition(1, targetPos);
+            _lineRenderer.SetPosition(1, impactPoint);
 
             // --- Impact sparks ---
-            UpdateSparkSystem(targetPos, beamColor);
+            UpdateSparkSystem(impactPoint, beamColor);
 
             // --- Heat shimmer at mining arm ---
             UpdateShimmerSystem(beamOrigin);
@@ -248,9 +256,10 @@ namespace VoidHarvest.Features.Mining.Views
             }
         }
 
-        private bool TryGetTargetPosition(out Vector3 position)
+        private bool TryGetTargetPosition(out Vector3 center, out float radius)
         {
-            position = Vector3.zero;
+            center = Vector3.zero;
+            radius = 1f;
 
             if (!_entityManager.HasComponent<MiningBeamComponent>(_shipEntity))
                 return false;
@@ -264,7 +273,14 @@ namespace VoidHarvest.Features.Mining.Views
                 return false;
 
             var targetTransform = _entityManager.GetComponentData<LocalTransform>(beam.TargetAsteroid);
-            position = targetTransform.Position;
+            center = targetTransform.Position;
+
+            if (_entityManager.HasComponent<AsteroidComponent>(beam.TargetAsteroid))
+            {
+                var asteroid = _entityManager.GetComponentData<AsteroidComponent>(beam.TargetAsteroid);
+                radius = asteroid.Radius;
+            }
+
             return true;
         }
 

@@ -256,6 +256,9 @@ namespace VoidHarvest.Features.Procedural.Systems
                 {
                     Value = new float4(0f, 0f, 0f, 0f)
                 });
+
+                // Glow fade state (separate from MaterialProperty to avoid corrupting GPU upload)
+                em.AddComponentData(entity, new AsteroidGlowFadeComponent { Value = 0f });
             }
 
             // Cleanup

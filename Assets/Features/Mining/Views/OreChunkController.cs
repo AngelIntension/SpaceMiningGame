@@ -101,8 +101,8 @@ namespace VoidHarvest.Features.Mining.Views
             if (!_ecsReady)
                 TryInitializeECS();
 
-            // Get asteroid position from ECS
-            Vector3 asteroidPos = Vector3.zero;
+            // Get asteroid surface position from ECS
+            Vector3 spawnPos = Vector3.zero;
             string oreId = "";
             Color oreColor = Color.white;
 
@@ -114,34 +114,26 @@ namespace VoidHarvest.Features.Mining.Views
                 if (_ecsReady)
                 {
                     int targetIndex = miningState.TargetAsteroidId.GetValueOrDefault(0);
-                    foreach (var (asteroid, lt, entity) in
-                        _entityManager.CreateEntityQuery(typeof(AsteroidComponent), typeof(LocalTransform))
-                            .ToEntityArray(Unity.Collections.Allocator.Temp)
-                            .ToArray()
-                            .Length > 0
-                        ? new (AsteroidComponent, LocalTransform, Entity)[0]
-                        : new (AsteroidComponent, LocalTransform, Entity)[0])
+                    var query = _entityManager.CreateEntityQuery(typeof(AsteroidComponent), typeof(LocalTransform));
+                    var entities = query.ToEntityArray(Unity.Collections.Allocator.Temp);
+                    for (int i = 0; i < entities.Length; i++)
                     {
-                        // Fallback: use a simpler approach
-                    }
-
-                    // Simpler approach: iterate entities via World
-                    var world = World.DefaultGameObjectInjectionWorld;
-                    if (world != null && world.IsCreated)
-                    {
-                        var query = _entityManager.CreateEntityQuery(typeof(AsteroidComponent), typeof(LocalTransform));
-                        var entities = query.ToEntityArray(Unity.Collections.Allocator.Temp);
-                        for (int i = 0; i < entities.Length; i++)
+                        if (entities[i].Index == targetIndex)
                         {
-                            if (entities[i].Index == targetIndex)
-                            {
-                                var lt = _entityManager.GetComponentData<LocalTransform>(entities[i]);
-                                asteroidPos = lt.Position;
-                                break;
-                            }
+                            var lt = _entityManager.GetComponentData<LocalTransform>(entities[i]);
+                            var asteroid = _entityManager.GetComponentData<AsteroidComponent>(entities[i]);
+                            Vector3 center = lt.Position;
+
+                            // Compute surface point facing the ship
+                            Vector3 toShip = transform.position - center;
+                            float dist = toShip.magnitude;
+                            spawnPos = dist > 0.001f
+                                ? center + (toShip / dist) * asteroid.Radius
+                                : center;
+                            break;
                         }
-                        entities.Dispose();
                     }
+                    entities.Dispose();
                 }
             }
 
@@ -158,7 +150,7 @@ namespace VoidHarvest.Features.Mining.Views
                 Vector3 driftDir = Random.onUnitSphere;
 
                 chunk.Initialize(
-                    asteroidPos,
+                    spawnPos,
                     driftDir,
                     _collectorPoint,
                     _config,

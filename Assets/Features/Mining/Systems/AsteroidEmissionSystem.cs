@@ -47,19 +47,19 @@ namespace VoidHarvest.Features.Mining.Systems
                 }
             }
 
-            foreach (var (asteroid, emission, entity) in
-                SystemAPI.Query<RefRO<AsteroidComponent>, RefRW<AsteroidEmissionComponent>>()
+            foreach (var (asteroid, emission, glowFade, entity) in
+                SystemAPI.Query<RefRO<AsteroidComponent>, RefRW<AsteroidEmissionComponent>, RefRW<AsteroidGlowFadeComponent>>()
                     .WithEntityAccess())
             {
                 float depletion = asteroid.ValueRO.Depletion;
                 bool isBeingMined = (entity == activeTarget) && depletion > 0f;
 
                 // Update glow fade: ramp up while mined, decay when not
-                float fade = emission.ValueRO.GlowFade;
+                float fade = glowFade.ValueRO.Value;
                 fade = isBeingMined
                     ? math.min(fade + fadeInSpeed * dt, 1f)
                     : math.max(fade - fadeOutSpeed * dt, 0f);
-                emission.ValueRW.GlowFade = fade;
+                glowFade.ValueRW.Value = fade;
 
                 if (fade <= 0f || depletion <= 0f)
                 {
