@@ -32,6 +32,9 @@ namespace VoidHarvest.Features.Mining.Views
         // Heat shimmer at mining arm
         private ParticleSystem _shimmerSystem;
 
+        // Cached runtime particle material (additive billboard)
+        private static Material _particleMaterial;
+
         // Mining arm origin transform (child of ship)
         private Transform _miningArmOrigin;
 
@@ -141,9 +144,9 @@ namespace VoidHarvest.Features.Mining.Views
             shape.angle = 45f;
             shape.radius = 0.1f;
 
-            // Assign spark particle material if available
             var renderer = _sparkSystem.GetComponent<ParticleSystemRenderer>();
             renderer.renderMode = ParticleSystemRenderMode.Billboard;
+            renderer.material = GetOrCreateParticleMaterial();
 
             _sparkSystem.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
         }
@@ -168,6 +171,10 @@ namespace VoidHarvest.Features.Mining.Views
             var shape = _shimmerSystem.shape;
             shape.shapeType = ParticleSystemShapeType.Sphere;
             shape.radius = 0.1f;
+
+            var shimmerRenderer = _shimmerSystem.GetComponent<ParticleSystemRenderer>();
+            shimmerRenderer.renderMode = ParticleSystemRenderMode.Billboard;
+            shimmerRenderer.material = GetOrCreateParticleMaterial();
 
             var colorOverLifetime = _shimmerSystem.colorOverLifetime;
             colorOverLifetime.enabled = true;
@@ -259,6 +266,26 @@ namespace VoidHarvest.Features.Mining.Views
             var targetTransform = _entityManager.GetComponentData<LocalTransform>(beam.TargetAsteroid);
             position = targetTransform.Position;
             return true;
+        }
+
+        private static Material GetOrCreateParticleMaterial()
+        {
+            if (_particleMaterial != null) return _particleMaterial;
+
+            var shader = Shader.Find("Universal Render Pipeline/Particles/Unlit");
+            if (shader == null)
+                shader = Shader.Find("Particles/Standard Unlit");
+
+            _particleMaterial = new Material(shader);
+            _particleMaterial.SetFloat("_Surface", 1f); // Transparent
+            _particleMaterial.SetFloat("_Blend", 0f); // Additive (BlendMode.Additive = 0 for Particles)
+            _particleMaterial.SetFloat("_SrcBlend", (float)UnityEngine.Rendering.BlendMode.SrcAlpha);
+            _particleMaterial.SetFloat("_DstBlend", (float)UnityEngine.Rendering.BlendMode.One);
+            _particleMaterial.SetFloat("_ZWrite", 0f);
+            _particleMaterial.renderQueue = 3000; // Transparent queue
+            _particleMaterial.enableInstancing = true;
+            _particleMaterial.SetColor("_BaseColor", Color.white);
+            return _particleMaterial;
         }
 
         private Color FindBeamColor(string oreId)

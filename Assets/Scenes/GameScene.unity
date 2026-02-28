@@ -847,6 +847,9 @@ GameObject:
   - component: {fileID: 979882646}
   - component: {fileID: 979882649}
   - component: {fileID: 979882648}
+  - component: {fileID: 979882652}
+  - component: {fileID: 979882651}
+  - component: {fileID: 979882650}
   m_Layer: 0
   m_Name: Ship
   m_TagString: Untagged
@@ -1202,6 +1205,42 @@ LineRenderer:
   m_UseWorldSpace: 1
   m_Loop: 0
   m_ApplyActiveColorSpace: 1
+--- !u!114 &979882650
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 979882641}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ba2b480569e5134c924cc0e5d204640, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: VoidHarvest.Features.Mining::VoidHarvest.Features.Mining.Views.MiningAudioController
+--- !u!114 &979882651
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 979882641}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 530aee7924d28b34599aa9a8d6763711, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: VoidHarvest.Features.Mining::VoidHarvest.Features.Mining.Views.OreChunkController
+--- !u!114 &979882652
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 979882641}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02b0a0c4b02314946a1d76ee9f5e3ed8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: VoidHarvest.Features.Mining::VoidHarvest.Features.Mining.Views.DepletionVFXView
 --- !u!1 &1021181112
 GameObject:
   m_ObjectHideFlags: 0

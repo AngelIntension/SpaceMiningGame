@@ -11,10 +11,10 @@ namespace VoidHarvest.Features.Mining.Data
     {
         [Header("Vein Glow")]
         [Tooltip("Emission intensity at 0% depletion.")]
-        public float VeinGlowMinIntensity = 0.1f;
+        public float VeinGlowMinIntensity = 0.0f;
 
-        [Tooltip("Emission intensity at 100% depletion.")]
-        public float VeinGlowMaxIntensity = 3.0f;
+        [Tooltip("Emission intensity at 100% depletion (kept low — no vein mask texture yet).")]
+        public float VeinGlowMaxIntensity = 0.6f;
 
         [Tooltip("Base emission color (warm).")]
         public Color VeinGlowColor = new Color(1f, 0.8f, 0.4f, 1f);
@@ -24,7 +24,7 @@ namespace VoidHarvest.Features.Mining.Data
 
         [Tooltip("Pulse intensity oscillation range [0,1] relative to current intensity.")]
         [Range(0f, 1f)]
-        public float VeinGlowPulseAmplitude = 0.25f;
+        public float VeinGlowPulseAmplitude = 0.15f;
 
         [Header("Crumble Burst")]
         [Tooltip("Particles at 25% threshold.")]

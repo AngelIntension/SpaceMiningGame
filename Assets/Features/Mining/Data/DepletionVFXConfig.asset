@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 576b8ee101da08545b728b9bf9b93f3f, type: 3}
   m_Name: DepletionVFXConfig
   m_EditorClassIdentifier: VoidHarvest.Features.Mining::VoidHarvest.Features.Mining.Data.DepletionVFXConfig
-  VeinGlowMinIntensity: 0.1
-  VeinGlowMaxIntensity: 3
+  VeinGlowMinIntensity: 0
+  VeinGlowMaxIntensity: 0.6
   VeinGlowColor: {r: 1, g: 0.8, b: 0.4, a: 1}
   VeinGlowPulseSpeed: 1.5
-  VeinGlowPulseAmplitude: 0.25
+  VeinGlowPulseAmplitude: 0.15
   CrumbleBurstCountBase: 8
   CrumbleBurstCountScale: 1.5
   CrumbleBurstSpeed: 5

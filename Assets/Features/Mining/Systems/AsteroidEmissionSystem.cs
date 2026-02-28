@@ -25,11 +25,13 @@ namespace VoidHarvest.Features.Mining.Systems
 
             // Config values — hardcoded for Burst compatibility
             // (ScriptableObject cannot be read from Burst; values match DepletionVFXConfig defaults)
-            float minIntensity = 0.1f;
-            float maxIntensity = 3.0f;
+            // Intensity kept low because emission is applied uniformly (no vein mask texture).
+            // Increase once per-vein emission maps are added to asteroid materials.
+            float minIntensity = 0.0f;
+            float maxIntensity = 0.6f;
             float3 glowColor = new float3(1f, 0.8f, 0.4f);
             float pulseSpeed = 1.5f;
-            float pulseAmplitude = 0.25f;
+            float pulseAmplitude = 0.15f;
 
             foreach (var (asteroid, emission) in
                 SystemAPI.Query<RefRO<AsteroidComponent>, RefRW<AsteroidEmissionComponent>>())

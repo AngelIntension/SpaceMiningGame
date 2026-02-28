@@ -26,6 +26,9 @@ namespace VoidHarvest.Features.Mining.Views
         // Flash quad
         private ParticleSystem _flashSystem;
 
+        // Cached runtime particle material (additive billboard)
+        private static Material _particleMaterial;
+
         [Inject]
         public void Construct(IEventBus eventBus, DepletionVFXConfig config)
         {
@@ -120,6 +123,25 @@ namespace VoidHarvest.Features.Mining.Views
             _flashSystem.Emit(burstParams, 1);
         }
 
+        private static Material GetOrCreateParticleMaterial()
+        {
+            if (_particleMaterial != null) return _particleMaterial;
+
+            var shader = Shader.Find("Universal Render Pipeline/Particles/Unlit");
+            if (shader == null)
+                shader = Shader.Find("Particles/Standard Unlit");
+
+            _particleMaterial = new Material(shader);
+            _particleMaterial.SetFloat("_Surface", 1f); // Transparent
+            _particleMaterial.SetFloat("_SrcBlend", (float)UnityEngine.Rendering.BlendMode.SrcAlpha);
+            _particleMaterial.SetFloat("_DstBlend", (float)UnityEngine.Rendering.BlendMode.One);
+            _particleMaterial.SetFloat("_ZWrite", 0f);
+            _particleMaterial.renderQueue = 3000;
+            _particleMaterial.enableInstancing = true;
+            _particleMaterial.SetColor("_BaseColor", Color.white);
+            return _particleMaterial;
+        }
+
         private void CreateCrumbleSystem()
         {
             var go = new GameObject("CrumbleBurst");
@@ -142,6 +164,10 @@ namespace VoidHarvest.Features.Mining.Views
             var shape = _crumbleSystem.shape;
             shape.shapeType = ParticleSystemShapeType.Sphere;
             shape.radius = 0.5f;
+
+            var crumbleRenderer = _crumbleSystem.GetComponent<ParticleSystemRenderer>();
+            crumbleRenderer.renderMode = ParticleSystemRenderMode.Billboard;
+            crumbleRenderer.material = GetOrCreateParticleMaterial();
 
             var sizeOverLifetime = _crumbleSystem.sizeOverLifetime;
             sizeOverLifetime.enabled = true;
@@ -174,6 +200,10 @@ namespace VoidHarvest.Features.Mining.Views
             var shape = _fragmentSystem.shape;
             shape.shapeType = ParticleSystemShapeType.Sphere;
             shape.radius = 0.3f;
+
+            var fragmentRenderer = _fragmentSystem.GetComponent<ParticleSystemRenderer>();
+            fragmentRenderer.renderMode = ParticleSystemRenderMode.Billboard;
+            fragmentRenderer.material = GetOrCreateParticleMaterial();
 
             var colorOverLifetime = _fragmentSystem.colorOverLifetime;
             colorOverLifetime.enabled = true;
@@ -211,6 +241,7 @@ namespace VoidHarvest.Features.Mining.Views
 
             var renderer = _flashSystem.GetComponent<ParticleSystemRenderer>();
             renderer.renderMode = ParticleSystemRenderMode.Billboard;
+            renderer.material = GetOrCreateParticleMaterial();
 
             var colorOverLifetime = _flashSystem.colorOverLifetime;
             colorOverLifetime.enabled = true;
