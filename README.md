@@ -45,18 +45,20 @@ Unity -runTests -batchmode -projectPath . -testResults results.xml -testPlatform
 ```
 Assets/
 ├── Features/                # One folder per major system
-│   ├── Camera/              # 3rd-person orbiting follow camera
+│   ├── Camera/              # 3rd-person orbiting follow camera, skybox
 │   ├── Input/               # EVE-style controls, PilotCommand
-│   ├── Ship/                # Ship state, physics, modules
+│   ├── Ship/                # Ship state, physics, modules, 3 archetypes
 │   ├── Fleet/               # Multi-ship ownership, swapping
-│   ├── Mining/              # Beam targeting, yield reducers
+│   ├── Mining/              # Beam targeting, yield, depletion visuals
 │   ├── Resources/           # Resource / inventory system
-│   ├── Procedural/          # Asteroid field generation
+│   ├── Procedural/          # Asteroid field generation, visual mapping
 │   ├── HUD/                 # In-game UI, radial menus, hotbar
+│   ├── Base/                # Station presets and prefabs
 │   ├── TechTree/            # Research / progression
 │   ├── Economy/             # Market simulation
-│   └── Base/                # Base building
+│   └── Tests/               # Cross-feature integration tests
 ├── Core/                    # Shared infrastructure
+│   ├── Editor/              # Editor utilities
 │   ├── EventBus/            # UniTask-based reactive messaging
 │   ├── State/               # Reducer framework, state store
 │   ├── Pools/               # ObjectPool<T> implementations
@@ -78,14 +80,15 @@ Each feature folder uses `Data/`, `Systems/`, `Views/`, `Tests/` sub-folders.
 
 ## What's Implemented (Phase 0 MVP)
 
-- **Ship flight** — 6DOF physics with inertia, flight modes, Burst-compiled math
+- **Ship flight** — 6DOF physics with inertia, flight modes, Burst-compiled math; 3 ship archetypes (Starter, Medium, Heavy Mining Barge)
 - **EVE-style controls** — mouse targeting, double-click align, radial context menus, 8-slot hotbar, keyboard thrust/strafe/roll
-- **3rd-person camera** — orbiting follow camera with zoom (Cinemachine)
-- **Mining** — beam targeting, yield calculation, asteroid depletion (ECS systems)
-- **Procedural asteroid field** — Burst-compiled job-based generation
+- **3rd-person camera** — orbiting follow camera with zoom (Cinemachine), dynamic nebula skybox with rotation
+- **Mining** — beam targeting, yield calculation, asteroid depletion with scale/destroy visuals, ore tint colors (ECS systems)
+- **Procedural asteroid field** — Burst-compiled job-based generation with ore-to-mesh visual mapping, multi-mesh premium asteroid variants
 - **Resource inventory** — immutable state with pure reducers
 - **HUD** — target info panel, warnings, selection outlines, radial menus
-- **Core infrastructure** — EventBus (UniTask), State Store, VContainer DI, 17 tests
+- **Station prefabs** — initial base presets (Small Mining Relay, Medium Refinery Hub) with test scene
+- **Core infrastructure** — EventBus (UniTask), State Store, VContainer DI; 108 C# files, 21 tests, 27 assembly definitions
 
 ## Architecture Principles
 

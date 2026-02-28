@@ -68,22 +68,24 @@ Dual pipeline configs — `Assets/Settings/PC_RPAsset.asset` (quality) and `Asse
 ```
 Assets/
 ├── Features/                # One folder per major system
-│   ├── Camera/              # 3rd-person orbiting follow camera
+│   ├── Camera/              # 3rd-person orbiting follow camera, skybox
 │   ├── Input/               # EVE-style controls, PilotCommand
-│   ├── Ship/                # Ship state, physics, modules
-│   ├── Fleet/               # Multi-ship ownership, swapping
-│   ├── Mining/              # Beam targeting, yield reducers
+│   ├── Ship/                # Ship state, physics, modules, 3 ship archetypes
+│   ├── Fleet/               # Multi-ship ownership, swapping (skeleton)
+│   ├── Mining/              # Beam targeting, yield, depletion visuals
 │   │   ├── Data/            # ScriptableObjects, records, components
 │   │   ├── Systems/         # Pure logic, reducers, ECS systems
 │   │   ├── Views/           # MonoBehaviours, UI bindings
 │   │   └── Tests/           # Unit + integration tests
 │   ├── Resources/           # Resource / inventory system
-│   ├── Procedural/          # Asteroid field generation
+│   ├── Procedural/          # Asteroid field generation, visual mapping
 │   ├── HUD/                 # In-game UI, radial menus, hotbar
-│   ├── TechTree/            # Research / progression (Phase 1+)
-│   ├── Economy/             # Market simulation (Phase 3+)
-│   └── Base/                # Base building (Phase 2+)
+│   ├── Base/                # Station presets, prefabs (Phase 2+)
+│   ├── TechTree/            # Research / progression (Phase 1+, skeleton)
+│   ├── Economy/             # Market simulation (Phase 3+, skeleton)
+│   └── Tests/               # Cross-feature integration tests
 ├── Core/                    # Shared infrastructure
+│   ├── Editor/              # Editor utilities (e.g., PremiumVisualsSetup)
 │   ├── EventBus/
 │   ├── State/               # Reducer framework, state store
 │   ├── Pools/               # ObjectPool<T> implementations
@@ -145,3 +147,4 @@ Any deviation from functional/immutable patterns requires explicit justification
 | NuGetForUnity | 4.5.0 | System.Collections.Immutable |
 | AI Navigation | 2.0.10 | Navigation meshes |
 | Timeline | 1.8.10 | Timeline sequences |
+| Unity MCP | git (main) | Editor MCP bridge for Claude Code |
