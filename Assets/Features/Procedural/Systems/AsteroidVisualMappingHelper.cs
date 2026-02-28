@@ -24,7 +24,7 @@ namespace VoidHarvest.Features.Procedural.Systems
                 (int)math.floor(position.x),
                 (int)math.floor(position.y),
                 (int)math.floor(position.z)));
-            return (int)(hash % 2);
+            return (int)((hash >> 16) & 1);
         }
 
         /// <summary>
