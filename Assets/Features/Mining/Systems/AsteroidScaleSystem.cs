@@ -1,4 +1,5 @@
 using Unity.Burst;
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
@@ -10,6 +11,7 @@ namespace VoidHarvest.Features.Mining.Systems
     /// Burst-compiled system that applies mass-proportional scaling to asteroids,
     /// detects depletion threshold crossings for crumble pauses, and initiates
     /// fade-out on full depletion. Runs after AsteroidDepletionSystem.
+    /// Enqueues NativeThresholdCrossedAction for MiningActionDispatchSystem to drain.
     /// See FR-019: Depletion shrink, FR-020: Crumble pauses, FR-021: Fade-out initiation.
     /// </summary>
     [BurstCompile]
@@ -17,6 +19,20 @@ namespace VoidHarvest.Features.Mining.Systems
     [UpdateAfter(typeof(AsteroidDepletionSystem))]
     public partial struct AsteroidScaleSystem : ISystem
     {
+        private NativeQueue<NativeThresholdCrossedAction> _thresholdQueue;
+
+        public NativeQueue<NativeThresholdCrossedAction> ThresholdQueue => _thresholdQueue;
+
+        public void OnCreate(ref SystemState state)
+        {
+            _thresholdQueue = new NativeQueue<NativeThresholdCrossedAction>(Allocator.Persistent);
+        }
+
+        public void OnDestroy(ref SystemState state)
+        {
+            if (_thresholdQueue.IsCreated) _thresholdQueue.Dispose();
+        }
+
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
@@ -27,8 +43,8 @@ namespace VoidHarvest.Features.Mining.Systems
                 ? SystemAPI.GetSingleton<AsteroidVisualMappingSingleton>().MinScaleFraction
                 : 0.3f;
 
-            foreach (var (asteroid, transform) in
-                SystemAPI.Query<RefRW<AsteroidComponent>, RefRW<LocalTransform>>())
+            foreach (var (asteroid, transform, entity) in
+                SystemAPI.Query<RefRW<AsteroidComponent>, RefRW<LocalTransform>>().WithEntityAccess())
             {
                 // Skip entities already in fade-out (handled by AsteroidDestroySystem)
                 if (asteroid.ValueRO.FadeOutTimer > 0f)
@@ -44,24 +60,32 @@ namespace VoidHarvest.Features.Mining.Systems
 
                 // --- Threshold detection ---
                 float depletion = asteroid.ValueRO.Depletion;
+                byte oldMask = asteroid.ValueRO.CrumbleThresholdsPassed;
                 bool crossed = AsteroidDepletionFormulas.DetectThresholdCrossing(
-                    depletion, asteroid.ValueRO.CrumbleThresholdsPassed, out byte newMask);
+                    depletion, oldMask, out byte newMask);
 
                 if (crossed)
                 {
                     asteroid.ValueRW.CrumbleThresholdsPassed = newMask;
 
-                    // Check if this is the final threshold (100% depleted)
-                    bool isFinalThreshold = (newMask & 0x08) != 0
-                        && (asteroid.ValueRO.CrumbleThresholdsPassed & 0x08) == 0
-                        || depletion >= 1.0f && (newMask & 0x08) != 0;
-
                     // Start crumble pause
                     asteroid.ValueRW.CrumblePauseTimer = AsteroidDepletionFormulas.CrumblePauseDuration;
 
-                    // If final threshold, after this pause completes, AsteroidDestroySystem
-                    // will start fade-out. We detect this by checking depletion >= 1.0 and
-                    // CrumblePauseTimer reaching 0 in the next block.
+                    // Enqueue threshold events for each newly crossed threshold
+                    byte newBits = (byte)(newMask & ~oldMask);
+                    for (byte i = 0; i < 4; i++)
+                    {
+                        if ((newBits & (1 << i)) != 0)
+                        {
+                            _thresholdQueue.Enqueue(new NativeThresholdCrossedAction
+                            {
+                                Asteroid = entity,
+                                ThresholdIndex = i,
+                                Position = transform.ValueRO.Position,
+                                Radius = asteroid.ValueRO.Radius
+                            });
+                        }
+                    }
                 }
 
                 // Check if final crumble pause just completed → start fade-out

@@ -250,6 +250,12 @@ namespace VoidHarvest.Features.Procedural.Systems
                 {
                     Value = pristineTintedColor
                 });
+
+                // Emission component for vein glow (initially zero — no glow at full health)
+                em.AddComponentData(entity, new AsteroidEmissionComponent
+                {
+                    Value = new float4(0f, 0f, 0f, 0f)
+                });
             }
 
             // Cleanup

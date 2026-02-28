@@ -24,4 +24,10 @@ namespace VoidHarvest.Core.State
     /// See MVP-05: Mining beam and yield.
     /// </summary>
     public sealed record StopMiningAction() : IMiningAction;
+
+    /// <summary>
+    /// Updates the depletion fraction in MiningSessionState for HUD display.
+    /// Dispatched by MiningActionDispatchSystem each frame during active mining.
+    /// </summary>
+    public sealed record MiningDepletionTickAction(float DepletionFraction) : IMiningAction;
 }

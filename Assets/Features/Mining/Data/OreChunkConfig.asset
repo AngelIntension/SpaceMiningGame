@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 308bbaf286729394f866611b9403d661, type: 3}
+  m_Name: OreChunkConfig
+  m_EditorClassIdentifier: VoidHarvest.Features.Mining::VoidHarvest.Features.Mining.Data.OreChunkConfig
+  SpawnIntervalMin: 3
+  SpawnIntervalMax: 7
+  ChunksPerSpawnMin: 2
+  ChunksPerSpawnMax: 5
+  ChunkScaleMin: 0.03
+  ChunkScaleMax: 0.12
+  InitialDriftDuration: 0.75
+  InitialDriftSpeed: 2
+  AttractionSpeed: 8
+  AttractionAcceleration: 3
+  CollectionFlashDuration: 0.15
+  MaxLifetime: 5
+  GlowIntensity: 2

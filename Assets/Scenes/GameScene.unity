@@ -190,6 +190,11 @@ MonoBehaviour:
   - {fileID: 1537462336}
   - {fileID: 515065704}
   - {fileID: 979882641}
+  miningVFXConfig: {fileID: 11400000, guid: 41e789176bcdb4444a5b0a2aeb58c75b, type: 2}
+  depletionVFXConfig: {fileID: 11400000, guid: c0ea49c6882dea84aab85531f6b4737d, type: 2}
+  oreChunkConfig: {fileID: 11400000, guid: 2179d0b939cbc8748b8a220df4f46f00, type: 2}
+  miningAudioConfig: {fileID: 11400000, guid: 6cfb7f252f44b014bbc6bbc5260de69a, type: 2}
+  asteroidVisualMappingConfig: {fileID: 11400000, guid: b2c3d4e5f6a70824b9c0d1e2f3a4b5c6, type: 2}
 --- !u!1 &330585543
 GameObject:
   m_ObjectHideFlags: 0

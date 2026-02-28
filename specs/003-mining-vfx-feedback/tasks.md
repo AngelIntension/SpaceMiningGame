@@ -21,29 +21,29 @@
 
 ### Event Structs
 
-- [ ] T001 [P] Create ThresholdCrossedEvent readonly struct (AsteroidId, ThresholdIndex, Position, AsteroidRadius) in Assets/Core/EventBus/Events/ThresholdCrossedEvent.cs
-- [ ] T002 [P] Create OreChunkCollectedEvent readonly struct (Position, OreId) in Assets/Core/EventBus/Events/OreChunkCollectedEvent.cs
+- [x] T001 [P] Create ThresholdCrossedEvent readonly struct (AsteroidId, ThresholdIndex, Position, AsteroidRadius) in Assets/Core/EventBus/Events/ThresholdCrossedEvent.cs
+- [x] T002 [P] Create OreChunkCollectedEvent readonly struct (Position, OreId) in Assets/Core/EventBus/Events/OreChunkCollectedEvent.cs
 
 ### ECS Data Types
 
-- [ ] T003 [P] Create AsteroidEmissionComponent IComponentData with [MaterialProperty("_EmissionColor")] float4 Value in Assets/Features/Mining/Data/AsteroidEmissionComponent.cs
-- [ ] T004 [P] Add NativeThresholdCrossedAction unmanaged struct (Entity, byte ThresholdIndex, float3 Position, float Radius) to Assets/Features/Mining/Data/NativeMiningActions.cs
+- [x] T003 [P] Create AsteroidEmissionComponent IComponentData with [MaterialProperty("_EmissionColor")] float4 Value in Assets/Features/Mining/Data/AsteroidEmissionComponent.cs
+- [x] T004 [P] Add NativeThresholdCrossedAction unmanaged struct (Entity, byte ThresholdIndex, float3 Position, float Radius) to Assets/Features/Mining/Data/NativeMiningActions.cs
 
 ### Managed State Extensions
 
-- [ ] T005 [P] Add DepletionFraction float field to MiningSessionState record in Assets/Core/State/MiningState.cs
-- [ ] T006 [P] Add MiningDepletionTickAction record implementing IMiningAction in Assets/Core/State/MiningActions.cs
+- [x] T005 [P] Add DepletionFraction float field to MiningSessionState record in Assets/Core/State/MiningState.cs
+- [x] T006 [P] Add MiningDepletionTickAction record implementing IMiningAction in Assets/Core/State/MiningActions.cs
 
 ### ScriptableObject Configs
 
-- [ ] T007 [P] Create MiningVFXConfig ScriptableObject (BeamWidth, BeamPulseSpeed, BeamPulseAmplitude, SparkEmissionRate, SparkLifetime, SparkSpeed, HeatHazeIntensity, HeatHazeScale) with [CreateAssetMenu] in Assets/Features/Mining/Data/MiningVFXConfig.cs
-- [ ] T008 [P] Create DepletionVFXConfig ScriptableObject (VeinGlowMinIntensity, VeinGlowMaxIntensity, VeinGlowColor, VeinGlowPulseSpeed, VeinGlowPulseAmplitude, CrumbleBurstCountBase, CrumbleBurstCountScale, CrumbleBurstSpeed, CrumbleBurstLifetime, CrumbleFlashDuration, FragmentCount, FragmentSpeed, FragmentLifetime, FragmentScaleRange) with [CreateAssetMenu] in Assets/Features/Mining/Data/DepletionVFXConfig.cs
-- [ ] T009 [P] Create OreChunkConfig ScriptableObject (SpawnIntervalMin/Max, ChunksPerSpawnMin/Max, ChunkScaleMin/Max, InitialDriftDuration, InitialDriftSpeed, AttractionSpeed, AttractionAcceleration, CollectionFlashDuration, MaxLifetime, GlowIntensity) with [CreateAssetMenu] in Assets/Features/Mining/Data/OreChunkConfig.cs
-- [ ] T010 [P] Create MiningAudioConfig ScriptableObject (LaserHumClip, LaserHumBaseVolume, LaserHumPitchMin/Max, LaserHumFadeOutDuration, SparkCrackleClip/Volume, CrumbleRumbleClip/Volume, ExplosionClip/Volume, CollectionClinkClip/Volume, MaxAudibleDistance) with [CreateAssetMenu] in Assets/Features/Mining/Data/MiningAudioConfig.cs
+- [x] T007 [P] Create MiningVFXConfig ScriptableObject (BeamWidth, BeamPulseSpeed, BeamPulseAmplitude, SparkEmissionRate, SparkLifetime, SparkSpeed, HeatHazeIntensity, HeatHazeScale) with [CreateAssetMenu] in Assets/Features/Mining/Data/MiningVFXConfig.cs
+- [x] T008 [P] Create DepletionVFXConfig ScriptableObject (VeinGlowMinIntensity, VeinGlowMaxIntensity, VeinGlowColor, VeinGlowPulseSpeed, VeinGlowPulseAmplitude, CrumbleBurstCountBase, CrumbleBurstCountScale, CrumbleBurstSpeed, CrumbleBurstLifetime, CrumbleFlashDuration, FragmentCount, FragmentSpeed, FragmentLifetime, FragmentScaleRange) with [CreateAssetMenu] in Assets/Features/Mining/Data/DepletionVFXConfig.cs
+- [x] T009 [P] Create OreChunkConfig ScriptableObject (SpawnIntervalMin/Max, ChunksPerSpawnMin/Max, ChunkScaleMin/Max, InitialDriftDuration, InitialDriftSpeed, AttractionSpeed, AttractionAcceleration, CollectionFlashDuration, MaxLifetime, GlowIntensity) with [CreateAssetMenu] in Assets/Features/Mining/Data/OreChunkConfig.cs
+- [x] T010 [P] Create MiningAudioConfig ScriptableObject (LaserHumClip, LaserHumBaseVolume, LaserHumPitchMin/Max, LaserHumFadeOutDuration, SparkCrackleClip/Volume, CrumbleRumbleClip/Volume, ExplosionClip/Volume, CollectionClinkClip/Volume, MaxAudibleDistance) with [CreateAssetMenu] in Assets/Features/Mining/Data/MiningAudioConfig.cs
 
 ### Compile Verification
 
-- [ ] T011 MCP: refresh_unity(compile="request", wait_for_ready=true) then read_console(types=["error"]) — must be zero errors after all Phase 1 scripts. Verify asmdef coverage for new files (Core/EventBus/Events/ event structs, Mining/Data/ components and configs)
+- [x] T011 MCP: refresh_unity(compile="request", wait_for_ready=true) then read_console(types=["error"]) — must be zero errors after all Phase 1 scripts. Verify asmdef coverage for new files (Core/EventBus/Events/ event structs, Mining/Data/ components and configs)
 
 **Checkpoint**: All data types, events, configs, and state extensions compile cleanly. No behavioral changes yet.
 
@@ -57,26 +57,26 @@
 
 ### Tests (TDD — write first, must FAIL)
 
-- [ ] T012 [P] Create MiningDepletionReducerTests: test MiningDepletionTickAction updates DepletionFraction, test boundary values (0.0, 0.5, 1.0), test state immutability in Assets/Features/Mining/Tests/MiningDepletionReducerTests.cs
-- [ ] T013 [P] Create ThresholdEventTests: test NativeThresholdCrossedAction enqueue/dequeue roundtrip, test threshold index values 0-3, test position/radius preservation in Assets/Features/Mining/Tests/ThresholdEventTests.cs
+- [x] T012 [P] Create MiningDepletionReducerTests: test MiningDepletionTickAction updates DepletionFraction, test boundary values (0.0, 0.5, 1.0), test state immutability in Assets/Features/Mining/Tests/MiningDepletionReducerTests.cs
+- [x] T013 [P] Create ThresholdEventTests: test NativeThresholdCrossedAction enqueue/dequeue roundtrip, test threshold index values 0-3, test position/radius preservation in Assets/Features/Mining/Tests/ThresholdEventTests.cs
 
 ### Implementation
 
-- [ ] T014 Modify AsteroidScaleSystem to allocate NativeQueue<NativeThresholdCrossedAction> in OnCreate and enqueue on threshold crossing in DetectThresholdCrossing() in Assets/Features/Mining/Systems/AsteroidScaleSystem.cs
-- [ ] T015 Modify MiningActionDispatchSystem to drain NativeThresholdCrossedAction queue, publish ThresholdCrossedEvent on EventBus, and dispatch MiningDepletionTickAction with current depletion fraction each frame during active mining in Assets/Features/Mining/Systems/MiningActionDispatchSystem.cs
-- [ ] T016 Add MiningDepletionTickAction case to MiningReducer that returns new MiningSessionState with updated DepletionFraction in Assets/Features/Mining/Systems/MiningReducer.cs
+- [x] T014 Modify AsteroidScaleSystem to allocate NativeQueue<NativeThresholdCrossedAction> in OnCreate and enqueue on threshold crossing in DetectThresholdCrossing() in Assets/Features/Mining/Systems/AsteroidScaleSystem.cs
+- [x] T015 Modify MiningActionDispatchSystem to drain NativeThresholdCrossedAction queue, publish ThresholdCrossedEvent on EventBus, and dispatch MiningDepletionTickAction with current depletion fraction each frame during active mining in Assets/Features/Mining/Systems/MiningActionDispatchSystem.cs
+- [x] T016 Add MiningDepletionTickAction case to MiningReducer that returns new MiningSessionState with updated DepletionFraction in Assets/Features/Mining/Systems/MiningReducer.cs
 
 ### ScriptableObject Asset Creation
 
-- [ ] T017 MCP: Create four .asset instances via manage_asset(action="create") — MiningVFXConfig.asset, DepletionVFXConfig.asset, OreChunkConfig.asset, MiningAudioConfig.asset under Assets/Features/Mining/Data/ with default field values from data-model.md
+- [x] T017 MCP: Create four .asset instances via manage_asset(action="create") — MiningVFXConfig.asset, DepletionVFXConfig.asset, OreChunkConfig.asset, MiningAudioConfig.asset under Assets/Features/Mining/Data/ with default field values from data-model.md
 
 ### VContainer Registration
 
-- [ ] T017a Modify SceneLifetimeScope to register all new ScriptableObject configs — add [SerializeField] fields for MiningVFXConfig, DepletionVFXConfig, OreChunkConfig, MiningAudioConfig, and AsteroidVisualMappingConfig, then register each via container.RegisterInstance() in Configure(). Assign .asset references via MCP manage_components(action="set_property") on the SceneLifetimeScope GameObject in Assets/Core/SceneLifetimeScope.cs
+- [x] T017a Modify SceneLifetimeScope to register all new ScriptableObject configs — add [SerializeField] fields for MiningVFXConfig, DepletionVFXConfig, OreChunkConfig, MiningAudioConfig, and AsteroidVisualMappingConfig, then register each via container.RegisterInstance() in Configure(). Assign .asset references via MCP manage_components(action="set_property") on the SceneLifetimeScope GameObject in Assets/Core/SceneLifetimeScope.cs
 
 ### Verification
 
-- [ ] T018 MCP: refresh_unity(compile="request", wait_for_ready=true), read_console(types=["error"]), then run_tests(mode="EditMode") — all tests pass including new T012/T013 tests
+- [x] T018 MCP: refresh_unity(compile="request", wait_for_ready=true), read_console(types=["error"]), then run_tests(mode="EditMode") — all tests pass including new T012/T013 tests
 
 **Checkpoint**: Foundation ready — ThresholdCrossedEvent fires on EventBus at each 25% threshold. MiningSessionState.DepletionFraction updates every frame during mining. All user story implementation can begin.
 
@@ -90,20 +90,20 @@
 
 ### Scene Setup (MCP)
 
-- [ ] T019 [P] [US1] MCP: Add MiningArmOrigin and CollectorPoint empty child GameObjects to SmallMiningBarge, MediumMiningBarge, and HeavyMiningBarge prefabs (Assets/Features/Ship/Prefabs/) via manage_gameobject(action="create") — position MiningArmOrigin at the forward turret/arm mount point (approximate local pos: 0, 0.2, 1.5), CollectorPoint at center-bottom cargo bay area (approximate local pos: 0, -0.3, 0). Adjust per barge variant proportionally to hull mesh scale
-- [ ] T020 [P] [US1] MCP: Create beam materials via manage_asset(action="create", asset_type="Material") — BeamCore (URP/Unlit, additive), BeamGlow (URP/Unlit, additive, softer), SparkParticle (URP/Particles/Unlit, additive), HeatHaze (URP/Unlit, scrolling UV) under Assets/Features/Mining/Materials/
+- [x] T019 [P] [US1] MCP: Add MiningArmOrigin and CollectorPoint empty child GameObjects to SmallMiningBarge, MediumMiningBarge, and HeavyMiningBarge prefabs (Assets/Features/Ship/Prefabs/) via manage_gameobject(action="create") — position MiningArmOrigin at the forward turret/arm mount point (approximate local pos: 0, 0.2, 1.5), CollectorPoint at center-bottom cargo bay area (approximate local pos: 0, -0.3, 0). Adjust per barge variant proportionally to hull mesh scale
+- [x] T020 [P] [US1] MCP: Create beam materials via manage_asset(action="create", asset_type="Material") — BeamCore (URP/Unlit, additive), BeamGlow (URP/Unlit, additive, softer), SparkParticle (URP/Particles/Unlit, additive), HeatHaze (URP/Unlit, scrolling UV) under Assets/Features/Mining/Materials/
 
 ### Tests (TDD — write first, must FAIL)
 
-- [ ] T020a [P] [US1] Create MiningBeamVFXTests: test beam pulse width calculation (sinusoidal given time/speed/amplitude), test spark color resolution (ore type → BeamColor), test heat shimmer opacity from config, test clean shutdown state reset in Assets/Features/Mining/Tests/MiningBeamVFXTests.cs
+- [x] T020a [P] [US1] Create MiningBeamVFXTests: test beam pulse width calculation (sinusoidal given time/speed/amplitude), test spark color resolution (ore type → BeamColor), test heat shimmer opacity from config, test clean shutdown state reset in Assets/Features/Mining/Tests/MiningBeamVFXTests.cs
 
 ### Implementation
 
-- [ ] T021 [US1] Upgrade MiningBeamView with pulsing beam width (sinusoidal from MiningVFXConfig), impact ParticleSystem (cone emission, ore-colored, SparkEmissionRate), heat shimmer ParticleSystem (billboard quad at mining arm), clean shutdown on MiningStoppedEvent, inject MiningVFXConfig via VContainer in Assets/Features/Mining/Views/MiningBeamView.cs
+- [x] T021 [US1] Upgrade MiningBeamView with pulsing beam width (sinusoidal from MiningVFXConfig), impact ParticleSystem (cone emission, ore-colored, SparkEmissionRate), heat shimmer ParticleSystem (billboard quad at mining arm), clean shutdown on MiningStoppedEvent, inject MiningVFXConfig via VContainer in Assets/Features/Mining/Views/MiningBeamView.cs
 
 ### Verification
 
-- [ ] T022 [US1] MCP: refresh_unity(compile="request"), read_console(types=["error"]), manage_editor(action="play"), manage_scene(action="screenshot") — verify beam pulses, sparks visible at asteroid, heat shimmer at arm, clean stop behavior (Acceptance Scenarios US1.1-US1.6)
+- [x] T022 [US1] MCP: refresh_unity(compile="request"), read_console(types=["error"]), manage_editor(action="play"), manage_scene(action="screenshot") — verify beam pulses, sparks visible at asteroid, heat shimmer at arm, clean stop behavior (Acceptance Scenarios US1.1-US1.6)
 
 **Checkpoint**: User Story 1 fully functional. Mining beam is visually compelling with pulsing energy, ore-colored sparks, and heat shimmer.
 
@@ -117,18 +117,18 @@
 
 ### Tests (TDD — write first, must FAIL)
 
-- [ ] T023 [P] [US2] Create AsteroidEmissionTests: test emission intensity lerp between min/max with sqrt curve, test boundary values (0%, 50%, 100% depletion), test HDR float4 output format, test pulse modulation (sinusoidal at VeinGlowPulseSpeed with VeinGlowPulseAmplitude) in Assets/Features/Mining/Tests/AsteroidEmissionTests.cs
+- [x] T023 [P] [US2] Create AsteroidEmissionTests: test emission intensity lerp between min/max with sqrt curve, test boundary values (0%, 50%, 100% depletion), test HDR float4 output format, test pulse modulation (sinusoidal at VeinGlowPulseSpeed with VeinGlowPulseAmplitude) in Assets/Features/Mining/Tests/AsteroidEmissionTests.cs
 
 ### Implementation
 
-- [ ] T024 [US2] Create AsteroidEmissionSystem (Burst-compiled ISystem, SimulationSystemGroup, after AsteroidDepletionSystem) — queries AsteroidComponent + AsteroidEmissionComponent, calculates emission from depletion via sqrt ease-in, applies sinusoidal pulse modulation (VeinGlowPulseSpeed Hz, VeinGlowPulseAmplitude range), writes HDR float4 using DepletionVFXConfig values in Assets/Features/Mining/Systems/AsteroidEmissionSystem.cs
-- [ ] T025 [P] [US2] Modify AsteroidFieldSystem to add AsteroidEmissionComponent (initial float4(0,0,0,0)) when creating asteroid entities via RenderMeshUtility.AddComponents in Assets/Features/Procedural/Systems/AsteroidFieldSystem.cs
-- [ ] T026 [US2] MCP: Enable emission on asteroid materials via manage_material(action="set_material_shader_property") — set _EmissionColor enabled on SF_Asteroids-M2 material assets
-- [ ] T027 [US2] Create DepletionVFXView MonoBehaviour — subscribe to ThresholdCrossedEvent via EventBus, spawn crumble burst ParticleSystem (count scaled by CrumbleBurstCountBase * CrumbleBurstCountScale^thresholdIndex), flash billboard quad (CrumbleFlashDuration), fragment explosion on final threshold (FragmentCount 8-15, FragmentSpeed, FragmentLifetime), inject DepletionVFXConfig via VContainer in Assets/Features/Mining/Views/DepletionVFXView.cs
+- [x] T024 [US2] Create AsteroidEmissionSystem (Burst-compiled ISystem, SimulationSystemGroup, after AsteroidDepletionSystem) — queries AsteroidComponent + AsteroidEmissionComponent, calculates emission from depletion via sqrt ease-in, applies sinusoidal pulse modulation (VeinGlowPulseSpeed Hz, VeinGlowPulseAmplitude range), writes HDR float4 using DepletionVFXConfig values in Assets/Features/Mining/Systems/AsteroidEmissionSystem.cs
+- [x] T025 [P] [US2] Modify AsteroidFieldSystem to add AsteroidEmissionComponent (initial float4(0,0,0,0)) when creating asteroid entities via RenderMeshUtility.AddComponents in Assets/Features/Procedural/Systems/AsteroidFieldSystem.cs
+- [x] T026 [US2] MCP: Enable emission on asteroid materials via manage_material(action="set_material_shader_property") — set _EmissionColor enabled on SF_Asteroids-M2 material assets
+- [x] T027 [US2] Create DepletionVFXView MonoBehaviour — subscribe to ThresholdCrossedEvent via EventBus, spawn crumble burst ParticleSystem (count scaled by CrumbleBurstCountBase * CrumbleBurstCountScale^thresholdIndex), flash billboard quad (CrumbleFlashDuration), fragment explosion on final threshold (FragmentCount 8-15, FragmentSpeed, FragmentLifetime), inject DepletionVFXConfig via VContainer in Assets/Features/Mining/Views/DepletionVFXView.cs
 
 ### Verification
 
-- [ ] T028 [US2] MCP: refresh_unity(compile="request"), run_tests(mode="EditMode") — AsteroidEmissionTests pass, then manage_editor(action="play"), manage_scene(action="screenshot") at 50% depletion — verify vein glow visible, burst at threshold, fragment explosion on destroy (Acceptance Scenarios US2.1-US2.7)
+- [x] T028 [US2] MCP: refresh_unity(compile="request"), run_tests(mode="EditMode") — AsteroidEmissionTests pass, then manage_editor(action="play"), manage_scene(action="screenshot") at 50% depletion — verify vein glow visible, burst at threshold, fragment explosion on destroy (Acceptance Scenarios US2.1-US2.7)
 
 **Checkpoint**: User Story 2 fully functional. Asteroids visually communicate depletion state through glow, bursts, and final explosion.
 
@@ -142,16 +142,16 @@
 
 ### Tests (TDD — write first, must FAIL)
 
-- [ ] T029 [US3] Create OreChunkAttractionTests: test bezier curve calculation (pure math), test chunk reaches target within MaxLifetime, test pool reclaim on collection, test drift phase duration and direction in Assets/Features/Mining/Tests/OreChunkAttractionTests.cs
+- [x] T029 [US3] Create OreChunkAttractionTests: test bezier curve calculation (pure math), test chunk reaches target within MaxLifetime, test pool reclaim on collection, test drift phase duration and direction in Assets/Features/Mining/Tests/OreChunkAttractionTests.cs
 
 ### Implementation
 
-- [ ] T030 [US3] Create OreChunkBehaviour MonoBehaviour — drift phase (InitialDriftDuration, InitialDriftSpeed outward), attract phase (bezier curve toward CollectorPoint, AttractionSpeed/AttractionAcceleration), collect phase (distance threshold, flash, publish OreChunkCollectedEvent, return to pool), force-despawn at MaxLifetime, zero-GC (pre-allocated bezier control points, cached transforms) in Assets/Features/Mining/Views/OreChunkBehaviour.cs
-- [ ] T031 [US3] Create OreChunkController MonoBehaviour — subscribe to MiningStartedEvent/MiningStoppedEvent, spawn timer (Random.Range 3-7s), spawn 2-5 chunks per event (random mesh variant A/B from AsteroidVisualMappingConfig, random scale ChunkScaleMin-Max, ore-type glow color, GlowIntensity emission), ObjectPool<OreChunkBehaviour> (size 15), inject OreChunkConfig + AsteroidVisualMappingConfig + IEventBus + IStateStore via VContainer in Assets/Features/Mining/Views/OreChunkController.cs
+- [x] T030 [US3] Create OreChunkBehaviour MonoBehaviour — drift phase (InitialDriftDuration, InitialDriftSpeed outward), attract phase (bezier curve toward CollectorPoint, AttractionSpeed/AttractionAcceleration), collect phase (distance threshold, flash, publish OreChunkCollectedEvent, return to pool), force-despawn at MaxLifetime, zero-GC (pre-allocated bezier control points, cached transforms) in Assets/Features/Mining/Views/OreChunkBehaviour.cs
+- [x] T031 [US3] Create OreChunkController MonoBehaviour — subscribe to MiningStartedEvent/MiningStoppedEvent, spawn timer (Random.Range 3-7s), spawn 2-5 chunks per event (random mesh variant A/B from AsteroidVisualMappingConfig, random scale ChunkScaleMin-Max, ore-type glow color, GlowIntensity emission), ObjectPool<OreChunkBehaviour> (size 15), inject OreChunkConfig + AsteroidVisualMappingConfig + IEventBus + IStateStore via VContainer in Assets/Features/Mining/Views/OreChunkController.cs
 
 ### Verification
 
-- [ ] T032 [US3] MCP: refresh_unity(compile="request"), run_tests(mode="EditMode") — OreChunkAttractionTests pass, then manage_editor(action="play") for 20s active mining, manage_scene(action="screenshot") — verify multiple chunk bursts spawned, curved attraction toward barge, collection flash (Acceptance Scenarios US3.1-US3.7)
+- [x] T032 [US3] MCP: refresh_unity(compile="request"), run_tests(mode="EditMode") — OreChunkAttractionTests pass, then manage_editor(action="play") for 20s active mining, manage_scene(action="screenshot") — verify multiple chunk bursts spawned, curved attraction toward barge, collection flash (Acceptance Scenarios US3.1-US3.7)
 
 **Checkpoint**: User Story 3 fully functional. Continuous stream of ore chunk bursts creates sustained visual reward during mining.
 
@@ -165,17 +165,17 @@
 
 ### Tests (TDD — write first, must FAIL)
 
-- [ ] T033 [US4] Create HUDMiningFeedbackTests: test color interpolation formula (ore color to red/orange), test progress bar percentage matches DepletionFraction input, test flash trigger on threshold event in Assets/Features/HUD/Tests/HUDMiningFeedbackTests.cs
+- [x] T033 [US4] Create HUDMiningFeedbackTests: test color interpolation formula (ore color to red/orange), test progress bar percentage matches DepletionFraction input, test flash trigger on threshold event in Assets/Features/HUD/Tests/HUDMiningFeedbackTests.cs
 
 ### Implementation
 
-- [ ] T034 [P] [US4] Add progress bar elements to mining-info-panel: mining-progress-bar (container), mining-progress-fill (inner fill), mining-progress-flash (overlay) in Assets/Features/HUD/Views/HUD.uxml
-- [ ] T035 [P] [US4] Add progress bar styles: fixed height, rounded corners, fill width driven by percentage, color transitions, pulse animation, flash overlay in Assets/Features/HUD/Views/HUD.uss
-- [ ] T036 [US4] Modify HUDView to read gameState.Loop.Mining.DepletionFraction, set mining-progress-fill width percentage, lerp fill color (ore → red/orange), sinusoidal pulse opacity at DepletionVFXConfig.VeinGlowPulseSpeed Hz (matching vein glow pulse for visual sync), subscribe to ThresholdCrossedEvent for white flash overlay with 0.3s fade in Assets/Features/HUD/Views/HUDView.cs
+- [x] T034 [P] [US4] Add progress bar elements to mining-info-panel: mining-progress-bar (container), mining-progress-fill (inner fill), mining-progress-flash (overlay) in Assets/Features/HUD/Views/HUD.uxml
+- [x] T035 [P] [US4] Add progress bar styles: fixed height, rounded corners, fill width driven by percentage, color transitions, pulse animation, flash overlay in Assets/Features/HUD/Views/HUD.uss
+- [x] T036 [US4] Modify HUDView to read gameState.Loop.Mining.DepletionFraction, set mining-progress-fill width percentage, lerp fill color (ore → red/orange), sinusoidal pulse opacity at DepletionVFXConfig.VeinGlowPulseSpeed Hz (matching vein glow pulse for visual sync), subscribe to ThresholdCrossedEvent for white flash overlay with 0.3s fade in Assets/Features/HUD/Views/HUDView.cs
 
 ### Verification
 
-- [ ] T037 [US4] MCP: refresh_unity(compile="request"), run_tests(mode="EditMode") — HUDMiningFeedbackTests pass, then manage_editor(action="play"), manage_scene(action="screenshot") at various depletion levels — verify bar fills, color shifts, pulses, flashes at thresholds (Acceptance Scenarios US4.1-US4.5)
+- [x] T037 [US4] MCP: refresh_unity(compile="request"), run_tests(mode="EditMode") — HUDMiningFeedbackTests pass, then manage_editor(action="play"), manage_scene(action="screenshot") at various depletion levels — verify bar fills, color shifts, pulses, flashes at thresholds (Acceptance Scenarios US4.1-US4.5)
 
 **Checkpoint**: User Story 4 fully functional. HUD progress bar perfectly synchronized with 3D depletion effects.
 
@@ -189,16 +189,16 @@
 
 ### Tests (TDD — write first, must FAIL)
 
-- [ ] T037a [US5] Create MiningAudioTests: test pitch interpolation formula (Lerp PitchMin/PitchMax at depletion 0.0, 0.5, 1.0), test volume scaling from config values, test fade-out volume curve over LaserHumFadeOutDuration in Assets/Features/Mining/Tests/MiningAudioTests.cs
+- [x] T037a [US5] Create MiningAudioTests: test pitch interpolation formula (Lerp PitchMin/PitchMax at depletion 0.0, 0.5, 1.0), test volume scaling from config values, test fade-out volume curve over LaserHumFadeOutDuration in Assets/Features/Mining/Tests/MiningAudioTests.cs
 
 ### Implementation
 
-- [ ] T038 [US5] Create ProceduralAudioGenerator static utility — generate placeholder AudioClips via AudioClip.Create(): LaserHum (80Hz sine + harmonics, looping), SparkCrackle (white noise burst, 0.1s), CrumbleRumble (40-60Hz sine sweep, 0.5s), Explosion (white noise + low sine, 0.8s, amplitude envelope), CollectionClink (2kHz sine ping, 0.1s, fast decay). Cache on first access in Assets/Features/Mining/Views/ProceduralAudioGenerator.cs
-- [ ] T039 [US5] Create MiningAudioController MonoBehaviour — 3 AudioSources (HumSource looping 3D at beam midpoint, ImpactSource one-shot 3D at asteroid, EventSource one-shot 3D repositioned per event). Subscribe to MiningStartedEvent (start hum+crackle), MiningStoppedEvent (fade hum over LaserHumFadeOutDuration, stop crackle), ThresholdCrossedEvent (play rumble index 0-2 or explosion index 3), OreChunkCollectedEvent (play clink at barge). LateUpdate: lerp hum pitch from PitchMin-PitchMax keyed on DepletionFraction. Null-clip fallback: if any MiningAudioConfig AudioClip field is null, use the corresponding ProceduralAudioGenerator cached clip instead. Inject MiningAudioConfig + IEventBus + IStateStore via VContainer in Assets/Features/Mining/Views/MiningAudioController.cs
+- [x] T038 [US5] Create ProceduralAudioGenerator static utility — generate placeholder AudioClips via AudioClip.Create(): LaserHum (80Hz sine + harmonics, looping), SparkCrackle (white noise burst, 0.1s), CrumbleRumble (40-60Hz sine sweep, 0.5s), Explosion (white noise + low sine, 0.8s, amplitude envelope), CollectionClink (2kHz sine ping, 0.1s, fast decay). Cache on first access in Assets/Features/Mining/Views/ProceduralAudioGenerator.cs
+- [x] T039 [US5] Create MiningAudioController MonoBehaviour — 3 AudioSources (HumSource looping 3D at beam midpoint, ImpactSource one-shot 3D at asteroid, EventSource one-shot 3D repositioned per event). Subscribe to MiningStartedEvent (start hum+crackle), MiningStoppedEvent (fade hum over LaserHumFadeOutDuration, stop crackle), ThresholdCrossedEvent (play rumble index 0-2 or explosion index 3), OreChunkCollectedEvent (play clink at barge). LateUpdate: lerp hum pitch from PitchMin-PitchMax keyed on DepletionFraction. Null-clip fallback: if any MiningAudioConfig AudioClip field is null, use the corresponding ProceduralAudioGenerator cached clip instead. Inject MiningAudioConfig + IEventBus + IStateStore via VContainer in Assets/Features/Mining/Views/MiningAudioController.cs
 
 ### Verification
 
-- [ ] T040 [US5] MCP: refresh_unity(compile="request"), read_console(types=["error"]), manage_editor(action="play") — verify all 6 audio cues play at correct spatial positions and timing (Acceptance Scenarios US5.1-US5.7)
+- [x] T040 [US5] MCP: refresh_unity(compile="request"), read_console(types=["error"]), manage_editor(action="play") — verify all 6 audio cues play at correct spatial positions and timing (Acceptance Scenarios US5.1-US5.7)
 
 **Checkpoint**: User Story 5 fully functional. Complete spatial audio layer reinforces all visual feedback.
 
@@ -208,10 +208,10 @@
 
 **Purpose**: Edge case verification, regression testing, performance profiling, and visual verification across all user stories.
 
-- [ ] T041 Edge case verification: target switch mid-beam (beam/sparks transition cleanly), chunks in flight on asteroid destroy (continue to barge), chunks in flight on range exit (complete journey), target switch resets chunk timer, crumble burst completes on stop, HUD hidden while VFX continues, camera away particles culled — test each via MCP playtest
-- [ ] T042 MCP: run_tests(mode="EditMode") and run_tests(mode="PlayMode") — verify all existing tests (21+) plus all new tests pass with zero regressions (SC-010)
-- [ ] T043 Performance profiling: manage_editor(action="play") in TestScene_MiningField with 300 asteroids, activate mining, verify via Unity Profiler — total VFX+audio < 1.5 ms (SC-008), asteroid field < 2 ms with emission (SC-009), zero GC allocations in gameplay frame, steady 60 FPS (SC-011). Verify off-screen particle culling: rotate camera away from mining operation, confirm GPU budget drops (FR-034). Note: multi-beam simultaneous mining performance validation deferred to future NPC mining spec (FR-035)
-- [ ] T044 [P] MCP: manage_scene(action="screenshot") at key moments — beam active with sparks, asteroid at 50% depletion (vein glow), crumble burst in progress, ore chunks in flight, HUD progress bar at various fill levels — visual verification archive
+- [x] T041 Edge case verification: target switch mid-beam (beam/sparks transition cleanly), chunks in flight on asteroid destroy (continue to barge), chunks in flight on range exit (complete journey), target switch resets chunk timer, crumble burst completes on stop, HUD hidden while VFX continues, camera away particles culled — test each via MCP playtest
+- [x] T042 MCP: run_tests(mode="EditMode") and run_tests(mode="PlayMode") — verify all existing tests (21+) plus all new tests pass with zero regressions (SC-010)
+- [x] T043 Performance profiling: manage_editor(action="play") in TestScene_MiningField with 300 asteroids, activate mining, verify via Unity Profiler — total VFX+audio < 1.5 ms (SC-008), asteroid field < 2 ms with emission (SC-009), zero GC allocations in gameplay frame, steady 60 FPS (SC-011). Verify off-screen particle culling: rotate camera away from mining operation, confirm GPU budget drops (FR-034). Note: multi-beam simultaneous mining performance validation deferred to future NPC mining spec (FR-035)
+- [x] T044 [P] MCP: manage_scene(action="screenshot") at key moments — beam active with sparks, asteroid at 50% depletion (vein glow), crumble burst in progress, ore chunks in flight, HUD progress bar at various fill levels — visual verification archive
 
 ---
 

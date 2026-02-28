@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Unity.Entities;
+using Unity.Transforms;
 using VoidHarvest.Core.EventBus;
 using VoidHarvest.Core.EventBus.Events;
 using VoidHarvest.Core.State;
@@ -114,6 +115,43 @@ namespace VoidHarvest.Features.Mining.Systems
                 var evt = new MiningStoppedEvent(stopAction.SourceAsteroid.Index, (StopReason)stopAction.Reason);
                 _eventBus.Publish(in evt);
                 _yieldAccumulators.Clear();
+            }
+
+            // --- Drain threshold crossing queue ---
+            var scaleHandle = World.GetExistingSystem<AsteroidScaleSystem>();
+            if (scaleHandle != SystemHandle.Null)
+            {
+                ref var scaleSystem = ref World.Unmanaged.GetUnsafeSystemRef<AsteroidScaleSystem>(scaleHandle);
+                while (scaleSystem.ThresholdQueue.TryDequeue(out var thresholdAction))
+                {
+                    var thresholdEvt = new ThresholdCrossedEvent(
+                        thresholdAction.Asteroid.Index,
+                        thresholdAction.ThresholdIndex,
+                        thresholdAction.Position,
+                        thresholdAction.Radius);
+                    _eventBus.Publish(in thresholdEvt);
+                }
+            }
+
+            // --- Dispatch depletion fraction update each frame during active mining ---
+            var miningState = _stateStore.Current.Loop.Mining;
+            if (miningState.TargetAsteroidId.HasValue)
+            {
+                int asteroidIndex = miningState.TargetAsteroidId.GetValueOrDefault(0);
+                float depletionFraction = 0f;
+
+                // Find the target asteroid entity and read its depletion
+                foreach (var (asteroid, entity) in
+                    SystemAPI.Query<RefRO<AsteroidComponent>>().WithEntityAccess())
+                {
+                    if (entity.Index == asteroidIndex)
+                    {
+                        depletionFraction = asteroid.ValueRO.Depletion;
+                        break;
+                    }
+                }
+
+                _stateStore.Dispatch(new MiningDepletionTickAction(depletionFraction));
             }
         }
     }

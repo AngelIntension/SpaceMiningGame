@@ -21,9 +21,11 @@ namespace VoidHarvest.Features.Mining.Systems
                     ActiveOreId = Option<string>.Some(a.OreId),
                     BeamEnergy = 1.0f,
                     YieldAccumulator = 0f,
-                    MiningDuration = 0f
+                    MiningDuration = 0f,
+                    DepletionFraction = 0f
                 },
                 MiningTickAction a => ComputeMiningTick(state, a),
+                MiningDepletionTickAction a => state with { DepletionFraction = a.DepletionFraction },
                 StopMiningAction => MiningSessionState.Empty,
                 _ => state
             };
