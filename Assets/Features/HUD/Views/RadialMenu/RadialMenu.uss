@@ -94,6 +94,12 @@
     top: 125px;
 }
 
+/* Bottom-Right: Dock */
+.segment-bottom-right {
+    left: 190px;
+    top: 235px;
+}
+
 /* ---- Selected segment highlight ---- */
 .radial-segment--selected {
     background-color: rgba(25, 60, 110, 0.95);

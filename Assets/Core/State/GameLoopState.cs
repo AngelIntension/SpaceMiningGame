@@ -11,6 +11,7 @@ namespace VoidHarvest.Core.State
         TechTreeState TechTree,
         FleetState Fleet,
         BaseState Base,
-        MarketState Market
+        MarketState Market,
+        DockingState Docking
     );
 }

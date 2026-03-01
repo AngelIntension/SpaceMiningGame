@@ -29,6 +29,9 @@
         <!-- Left: Keep at Range -->
         <ui:Button name="segment-keep-at-range" class="radial-segment segment-left" text="Keep at&#10;Range" />
 
+        <!-- Bottom-Right: Dock (station target only) -->
+        <ui:Button name="segment-dock" class="radial-segment segment-bottom-right" text="Dock" />
+
         <!-- Distance sub-menu panel (shown for Approach, Orbit, KeepAtRange) -->
         <ui:VisualElement name="distance-submenu" class="distance-submenu">
             <ui:Label name="distance-title" class="distance-title" text="Set Distance" />

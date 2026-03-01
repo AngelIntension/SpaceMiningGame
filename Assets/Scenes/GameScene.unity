@@ -189,11 +189,15 @@ MonoBehaviour:
   - {fileID: 979882641}
   - {fileID: 1021181112}
   - {fileID: 1597571234}
+  - {fileID: 729069247}
   miningVFXConfig: {fileID: 11400000, guid: 41e789176bcdb4444a5b0a2aeb58c75b, type: 2}
   depletionVFXConfig: {fileID: 11400000, guid: c0ea49c6882dea84aab85531f6b4737d, type: 2}
   oreChunkConfig: {fileID: 11400000, guid: 2179d0b939cbc8748b8a220df4f46f00, type: 2}
   miningAudioConfig: {fileID: 11400000, guid: 6cfb7f252f44b014bbc6bbc5260de69a, type: 2}
   asteroidVisualMappingConfig: {fileID: 11400000, guid: b2c3d4e5f6a70824b9c0d1e2f3a4b5c6, type: 2}
+  dockingConfig: {fileID: 11400000, guid: 828e08e033e3ec24497f57f82ece191c, type: 2}
+  dockingVFXConfig: {fileID: 11400000, guid: 925ef3bdfb04a7a4b8bcf517e00706c9, type: 2}
+  dockingAudioConfig: {fileID: 11400000, guid: 7fd96f0185cb7c74db4372eaec51fd77, type: 2}
 --- !u!1 &330585543
 GameObject:
   m_ObjectHideFlags: 0
@@ -731,6 +735,75 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &729069247
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 729069250}
+  - component: {fileID: 729069249}
+  - component: {fileID: 729069248}
+  m_Layer: 0
+  m_Name: StationServicesMenu
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &729069248
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 729069247}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef26b9ece1a269546a27629991fa6a2e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: VoidHarvest.Features.Docking::VoidHarvest.Features.Docking.Views.StationServicesMenuController
+  uiDocument: {fileID: 729069249}
+--- !u!114 &729069249
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 729069247}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 19102, guid: 0000000000000000e000000000000000, type: 0}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.dll::UnityEngine.UIElements.UIDocument
+  m_PanelSettings: {fileID: 11400000, guid: e5daa92228a0b72429cb360ea45bf759, type: 2}
+  m_ParentUI: {fileID: 0}
+  sourceAsset: {fileID: 9197481963319205126, guid: 22379418e6279b3439e6851837128393, type: 3}
+  m_SortingOrder: 20
+  m_Position: 0
+  m_WorldSpaceSizeMode: 1
+  m_WorldSpaceWidth: 1920
+  m_WorldSpaceHeight: 1080
+  m_PivotReferenceSize: 0
+  m_Pivot: 0
+  m_WorldSpaceCollider: {fileID: 0}
+--- !u!4 &729069250
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 729069247}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &832575517
 GameObject:
   m_ObjectHideFlags: 0
@@ -850,6 +923,7 @@ GameObject:
   - component: {fileID: 979882652}
   - component: {fileID: 979882651}
   - component: {fileID: 979882650}
+  - component: {fileID: 979882653}
   m_Layer: 0
   m_Name: Ship
   m_TagString: Untagged
@@ -1241,6 +1315,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 02b0a0c4b02314946a1d76ee9f5e3ed8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: VoidHarvest.Features.Mining::VoidHarvest.Features.Mining.Views.DepletionVFXView
+--- !u!114 &979882653
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 979882641}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: be7ca7f5bad3de04fa97c2fc846e473f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: VoidHarvest.Features.Docking::VoidHarvest.Features.Docking.Views.DockingFeedbackView
 --- !u!1 &1021181112
 GameObject:
   m_ObjectHideFlags: 0
@@ -1367,6 +1453,67 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 70bf6ab30181f054791cc1b4ae562a2e, type: 3}
+--- !u!1001 &1274278899
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4718422465969686566, guid: 367ac946a7b4aaa4382ff7f2b4a8233f, type: 3}
+      propertyPath: m_Name
+      value: MediumRefineryHub
+      objectReference: {fileID: 0}
+    - target: {fileID: 6697567079080125492, guid: 367ac946a7b4aaa4382ff7f2b4a8233f, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 500
+      objectReference: {fileID: 0}
+    - target: {fileID: 6697567079080125492, guid: 367ac946a7b4aaa4382ff7f2b4a8233f, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6697567079080125492, guid: 367ac946a7b4aaa4382ff7f2b4a8233f, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6697567079080125492, guid: 367ac946a7b4aaa4382ff7f2b4a8233f, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6697567079080125492, guid: 367ac946a7b4aaa4382ff7f2b4a8233f, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6697567079080125492, guid: 367ac946a7b4aaa4382ff7f2b4a8233f, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6697567079080125492, guid: 367ac946a7b4aaa4382ff7f2b4a8233f, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6697567079080125492, guid: 367ac946a7b4aaa4382ff7f2b4a8233f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6697567079080125492, guid: 367ac946a7b4aaa4382ff7f2b4a8233f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6697567079080125492, guid: 367ac946a7b4aaa4382ff7f2b4a8233f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8576151583295545428, guid: 367ac946a7b4aaa4382ff7f2b4a8233f, type: 3}
+      propertyPath: StationId
+      value: 2
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 367ac946a7b4aaa4382ff7f2b4a8233f, type: 3}
 --- !u!1 &1351852029
 GameObject:
   m_ObjectHideFlags: 0
@@ -1415,6 +1562,67 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &1359845201
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 2234927107811168735, guid: 1a617c619e08b4e48ba3f4959c9a632a, type: 3}
+      propertyPath: StationId
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8790162813769972537, guid: 1a617c619e08b4e48ba3f4959c9a632a, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8790162813769972537, guid: 1a617c619e08b4e48ba3f4959c9a632a, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8790162813769972537, guid: 1a617c619e08b4e48ba3f4959c9a632a, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 200
+      objectReference: {fileID: 0}
+    - target: {fileID: 8790162813769972537, guid: 1a617c619e08b4e48ba3f4959c9a632a, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8790162813769972537, guid: 1a617c619e08b4e48ba3f4959c9a632a, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8790162813769972537, guid: 1a617c619e08b4e48ba3f4959c9a632a, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8790162813769972537, guid: 1a617c619e08b4e48ba3f4959c9a632a, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8790162813769972537, guid: 1a617c619e08b4e48ba3f4959c9a632a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8790162813769972537, guid: 1a617c619e08b4e48ba3f4959c9a632a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8790162813769972537, guid: 1a617c619e08b4e48ba3f4959c9a632a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9062628008030399983, guid: 1a617c619e08b4e48ba3f4959c9a632a, type: 3}
+      propertyPath: m_Name
+      value: SmallMiningRelay
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 1a617c619e08b4e48ba3f4959c9a632a, type: 3}
 --- !u!1 &1537462336
 GameObject:
   m_ObjectHideFlags: 0
@@ -1689,3 +1897,6 @@ SceneRoots:
   - {fileID: 1021181115}
   - {fileID: 1597571237}
   - {fileID: 1700000002}
+  - {fileID: 729069250}
+  - {fileID: 1359845201}
+  - {fileID: 1274278899}

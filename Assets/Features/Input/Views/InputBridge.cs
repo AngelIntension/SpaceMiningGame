@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Unity.Entities;
@@ -7,9 +8,11 @@ using VContainer;
 using VoidHarvest.Core.EventBus;
 using VoidHarvest.Core.EventBus.Events;
 using VoidHarvest.Core.State;
+using VoidHarvest.Core.Extensions;
 using VoidHarvest.Features.Ship.Data;
 using VoidHarvest.Features.Mining.Data;
 using VoidHarvest.Features.Mining.Systems;
+using VoidHarvest.Features.Docking.Data;
 
 namespace VoidHarvest.Features.Input.Views
 {
@@ -53,6 +56,11 @@ namespace VoidHarvest.Features.Input.Views
         private Features.Camera.Views.CameraView _cameraView;
         private Entity _selectedAsteroidEntity;
         private bool _radialMenuOpen;
+        private TargetType _selectedTargetType = TargetType.None;
+        private DockingPortComponent _selectedDockingPort;
+
+        /// <summary>Type of the currently selected target (Asteroid, Station, None).</summary>
+        public TargetType SelectedTargetType => _selectedTargetType;
 
         /// <summary>
         /// DI injection point for state store and event bus. See MVP-01: 6DOF Newtonian flight.
@@ -130,6 +138,18 @@ namespace VoidHarvest.Features.Input.Views
         {
             TryInitializeECS();
             _cameraView = FindFirstObjectByType<Features.Camera.Views.CameraView>();
+
+            if (_eventBus != null)
+                ListenForUndockingStarted().Forget();
+        }
+
+        private async UniTaskVoid ListenForUndockingStarted()
+        {
+            var ct = this.GetCancellationTokenOnDestroy();
+            await foreach (var _ in _eventBus.Subscribe<UndockingStartedEvent>().WithCancellation(ct))
+            {
+                InitiateUndocking();
+            }
         }
 
         private void Update()
@@ -177,6 +197,15 @@ namespace VoidHarvest.Features.Input.Views
                 _hasAlignPoint = false;
                 _radialAction = -1;
                 _radialDistance = 0f;
+
+                // Cancel docking if manual thrust during Docking flight mode
+                if (_ecsReady && _entityManager.Exists(_shipEntity)
+                    && _entityManager.HasComponent<DockingStateComponent>(_shipEntity))
+                {
+                    _entityManager.RemoveComponent<DockingStateComponent>(_shipEntity);
+                    _stateStore?.Dispatch(new CancelDockingAction());
+                    _eventBus?.Publish(new DockingCancelledEvent());
+                }
             }
 
             if (!_entityManager.Exists(_shipEntity)) return;
@@ -246,19 +275,32 @@ namespace VoidHarvest.Features.Input.Views
             bool isDoubleClick = (now - _lastClickTime) < DoubleClickWindow;
             _lastClickTime = now;
 
-            // Try physics raycast first (for future GameObject-based selectables)
+            // Try physics raycast first (for stations on Selectable layer)
             if (TryRaycastSelectable(out var hit))
             {
                 if (isDoubleClick)
                 {
                     _alignPoint = hit.point;
                     _hasAlignPoint = true;
-
                 }
                 else
                 {
                     _selectedTargetId = hit.collider.gameObject.GetInstanceID();
                     _selectedAsteroidEntity = Entity.Null;
+
+                    // Check if hit object has a DockingPortComponent (station)
+                    var dockingPort = hit.collider.GetComponentInChildren<DockingPortComponent>();
+                    if (dockingPort != null)
+                    {
+                        _selectedTargetType = TargetType.Station;
+                        _selectedDockingPort = dockingPort;
+                    }
+                    else
+                    {
+                        _selectedTargetType = TargetType.None;
+                        _selectedDockingPort = null;
+                    }
+
                     _eventBus?.Publish(new TargetSelectedEvent(_selectedTargetId));
                 }
                 return;
@@ -276,6 +318,8 @@ namespace VoidHarvest.Features.Input.Views
                 {
                     _selectedTargetId = hitEntity.Index;
                     _selectedAsteroidEntity = hitEntity;
+                    _selectedTargetType = TargetType.Asteroid;
+                    _selectedDockingPort = null;
                     _eventBus?.Publish(new TargetSelectedEvent(_selectedTargetId));
                 }
                 return;
@@ -284,6 +328,8 @@ namespace VoidHarvest.Features.Input.Views
             // No hit — clear selection
             _selectedTargetId = -1;
             _selectedAsteroidEntity = Entity.Null;
+            _selectedTargetType = TargetType.None;
+            _selectedDockingPort = null;
             _eventBus?.Publish(new TargetSelectedEvent(-1));
         }
 
@@ -295,7 +341,7 @@ namespace VoidHarvest.Features.Input.Views
 
         private void OnRadialMenuRelease(InputAction.CallbackContext ctx)
         {
-            if (_selectedTargetId < 0) return;
+            if (_selectedTargetType == TargetType.None) return;
 
             // Only open radial menu if right-click was a tap (not a drag for orbit)
             var mouse = Mouse.current;
@@ -303,7 +349,7 @@ namespace VoidHarvest.Features.Input.Views
             Vector2 endPos = mouse.position.ReadValue();
             if (Vector2.Distance(_radialMenuStartPos, endPos) > RadialMenuDragThreshold) return;
 
-            _eventBus?.Publish(new RadialMenuRequestedEvent(_selectedTargetId));
+            _eventBus?.Publish(new RadialMenuRequestedEvent(_selectedTargetId, _selectedTargetType));
         }
 
         /// <summary>
@@ -401,6 +447,53 @@ namespace VoidHarvest.Features.Input.Views
         {
             if (_selectedTargetId >= 0 && !_isMining)
                 StartMining();
+        }
+
+        /// <summary>
+        /// Returns the DockingPortComponent of the currently selected station, if any.
+        /// </summary>
+        public DockingPortComponent GetSelectedDockingPort() => _selectedDockingPort;
+
+        /// <summary>
+        /// Called by RadialMenuController to initiate docking at the ECS level.
+        /// Adds DockingStateComponent to the ship entity with target port data.
+        /// </summary>
+        public void InitiateDocking(DockingPortComponent port)
+        {
+            if (!_ecsReady || !_entityManager.Exists(_shipEntity) || port == null) return;
+
+            var dockingState = new DockingStateComponent
+            {
+                Phase = DockingPhase.Approaching,
+                TargetPortPosition = port.WorldPortPosition,
+                TargetPortRotation = port.WorldPortRotation,
+                TargetStationId = port.StationId,
+                SnapTimer = 0f
+            };
+
+            if (_entityManager.HasComponent<DockingStateComponent>(_shipEntity))
+                _entityManager.SetComponentData(_shipEntity, dockingState);
+            else
+                _entityManager.AddComponentData(_shipEntity, dockingState);
+
+            // Set align point toward port for approach
+            _alignPoint = port.WorldPortPosition;
+            _hasAlignPoint = true;
+        }
+
+        /// <summary>
+        /// Called to initiate undocking at the ECS level.
+        /// Transitions DockingStateComponent to Undocking phase.
+        /// </summary>
+        public void InitiateUndocking()
+        {
+            if (!_ecsReady || !_entityManager.Exists(_shipEntity)) return;
+            if (!_entityManager.HasComponent<DockingStateComponent>(_shipEntity)) return;
+
+            var docking = _entityManager.GetComponentData<DockingStateComponent>(_shipEntity);
+            docking.Phase = DockingPhase.Undocking;
+            docking.SnapTimer = 0f;
+            _entityManager.SetComponentData(_shipEntity, docking);
         }
 
         /// <summary>

@@ -8,12 +8,14 @@
         "VoidHarvest.Features.Camera",
         "VoidHarvest.Features.Ship",
         "VoidHarvest.Features.Mining",
+        "VoidHarvest.Features.Docking",
         "Unity.InputSystem",
         "Unity.Entities",
         "Unity.Collections",
         "Unity.Mathematics",
         "Unity.Transforms",
-        "VContainer"
+        "VContainer",
+        "UniTask"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

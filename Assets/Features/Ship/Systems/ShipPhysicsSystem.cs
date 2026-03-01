@@ -46,6 +46,22 @@ namespace VoidHarvest.Features.Ship.Systems
                     cmd.Forward, cmd.Strafe, cmd.Roll,
                     cmd.HasAlignPoint, cmd.RadialAction);
 
+                // Docked: zero velocities, skip all force application
+                if (newMode == ShipFlightMode.Docked)
+                {
+                    velocity.ValueRW.Velocity = float3.zero;
+                    velocity.ValueRW.AngularVelocity = float3.zero;
+                    flightMode.ValueRW.Mode = newMode;
+                    continue;
+                }
+
+                // Docking: handled by DockingSystem — skip manual thrust
+                if (newMode == ShipFlightMode.Docking)
+                {
+                    flightMode.ValueRW.Mode = newMode;
+                    continue;
+                }
+
                 // Get local axes from current rotation
                 var forward = math.forward(pos.Rotation);
                 var right = math.mul(pos.Rotation, math.right());

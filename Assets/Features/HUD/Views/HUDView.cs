@@ -1,3 +1,4 @@
+using System.Threading;
 using UnityEngine;
 using UnityEngine.UIElements;
 using Unity.Mathematics;
@@ -26,10 +27,13 @@ namespace VoidHarvest.Features.HUD.Views
         private IStateStore _stateStore;
         private IEventBus _eventBus;
         private DepletionVFXConfig _depletionConfig;
+        private CancellationTokenSource _eventCts;
         private int _lastVersion = -1;
 
         // UI elements
         private Label _velocityLabel;
+        private VisualElement _hotbarPanel;
+        private VisualElement _shipInfoPanel;
         private VisualElement _hullBarFill;
         private VisualElement _resourceList;
         private VisualElement _miningPanel;
@@ -61,6 +65,8 @@ namespace VoidHarvest.Features.HUD.Views
             if (uiDocument == null) return;
             var root = uiDocument.rootVisualElement;
 
+            _hotbarPanel = root.Q<VisualElement>("hotbar-panel");
+            _shipInfoPanel = root.Q<VisualElement>("ship-info-panel");
             _velocityLabel = root.Q<Label>("velocity-label");
             _hullBarFill = root.Q<VisualElement>("hull-bar-fill");
             _resourceList = root.Q<VisualElement>("resource-list");
@@ -75,16 +81,49 @@ namespace VoidHarvest.Features.HUD.Views
         private void Start()
         {
             if (_eventBus != null)
-                SubscribeToThresholdEvents().Forget();
+            {
+                _eventCts = new CancellationTokenSource();
+                SubscribeToThresholdEvents(_eventCts.Token).Forget();
+                ListenForDockingCompleted(_eventCts.Token).Forget();
+                ListenForUndockingStarted(_eventCts.Token).Forget();
+            }
         }
 
-        private async UniTaskVoid SubscribeToThresholdEvents()
+        private void OnDestroy()
         {
-            var cts = this.GetCancellationTokenOnDestroy();
-            await foreach (var evt in _eventBus.Subscribe<ThresholdCrossedEvent>().WithCancellation(cts))
+            _eventCts?.Cancel();
+            _eventCts?.Dispose();
+        }
+
+        private async UniTaskVoid SubscribeToThresholdEvents(CancellationToken ct)
+        {
+            await foreach (var evt in _eventBus.Subscribe<ThresholdCrossedEvent>().WithCancellation(ct))
             {
                 _flashTimer = FlashDuration;
             }
+        }
+
+        private async UniTaskVoid ListenForDockingCompleted(CancellationToken ct)
+        {
+            await foreach (var evt in _eventBus.Subscribe<DockingCompletedEvent>().WithCancellation(ct))
+            {
+                SetDockedVisibility(false);
+            }
+        }
+
+        private async UniTaskVoid ListenForUndockingStarted(CancellationToken ct)
+        {
+            await foreach (var evt in _eventBus.Subscribe<UndockingStartedEvent>().WithCancellation(ct))
+            {
+                SetDockedVisibility(true);
+            }
+        }
+
+        private void SetDockedVisibility(bool visible)
+        {
+            var display = visible ? DisplayStyle.Flex : DisplayStyle.None;
+            if (_hotbarPanel != null) _hotbarPanel.style.display = display;
+            if (_shipInfoPanel != null) _shipInfoPanel.style.display = display;
         }
 
         private void LateUpdate()

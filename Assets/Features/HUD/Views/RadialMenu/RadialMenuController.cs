@@ -7,6 +7,8 @@ using VContainer;
 using VoidHarvest.Core.EventBus;
 using VoidHarvest.Core.EventBus.Events;
 using VoidHarvest.Core.State;
+using VoidHarvest.Core.Extensions;
+using VoidHarvest.Features.Docking.Data;
 using VoidHarvest.Features.Input.Views;
 
 namespace VoidHarvest.Features.HUD.Views
@@ -21,6 +23,7 @@ namespace VoidHarvest.Features.HUD.Views
         private const int ActionOrbit = 1;
         private const int ActionMine = 2;
         private const int ActionKeepAtRange = 3;
+        private const int ActionDock = 4;
 
         private const float DefaultApproachDistance = 50f;
         private const float DefaultOrbitDistance = 100f;
@@ -39,12 +42,15 @@ namespace VoidHarvest.Features.HUD.Views
         private Button _segmentOrbit;
         private Button _segmentMine;
         private Button _segmentKeepAtRange;
+        private Button _segmentDock;
         private Button _confirmButton;
         private Button _preset25;
         private Button _preset50;
         private Button _preset100;
         private Button _preset250;
         private Button _preset500;
+
+        private TargetType _currentTargetType;
 
         private int _selectedAction = -1;
         private bool _isOpen;
@@ -89,6 +95,7 @@ namespace VoidHarvest.Features.HUD.Views
         {
             await foreach (var evt in _eventBus.Subscribe<RadialMenuRequestedEvent>().WithCancellation(ct))
             {
+                _currentTargetType = evt.TargetType;
                 Open();
             }
         }
@@ -116,6 +123,7 @@ namespace VoidHarvest.Features.HUD.Views
             _segmentOrbit = _root.Q<Button>("segment-orbit");
             _segmentMine = _root.Q<Button>("segment-mine");
             _segmentKeepAtRange = _root.Q<Button>("segment-keep-at-range");
+            _segmentDock = _root.Q<Button>("segment-dock");
 
             // Query distance submenu elements
             _distanceSubmenu = _root.Q<VisualElement>("distance-submenu");
@@ -135,6 +143,7 @@ namespace VoidHarvest.Features.HUD.Views
             _segmentOrbit?.RegisterCallback<ClickEvent>(_ => OnSegmentClicked(ActionOrbit));
             _segmentMine?.RegisterCallback<ClickEvent>(_ => OnSegmentClicked(ActionMine));
             _segmentKeepAtRange?.RegisterCallback<ClickEvent>(_ => OnSegmentClicked(ActionKeepAtRange));
+            _segmentDock?.RegisterCallback<ClickEvent>(_ => OnDockClicked());
 
             // Bind preset button callbacks
             _preset25?.RegisterCallback<ClickEvent>(_ => OnPresetClicked(25));
@@ -186,6 +195,10 @@ namespace VoidHarvest.Features.HUD.Views
         {
             if (_root == null) return;
 
+            // Suppress radial menu while docked — station services menu handles undock
+            bool isDocked = _stateStore?.Current.Loop.Docking.IsDocked ?? false;
+            if (isDocked) return;
+
             // Position menu at mouse cursor
             var mouse = Mouse.current;
             if (mouse == null) return;
@@ -202,6 +215,26 @@ namespace VoidHarvest.Features.HUD.Views
             _selectedAction = -1;
             HideDistanceSubmenu();
             ClearSegmentSelection();
+
+            // Context-sensitive segment visibility
+            if (_currentTargetType == TargetType.Station)
+            {
+                // Station undocked: Approach, KeepAtRange, Orbit, Dock
+                SetSegmentVisible(_segmentApproach, true);
+                SetSegmentVisible(_segmentOrbit, true);
+                SetSegmentVisible(_segmentMine, false);
+                SetSegmentVisible(_segmentKeepAtRange, true);
+                SetSegmentVisible(_segmentDock, true);
+            }
+            else
+            {
+                // Asteroid or default: Approach, Orbit, Mine, KeepAtRange
+                SetSegmentVisible(_segmentApproach, true);
+                SetSegmentVisible(_segmentOrbit, true);
+                SetSegmentVisible(_segmentMine, true);
+                SetSegmentVisible(_segmentKeepAtRange, true);
+                SetSegmentVisible(_segmentDock, false);
+            }
 
             _isOpen = true;
             _inputBridge?.SetRadialMenuOpen(true);
@@ -326,12 +359,45 @@ namespace VoidHarvest.Features.HUD.Views
             button?.AddToClassList("radial-segment--selected");
         }
 
+        private void OnDockClicked()
+        {
+            if (_inputBridge == null || _stateStore == null) return;
+
+            var port = _inputBridge.GetSelectedDockingPort();
+            if (port == null) return;
+
+            // Immediate action — no distance submenu
+            _inputBridge.SetRadialChoice(ActionDock, 0f);
+
+            // Dispatch BeginDockingAction via state store
+            _stateStore.Dispatch(new BeginDockingAction(
+                port.StationId,
+                port.WorldPortPosition,
+                port.WorldPortRotation
+            ));
+
+            // Initiate docking at ECS level
+            _inputBridge.InitiateDocking(port);
+
+            // Publish docking started event
+            _eventBus?.Publish(new DockingStartedEvent(port.StationId));
+
+            Close();
+        }
+
+        private static void SetSegmentVisible(Button segment, bool visible)
+        {
+            if (segment == null) return;
+            segment.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
+        }
+
         private void ClearSegmentSelection()
         {
             _segmentApproach?.RemoveFromClassList("radial-segment--selected");
             _segmentOrbit?.RemoveFromClassList("radial-segment--selected");
             _segmentMine?.RemoveFromClassList("radial-segment--selected");
             _segmentKeepAtRange?.RemoveFromClassList("radial-segment--selected");
+            _segmentDock?.RemoveFromClassList("radial-segment--selected");
         }
 
         private Button GetSegmentButton(int action)
@@ -342,6 +408,7 @@ namespace VoidHarvest.Features.HUD.Views
                 ActionOrbit => _segmentOrbit,
                 ActionMine => _segmentMine,
                 ActionKeepAtRange => _segmentKeepAtRange,
+                ActionDock => _segmentDock,
                 _ => null
             };
         }

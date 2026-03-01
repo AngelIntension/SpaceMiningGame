@@ -17,6 +17,10 @@ namespace VoidHarvest.Core.State
         Orbit,
         /// <summary>Auto-pilot: maintain fixed radial distance from target. See MVP-04.</summary>
         KeepAtRange,
+        /// <summary>Ship is in automatic docking sequence (approach/snap). See spec 004.</summary>
+        Docking,
+        /// <summary>Ship is locked at a station docking port. See spec 004.</summary>
+        Docked,
         /// <summary>High-speed warp travel. Phase 1+.</summary>
         Warp
     }

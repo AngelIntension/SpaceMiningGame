@@ -34,7 +34,8 @@ namespace VoidHarvest.Features.Tests
                     TechTreeState.Empty,
                     FleetState.Empty,
                     BaseState.Empty,
-                    MarketState.Empty
+                    MarketState.Empty,
+                    DockingState.Empty
                 ),
                 ActiveShipPhysics: ShipState.Default,
                 Camera: CameraState.Default,
