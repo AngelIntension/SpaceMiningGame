@@ -70,7 +70,10 @@ namespace VoidHarvest.Features.Docking.Views
             _undockButton?.RegisterCallback<ClickEvent>(_ => OnUndockClicked());
 
             _root.style.display = DisplayStyle.None;
+        }
 
+        private void Start()
+        {
             if (_eventBus != null)
             {
                 _eventCts = new CancellationTokenSource();

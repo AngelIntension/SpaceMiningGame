@@ -41,7 +41,10 @@ namespace VoidHarvest.Features.HUD.Views
                 if (_warningPanel != null)
                     _warningPanel.style.display = DisplayStyle.None;
             }
+        }
 
+        private void Start()
+        {
             if (_eventBus != null)
                 ListenForMiningStoppedAsync().Forget();
         }

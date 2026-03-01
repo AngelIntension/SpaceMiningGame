@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Unity.Entities;
@@ -137,6 +138,18 @@ namespace VoidHarvest.Features.Input.Views
         {
             TryInitializeECS();
             _cameraView = FindFirstObjectByType<Features.Camera.Views.CameraView>();
+
+            if (_eventBus != null)
+                ListenForUndockingStarted().Forget();
+        }
+
+        private async UniTaskVoid ListenForUndockingStarted()
+        {
+            var ct = this.GetCancellationTokenOnDestroy();
+            await foreach (var _ in _eventBus.Subscribe<UndockingStartedEvent>().WithCancellation(ct))
+            {
+                InitiateUndocking();
+            }
         }
 
         private void Update()
