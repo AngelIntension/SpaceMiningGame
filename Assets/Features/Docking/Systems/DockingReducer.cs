@@ -21,10 +21,12 @@ namespace VoidHarvest.Features.Docking.Systems
                         Option<Unity.Mathematics.quaternion>.Some(a.PortRotation)
                     ),
 
-                CompleteDockingAction when state.Phase == DockingPhase.Approaching =>
+                CompleteDockingAction when state.Phase == DockingPhase.Approaching
+                    || state.Phase == DockingPhase.Aligning =>
                     state with { Phase = DockingPhase.Docked },
 
-                CancelDockingAction when state.Phase == DockingPhase.Approaching =>
+                CancelDockingAction when state.Phase == DockingPhase.Approaching
+                    || state.Phase == DockingPhase.Aligning =>
                     DockingState.Empty,
 
                 BeginUndockingAction when state.Phase == DockingPhase.Docked =>

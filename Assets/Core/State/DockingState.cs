@@ -10,6 +10,7 @@ namespace VoidHarvest.Core.State
     {
         None = 0,
         Approaching = 1,
+        Aligning = 5,
         Snapping = 2,
         Docked = 3,
         Undocking = 4
@@ -31,6 +32,6 @@ namespace VoidHarvest.Core.State
         );
 
         public bool IsDocked => Phase == DockingPhase.Docked;
-        public bool IsInProgress => Phase == DockingPhase.Approaching || Phase == DockingPhase.Snapping;
+        public bool IsInProgress => Phase == DockingPhase.Approaching || Phase == DockingPhase.Aligning || Phase == DockingPhase.Snapping;
     }
 }

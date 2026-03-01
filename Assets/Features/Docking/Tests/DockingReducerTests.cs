@@ -161,12 +161,45 @@ namespace VoidHarvest.Features.Docking.Tests
         }
 
         [Test]
-        public void DockingState_IsInProgress_TrueForApproachingAndSnapping()
+        public void DockingState_IsInProgress_TrueForApproachingAligningAndSnapping()
         {
             Assert.IsFalse(DockingState.Empty.IsInProgress);
             Assert.IsTrue(new DockingState(DockingPhase.Approaching, default, default, default).IsInProgress);
+            Assert.IsTrue(new DockingState(DockingPhase.Aligning, default, default, default).IsInProgress);
             Assert.IsTrue(new DockingState(DockingPhase.Snapping, default, default, default).IsInProgress);
             Assert.IsFalse(new DockingState(DockingPhase.Docked, default, default, default).IsInProgress);
+        }
+
+        [Test]
+        public void Aligning_CompleteDocking_TransitionsToDocked()
+        {
+            var state = new DockingState(
+                DockingPhase.Aligning,
+                TestStationId,
+                TestPortPos,
+                TestPortRot
+            );
+            var action = new CompleteDockingAction(TestStationId);
+
+            var result = DockingReducer.Reduce(state, action);
+
+            Assert.AreEqual(DockingPhase.Docked, result.Phase);
+        }
+
+        [Test]
+        public void Aligning_Cancel_TransitionsToNone()
+        {
+            var state = new DockingState(
+                DockingPhase.Aligning,
+                TestStationId,
+                TestPortPos,
+                TestPortRot
+            );
+            var action = new CancelDockingAction();
+
+            var result = DockingReducer.Reduce(state, action);
+
+            Assert.AreEqual(DockingPhase.None, result.Phase);
         }
     }
 }
