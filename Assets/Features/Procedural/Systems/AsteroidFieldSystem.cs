@@ -42,8 +42,14 @@ namespace VoidHarvest.Features.Procedural.Systems
             if (!SystemAPI.HasSingleton<AsteroidPrefabComponent>())
                 return;
 
-            // Data-driven path: process all AsteroidFieldConfigComponent entities
-            bool hasFieldConfig = false;
+            // Collect config data from query BEFORE any structural changes.
+            // Structural changes (CreateEntity, AddComponent) inside a Query foreach
+            // cause InvalidOperationException — so we snapshot everything first.
+            var configs = new NativeList<AsteroidFieldConfigComponent>(Allocator.Temp);
+            var configEntities = new NativeList<Entity>(Allocator.Temp);
+            var allOreWeights = new System.Collections.Generic.List<NativeArray<float>>();
+            var allMappings = new System.Collections.Generic.List<NativeArray<AsteroidVisualMappingElement>>();
+
             foreach (var (fieldConfig, weightBuffer, mappingBuf, entity)
                 in SystemAPI.Query<
                     RefRO<AsteroidFieldConfigComponent>,
@@ -51,12 +57,37 @@ namespace VoidHarvest.Features.Procedural.Systems
                     DynamicBuffer<AsteroidVisualMappingElement>>()
                 .WithEntityAccess())
             {
-                hasFieldConfig = true;
-                GenerateField(ref state, em, fieldConfig.ValueRO, weightBuffer, mappingBuf, entity);
+                configs.Add(fieldConfig.ValueRO);
+                configEntities.Add(entity);
+
+                var weights = new NativeArray<float>(weightBuffer.Length, Allocator.Temp);
+                for (int i = 0; i < weightBuffer.Length; i++)
+                    weights[i] = weightBuffer[i].NormalizedWeight;
+                allOreWeights.Add(weights);
+
+                var mappings = new NativeArray<AsteroidVisualMappingElement>(mappingBuf.Length, Allocator.Temp);
+                for (int i = 0; i < mappingBuf.Length; i++)
+                    mappings[i] = mappingBuf[i];
+                allMappings.Add(mappings);
             }
 
-            if (!hasFieldConfig)
+            if (configs.Length == 0)
+            {
+                configs.Dispose();
+                configEntities.Dispose();
                 return; // Wait for data-driven config
+            }
+
+            // Generate fields outside the query — structural changes are now safe
+            for (int i = 0; i < configs.Length; i++)
+            {
+                GenerateField(ref state, em, configs[i], allOreWeights[i], allMappings[i], configEntities[i]);
+                allOreWeights[i].Dispose();
+                allMappings[i].Dispose();
+            }
+
+            configs.Dispose();
+            configEntities.Dispose();
 
             _generated = true;
             state.Enabled = false;
@@ -66,21 +97,12 @@ namespace VoidHarvest.Features.Procedural.Systems
             ref SystemState state,
             EntityManager em,
             AsteroidFieldConfigComponent config,
-            DynamicBuffer<AsteroidOreWeightElement> weightBuffer,
-            DynamicBuffer<AsteroidVisualMappingElement> mappingBuf,
+            NativeArray<float> oreWeights,
+            NativeArray<AsteroidVisualMappingElement> mappingArray,
             Entity configEntity)
         {
             int count = config.Count;
             if (count <= 0) return;
-
-            // Copy buffers to NativeArrays (structural changes invalidate DynamicBuffer handles)
-            var oreWeights = new NativeArray<float>(weightBuffer.Length, Allocator.TempJob);
-            for (int i = 0; i < weightBuffer.Length; i++)
-                oreWeights[i] = weightBuffer[i].NormalizedWeight;
-
-            var mappingArray = new NativeArray<AsteroidVisualMappingElement>(mappingBuf.Length, Allocator.Temp);
-            for (int i = 0; i < mappingBuf.Length; i++)
-                mappingArray[i] = mappingBuf[i];
 
             // Load mesh prefab data from AsteroidPrefabComponent singleton entity
             var prefabSingletonEntity = SystemAPI.GetSingletonEntity<AsteroidPrefabComponent>();
@@ -99,9 +121,11 @@ namespace VoidHarvest.Features.Procedural.Systems
                 prefabArray = new NativeArray<AsteroidMeshPrefabElement>(0, Allocator.Temp);
             }
 
-            // Run generator job
+            // Run generator job — oreWeights must be TempJob for scheduled jobs
             var positions = new NativeArray<float3>(count, Allocator.TempJob);
             var oreTypeIds = new NativeArray<int>(count, Allocator.TempJob);
+            var jobOreWeights = new NativeArray<float>(oreWeights.Length, Allocator.TempJob);
+            jobOreWeights.CopyFrom(oreWeights);
 
             var job = new AsteroidFieldGeneratorJob
             {
@@ -110,9 +134,10 @@ namespace VoidHarvest.Features.Procedural.Systems
                 FieldRadius = config.Radius,
                 Positions = positions,
                 OreTypeIds = oreTypeIds,
-                OreWeights = oreWeights
+                OreWeights = jobOreWeights
             };
             job.Schedule(count, 64).Complete();
+            jobOreWeights.Dispose();
 
             bool useVisualMapping = prefabArray.Length > 0 && mappingArray.Length > 0;
 
@@ -290,9 +315,7 @@ namespace VoidHarvest.Features.Procedural.Systems
 
             positions.Dispose();
             oreTypeIds.Dispose();
-            oreWeights.Dispose();
             prefabArray.Dispose();
-            mappingArray.Dispose();
 
             string mode = useVisualMapping ? "visual mapping" : "single-prefab";
             Debug.Log($"[VoidHarvest] AsteroidFieldSystem: Generated {count} asteroids in {config.Radius}m radius ({mode} mode).");
