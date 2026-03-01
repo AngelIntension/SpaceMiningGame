@@ -38,7 +38,7 @@ Refactor VoidHarvest's ore and asteroid spawning systems from hard-coded definit
 **Pre-Design Check**: ALL GATES PASS. No deviations required.
 
 **Post-Design Re-Check (Phase 1 complete)**:
-- G1 PASS: OreDefinition and AsteroidFieldDefinition are ScriptableObjects (immutable at runtime). OreFieldEntry is a serializable struct (value type). OreTypeBlob is readonly struct in BlobAsset. No mutable domain state introduced.
+- G1 PASS: OreDefinition and AsteroidFieldDefinition are ScriptableObjects (immutable at runtime). OreFieldEntry is a serializable struct (value type) — NOT readonly due to Unity serialization limitation (CONSTITUTION DEVIATION documented in code). OreTypeBlob is readonly struct in BlobAsset. No mutable domain state introduced.
 - G2 PASS: Weight normalization is a pure function. AsteroidFieldGeneratorJob remains Burst-compiled with seeded RNG. All existing pure reducers unchanged.
 - G3 PASS: BlobAsset keeps only 3 float fields (lean). OreFieldEntry avoids managed references in Burst path. Entity creation via RenderMeshUtility preserved.
 - G4 PASS: ScriptableObjects for all static data. ECS components for runtime. Composition via OreFieldEntry[], no inheritance.
@@ -206,4 +206,5 @@ Phase order ensures no broken state:
 | AsteroidRotationSpeedMin | 0.0 |
 | AsteroidRotationSpeedMax | 15.0 |
 | Seed | 42 |
+| MinScaleFraction | 0.3 |
 | Ore Entries | Luminite (weight 6), Ferrox (weight 3), Auralite (weight 1) |

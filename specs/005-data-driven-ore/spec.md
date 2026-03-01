@@ -98,7 +98,7 @@ The HOWTOPLAY.md file and any in-game help text are updated to reference the new
 - What happens when two asteroid fields overlap spatially? Asteroids from both fields coexist without interference — each field manages its own entities.
 - What happens when a player is actively mining an asteroid when the scene reloads? Mining session state clears gracefully as per existing behavior.
 - What happens when an OreDefinition has zero baseYieldPerSecond? Mining produces no yield — the beam connects but extracts nothing.
-- What happens when asteroid size range min exceeds max? The system clamps or swaps values and logs a warning.
+- What happens when asteroid size range min exceeds max? The system swaps the values so min < max and logs a warning.
 
 ---
 
@@ -116,7 +116,7 @@ The HOWTOPLAY.md file and any in-game help text are updated to reference the new
 
 #### AsteroidFieldDefinition ScriptableObject
 
-- **FR-006**: System MUST provide an AsteroidFieldDefinition ScriptableObject type with the following fields: field name (string), ore entries (list of OreDefinition references with per-ore weight overrides), total asteroid count (int), field radius (float, meters), asteroid size range (min/max float), asteroid rotation speed range (min/max float), random seed (uint), and visual variant references (meshes per ore type with tint colors).
+- **FR-006**: System MUST provide an AsteroidFieldDefinition ScriptableObject type with the following fields: field name (string), ore entries (list of OreDefinition references with per-ore weight overrides), total asteroid count (int), field radius (float, meters), asteroid size range (min/max float), asteroid rotation speed range (min/max float), random seed (uint), minimum scale fraction (float, clamped to [0.1, 0.5], default 0.3 — smallest asteroid scale at full depletion), and visual variant references (meshes per ore type with tint colors).
 - **FR-007**: System MUST allow designers to create new AsteroidFieldDefinition assets via the Unity Editor Create Asset menu without modifying code.
 - **FR-008**: System MUST normalize ore entry weights at spawn time so they sum to 1.0, enabling designers to use arbitrary weight values (e.g., 7:2:1 instead of 0.7:0.2:0.1).
 - **FR-009**: System MUST support multiple AsteroidFieldDefinition instances in a single scene, each spawning independently.
@@ -161,7 +161,7 @@ The HOWTOPLAY.md file and any in-game help text are updated to reference the new
 
 - **OreDefinition**: A ScriptableObject representing a single mineable ore type. Contains all static data for spawning, mining, display, and economy: identifier, display name, rarity tier, icon, base value, description, rarity weight, base yield, hardness, volume per unit, beam color, and processing time. Replaces the legacy OreTypeDefinition.
 - **AsteroidFieldDefinition**: A ScriptableObject representing a complete asteroid field configuration. Contains ore composition (weighted references to OreDefinition assets), spatial parameters (count, radius, size range, rotation range, seed), and visual mapping (mesh variants and tint overrides per ore type). Replaces the legacy hard-coded AsteroidFieldConfig.
-- **OreFieldEntry**: A serializable entry within AsteroidFieldDefinition linking one OreDefinition to a spawn weight and optional visual variant overrides. Enables per-field ore composition tuning.
+- **OreFieldEntry**: A serializable entry within AsteroidFieldDefinition linking one OreDefinition to a spawn weight and visual variant fields (mesh variants, tint color). Enables per-field ore composition tuning.
 - **AsteroidFieldSpawner**: A scene component that references an AsteroidFieldDefinition and triggers asteroid entity creation at scene load. Replaces the hard-coded initialization path.
 
 ---
@@ -208,6 +208,7 @@ The HOWTOPLAY.md file and any in-game help text are updated to reference the new
 - **Seed determinism**: Asteroid field generation remains deterministic given the same seed, ensuring reproducible layouts.
 - **Existing assembly structure**: New types are added to existing assembly definitions rather than creating new assemblies.
 - **BlobAsset adaptation**: The existing OreTypeBlobBakingSystem pattern is adapted for the new OreDefinition type.
+- **OreFieldEntry mutability**: `OreFieldEntry` is a `[Serializable] struct` (not `readonly struct`) because Unity's serialization system requires mutable backing fields for Inspector editing. This is a Constitution Principle I deviation justified by Unity engine limitation. A `// CONSTITUTION DEVIATION:` comment is required in the source file.
 
 ---
 
