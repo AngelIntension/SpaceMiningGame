@@ -20,18 +20,29 @@ namespace VoidHarvest.Features.Mining.Systems
 
         /// <summary>
         /// Set the OreDefinition array to bake. Called from managed code during setup.
-        /// Immediately populates the OreId lookup for GetOreId() reverse mapping.
+        /// Immediately populates the OreId lookup and OreDisplayNames registry.
         /// </summary>
         public static void SetOreDefinitions(OreDefinition[] definitions)
         {
             _pendingDefinitions = definitions;
 
-            // Populate OreId lookup immediately so GetOreId() is available
+            // Populate lookups immediately so GetOreId()/OreDisplayNames.Get() are available
             if (definitions != null && definitions.Length > 0)
             {
                 _oreIdLookup = new string[definitions.Length];
+                var displayNames = new string[definitions.Length];
+                var oreIdToDisplayName = new System.Collections.Generic.Dictionary<string, string>(definitions.Length);
                 for (int i = 0; i < definitions.Length; i++)
-                    _oreIdLookup[i] = definitions[i] != null ? definitions[i].OreId : "";
+                {
+                    var def = definitions[i];
+                    string oreId = def != null ? def.OreId : "";
+                    string displayName = def != null && !string.IsNullOrEmpty(def.DisplayName) ? def.DisplayName : oreId;
+                    _oreIdLookup[i] = oreId;
+                    displayNames[i] = displayName;
+                    if (!string.IsNullOrEmpty(oreId))
+                        oreIdToDisplayName[oreId] = displayName;
+                }
+                OreDisplayNames.SetLookups(displayNames, oreIdToDisplayName);
             }
         }
 

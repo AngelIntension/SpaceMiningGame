@@ -172,7 +172,7 @@ namespace VoidHarvest.Features.HUD.Views
                 _resourceList.Clear();
                 foreach (var kvp in gameState.Loop.Inventory.Stacks)
                 {
-                    var label = new Label($"{kvp.Key}: {kvp.Value.Quantity}");
+                    var label = new Label($"{OreDisplayNames.Get(kvp.Key)}: {kvp.Value.Quantity}");
                     label.AddToClassList("hud-label");
                     _resourceList.Add(label);
                 }
@@ -186,7 +186,7 @@ namespace VoidHarvest.Features.HUD.Views
                 {
                     _miningPanel.style.display = DisplayStyle.Flex;
                     if (_miningOreLabel != null)
-                        _miningOreLabel.text = $"Mining: {mining.ActiveOreId.GetValueOrDefault("Unknown")}";
+                        _miningOreLabel.text = $"Mining: {OreDisplayNames.Get(mining.ActiveOreId.GetValueOrDefault("Unknown"))}";
                     if (_miningYieldLabel != null)
                         _miningYieldLabel.text = $"Yield: {mining.YieldAccumulator:F1} units";
 
