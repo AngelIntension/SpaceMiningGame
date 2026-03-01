@@ -1,47 +1,47 @@
 <!--
   ========== Sync Impact Report ==========
-  Version change: 1.1.0 → 1.2.0
-  Bump rationale: MINOR — new material guidance section added
-    (Editor Automation via Unity MCP) with mandatory quality gates
-    for compilation verification, console monitoring, and integrated
-    test execution. Existing Testing & Development Workflow sections
-    expanded with MCP-aware procedures.
+  Version change: 1.2.0 → 1.3.0
+  Bump rationale: MINOR — new mandatory Player Documentation section
+    added under Development Workflow. Requires a HOWTOPLAY.md file at
+    the project root to be maintained as a living document, updated
+    whenever player-facing features are added or changed.
 
   Modified principles: None renamed or removed.
 
   Modified sections:
-    - Testing & Quality Standards: Added MCP-based test execution
-      mandate and console-clean gate.
-    - Development Workflow: Added Unity MCP verification loop and
-      scene validation requirements.
+    - Development Workflow: Added "Player Documentation" subsection
+      mandating HOWTOPLAY.md maintenance.
 
   Added sections:
-    - Editor Automation (Unity MCP) (new subsection under
-      Technical Standards & Coding Style):
-        · Compilation Verification Gate
-        · Console Monitoring
-        · Scene & Asset Validation
-        · Script Management
-        · Test Execution
+    - Player Documentation (new subsection under Development Workflow):
+        · HOWTOPLAY.md file requirement at project root
+        · Mandatory update gate for player-facing feature changes
+        · Required content structure (controls, mechanics, UI)
+        · Version-aligned with development roadmap phases
 
   Removed sections: None
 
   Templates requiring updates:
     - .specify/templates/plan-template.md:         ✅ No update needed
-      (Constitution Check is dynamic; MCP gates apply at
+      (Constitution Check is dynamic; player docs gate applies at
       implementation time, not plan time)
     - .specify/templates/spec-template.md:          ✅ No update needed
-      (MCP is a development tool, not a spec concern)
+      (specs define features; player docs are a delivery artifact)
     - .specify/templates/tasks-template.md:         ✅ No update needed
-      (task structure unchanged; MCP verification is a
-      cross-cutting workflow concern, not a task type)
+      (task structure unchanged; player docs update is a
+      cross-cutting workflow concern, not a task type — the
+      existing "Documentation updates" sample task in the
+      Polish phase already covers this pattern)
     - .specify/templates/checklist-template.md:     ✅ No update needed
     - .specify/templates/agent-file-template.md:    ✅ No update needed
     - .specify/templates/commands/:                 ✅ N/A (no files)
 
-  Carried-forward TODOs: None (all previous TODOs resolved).
+  Carried-forward TODOs: None.
 
-  New TODOs (v1.2.0): None.
+  New TODOs (v1.3.0):
+    - Create initial HOWTOPLAY.md at project root covering Phase 0
+      features (ship controls, mining, inventory, HUD, station
+      docking). This is a one-time bootstrap task.
   ========================================
 -->
 
@@ -436,6 +436,56 @@ Each feature folder follows the `Data/`, `Systems/`, `Views/`,
   architectural sign-off, especially on any immutability
   trade-offs or DOTS/hybrid boundary decisions.
 
+### Player Documentation
+
+A `HOWTOPLAY.md` file MUST exist at the project root and serve as
+the authoritative player-facing instructions for the game. This is
+a living document that evolves alongside the game.
+
+**Maintenance Rules**:
+- `HOWTOPLAY.md` MUST be created before the first playable build
+  is delivered and MUST remain up-to-date thereafter.
+- Any feature that adds, removes, or changes player-facing behavior
+  (controls, mechanics, UI interactions, game systems) MUST include
+  a corresponding update to `HOWTOPLAY.md` as part of the same PR.
+  This is a delivery gate — a feature is not complete until the
+  player instructions reflect it.
+- Stale or missing instructions for shipped features are treated as
+  bugs and MUST be resolved with the same priority as functional
+  defects.
+
+**Required Content** (sections MUST exist once the relevant feature
+ships):
+- **Getting Started** — How to launch and begin playing.
+- **Controls** — Complete control reference (mouse, keyboard,
+  hotbar) matching the current input bindings.
+- **Ship Piloting** — Movement, alignment, thrust, camera controls.
+- **Mining** — How to target asteroids, activate mining beams,
+  collect resources.
+- **Inventory & Resources** — How to view and manage collected
+  resources.
+- **HUD & UI** — Explanation of all HUD elements, radial menus,
+  and hotbar usage.
+- **Station Docking** — How to approach, dock, undock, and access
+  station services.
+- Additional sections MUST be added as new systems ship (fleet
+  management, tech tree, base building, economy, etc.).
+
+**Style Guidelines**:
+- Written for players, not developers — no code references,
+  internal type names, or architecture jargon.
+- Use clear, concise language. Prefer short paragraphs and bullet
+  lists over dense prose.
+- Include default key bindings in a reference table format.
+- MAY include ASCII diagrams or references to in-game screenshots
+  where they aid comprehension.
+
+**Rationale**: Players cannot enjoy a game they do not understand.
+Maintaining player instructions as a first-class project artifact
+ensures discoverability of features, reduces onboarding friction,
+and forces developers to articulate gameplay from the player's
+perspective — often surfacing UX issues in the process.
+
 ## Initial Scope Guardrails (MVP)
 
 The MVP (Phase 0) scope is strictly limited to validate the core
@@ -551,4 +601,4 @@ all other practices, conventions, or preferences.
   feature plan.
 - Per-milestone constitution review to incorporate lessons learned.
 
-**Version**: 1.2.0 | **Ratified**: 2026-02-26 | **Last Amended**: 2026-02-27
+**Version**: 1.3.0 | **Ratified**: 2026-02-26 | **Last Amended**: 2026-03-01
