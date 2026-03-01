@@ -2,7 +2,6 @@ using UnityEngine;
 using VContainer;
 using VContainer.Unity;
 using VoidHarvest.Features.Mining.Data;
-using VoidHarvest.Features.Procedural.Data;
 using VoidHarvest.Features.Docking.Data;
 
 /// <summary>
@@ -16,9 +15,6 @@ public class SceneLifetimeScope : LifetimeScope
     [SerializeField] private DepletionVFXConfig depletionVFXConfig;
     [SerializeField] private OreChunkConfig oreChunkConfig;
     [SerializeField] private MiningAudioConfig miningAudioConfig;
-
-    [Header("Visual Mapping")]
-    [SerializeField] private AsteroidVisualMappingConfig asteroidVisualMappingConfig;
 
     [Header("Docking")]
     [SerializeField] private DockingConfig dockingConfig;
@@ -39,8 +35,6 @@ public class SceneLifetimeScope : LifetimeScope
             builder.RegisterInstance(oreChunkConfig);
         if (miningAudioConfig != null)
             builder.RegisterInstance(miningAudioConfig);
-        if (asteroidVisualMappingConfig != null)
-            builder.RegisterInstance(asteroidVisualMappingConfig);
         if (dockingConfig != null)
             builder.RegisterInstance(dockingConfig);
         if (dockingVFXConfig != null)

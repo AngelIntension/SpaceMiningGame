@@ -15,18 +15,18 @@ MonoBehaviour:
   m_GroupName: OreDefinitions
   m_GUID: 10624356ddd2b414288efc93675d59d6
   m_SerializeEntries:
-  - m_GUID: a38b33bc6a9d4b549b92a1be4ae9abe1
-    m_Address: Pyroxeres
+  - m_GUID: 6a9933a5370686a4cb099393a2fbc00e
+    m_Address: Luminite
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: b13ece92bd6a1194d8593ef563b3554d
-    m_Address: Veldspar
+  - m_GUID: 2d2cf883687199a4489f8d061d7cb003
+    m_Address: Ferrox
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: eacade31c0b879a4197db7fde183fb0d
-    m_Address: Scordite
+  - m_GUID: 85959a9e280c3704a9f40a28dc21f5d5
+    m_Address: Auralite
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

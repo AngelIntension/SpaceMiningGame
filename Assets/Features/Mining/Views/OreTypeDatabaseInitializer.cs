@@ -5,13 +5,13 @@ using VoidHarvest.Features.Mining.Systems;
 namespace VoidHarvest.Features.Mining.Views
 {
     /// <summary>
-    /// Initializes the OreTypeBlobBakingSystem with OreTypeDefinition ScriptableObjects.
+    /// Initializes the OreTypeBlobBakingSystem with OreDefinition ScriptableObjects.
     /// Place on a GameObject in the scene and assign ore definitions in the inspector.
-    /// See MVP-05: Mining beam and yield.
+    /// See Spec 005: Data-Driven Ore System.
     /// </summary>
     public sealed class OreTypeDatabaseInitializer : MonoBehaviour
     {
-        [SerializeField] private OreTypeDefinition[] oreDefinitions;
+        [SerializeField] private OreDefinition[] oreDefinitions;
 
         private void Awake()
         {

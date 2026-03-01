@@ -77,7 +77,7 @@ namespace VoidHarvest.Features.Mining.Data
 
     /// <summary>
     /// Singleton component holding the MinScaleFraction config value for AsteroidScaleSystem.
-    /// Set by AsteroidPrefabBaker from AsteroidVisualMappingConfig.
+    /// Set by AsteroidFieldSpawnerBaker from AsteroidFieldDefinition.
     /// See FR-019: Depletion shrink.
     /// </summary>
     public struct AsteroidVisualMappingSingleton : IComponentData

@@ -5,11 +5,11 @@ using VoidHarvest.Features.Mining.Data;
 namespace VoidHarvest.Features.Mining.Systems
 {
     /// <summary>
-    /// Bakes OreTypeDefinition ScriptableObjects into an OreTypeBlobDatabase BlobAsset.
+    /// Bakes OreDefinition ScriptableObjects into an OreTypeBlobDatabase BlobAsset.
     /// Creates a singleton entity with OreTypeDatabaseComponent.
     /// Also maintains a managed string[] OreId lookup for MiningActionDispatchSystem.
     /// // CONSTITUTION DEVIATION: DOTS SystemBase uses static for managed data access
-    /// See MVP-05: Mining beam and yield.
+    /// See Spec 005: Data-Driven Ore System.
     /// </summary>
     [UpdateInGroup(typeof(InitializationSystemGroup))]
     public partial class OreTypeBlobBakingSystem : SystemBase
@@ -19,15 +19,34 @@ namespace VoidHarvest.Features.Mining.Systems
         private BlobAssetReference<OreTypeBlobDatabase> _blobRef;
 
         /// <summary>
-        /// Set the OreTypeDefinition array to bake. Called from managed code during setup.
+        /// Set the OreDefinition array to bake. Called from managed code during setup.
+        /// Immediately populates the OreId lookup and OreDisplayNames registry.
         /// </summary>
-        public static void SetOreDefinitions(OreTypeDefinition[] definitions)
+        public static void SetOreDefinitions(OreDefinition[] definitions)
         {
-            // Store definitions for OnUpdate to process
             _pendingDefinitions = definitions;
+
+            // Populate lookups immediately so GetOreId()/OreDisplayNames.Get() are available
+            if (definitions != null && definitions.Length > 0)
+            {
+                _oreIdLookup = new string[definitions.Length];
+                var displayNames = new string[definitions.Length];
+                var oreIdToDisplayName = new System.Collections.Generic.Dictionary<string, string>(definitions.Length);
+                for (int i = 0; i < definitions.Length; i++)
+                {
+                    var def = definitions[i];
+                    string oreId = def != null ? def.OreId : "";
+                    string displayName = def != null && !string.IsNullOrEmpty(def.DisplayName) ? def.DisplayName : oreId;
+                    _oreIdLookup[i] = oreId;
+                    displayNames[i] = displayName;
+                    if (!string.IsNullOrEmpty(oreId))
+                        oreIdToDisplayName[oreId] = displayName;
+                }
+                OreDisplayNames.SetLookups(displayNames, oreIdToDisplayName);
+            }
         }
 
-        private static OreTypeDefinition[] _pendingDefinitions;
+        private static OreDefinition[] _pendingDefinitions;
 
         /// <summary>
         /// Get the OreId string for an OreTypeId index.
@@ -53,7 +72,6 @@ namespace VoidHarvest.Features.Mining.Systems
                 return;
 
             var definitions = _pendingDefinitions;
-            _oreIdLookup = new string[definitions.Length];
 
             // Build blob asset
             using var builder = new BlobBuilder(Allocator.Temp);
@@ -63,14 +81,10 @@ namespace VoidHarvest.Features.Mining.Systems
             for (int i = 0; i < definitions.Length; i++)
             {
                 var def = definitions[i];
-                _oreIdLookup[i] = def.OreId;
-
                 oreArray[i] = new OreTypeBlob
                 {
                     BaseYieldPerSecond = def.BaseYieldPerSecond,
                     Hardness = def.Hardness,
-                    Tier = def.Tier,
-                    Rarity = def.Rarity,
                     VolumePerUnit = def.VolumePerUnit
                 };
             }

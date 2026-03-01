@@ -3,6 +3,7 @@
     "rootNamespace": "VoidHarvest.Features.Procedural.Tests",
     "references": [
         "VoidHarvest.Features.Procedural",
+        "VoidHarvest.Features.Mining",
         "VoidHarvest.Core.Extensions",
         "Unity.Mathematics",
         "Unity.Burst",

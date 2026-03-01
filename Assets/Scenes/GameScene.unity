@@ -194,7 +194,6 @@ MonoBehaviour:
   depletionVFXConfig: {fileID: 11400000, guid: c0ea49c6882dea84aab85531f6b4737d, type: 2}
   oreChunkConfig: {fileID: 11400000, guid: 2179d0b939cbc8748b8a220df4f46f00, type: 2}
   miningAudioConfig: {fileID: 11400000, guid: 6cfb7f252f44b014bbc6bbc5260de69a, type: 2}
-  asteroidVisualMappingConfig: {fileID: 11400000, guid: b2c3d4e5f6a70824b9c0d1e2f3a4b5c6, type: 2}
   dockingConfig: {fileID: 11400000, guid: 828e08e033e3ec24497f57f82ece191c, type: 2}
   dockingVFXConfig: {fileID: 11400000, guid: 925ef3bdfb04a7a4b8bcf517e00706c9, type: 2}
   dockingAudioConfig: {fileID: 11400000, guid: 7fd96f0185cb7c74db4372eaec51fd77, type: 2}
@@ -1166,9 +1165,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: VoidHarvest.Features.Mining::VoidHarvest.Features.Mining.Views.MiningBeamView
   oreDefinitions:
-  - {fileID: 11400000, guid: b13ece92bd6a1194d8593ef563b3554d, type: 2}
-  - {fileID: 11400000, guid: eacade31c0b879a4197db7fde183fb0d, type: 2}
-  - {fileID: 11400000, guid: a38b33bc6a9d4b549b92a1be4ae9abe1, type: 2}
+  - {fileID: 11400000, guid: 6a9933a5370686a4cb099393a2fbc00e, type: 2}
+  - {fileID: 11400000, guid: 2d2cf883687199a4489f8d061d7cb003, type: 2}
+  - {fileID: 11400000, guid: 85959a9e280c3704a9f40a28dc21f5d5, type: 2}
 --- !u!120 &979882649
 LineRenderer:
   serializedVersion: 3
@@ -1544,9 +1543,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: VoidHarvest.Features.Mining::VoidHarvest.Features.Mining.Views.OreTypeDatabaseInitializer
   oreDefinitions:
-  - {fileID: 11400000, guid: b13ece92bd6a1194d8593ef563b3554d, type: 2}
-  - {fileID: 11400000, guid: eacade31c0b879a4197db7fde183fb0d, type: 2}
-  - {fileID: 11400000, guid: a38b33bc6a9d4b549b92a1be4ae9abe1, type: 2}
+  - {fileID: 11400000, guid: 6a9933a5370686a4cb099393a2fbc00e, type: 2}
+  - {fileID: 11400000, guid: 2d2cf883687199a4489f8d061d7cb003, type: 2}
+  - {fileID: 11400000, guid: 85959a9e280c3704a9f40a28dc21f5d5, type: 2}
 --- !u!4 &1351852031
 Transform:
   m_ObjectHideFlags: 0

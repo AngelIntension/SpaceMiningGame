@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bb1925a6878e1db4eb55cb4e18b80704, type: 3}
+  m_Name: DefaultField
+  m_EditorClassIdentifier: VoidHarvest.Features.Procedural::VoidHarvest.Features.Procedural.Data.AsteroidFieldDefinition
+  FieldName: Default Asteroid Field
+  OreEntries:
+  - OreDefinition: {fileID: 11400000, guid: 6a9933a5370686a4cb099393a2fbc00e, type: 2}
+    Weight: 6
+    MeshVariantA: {fileID: 4300000, guid: 6cf56aafee8da5d49854bc53853169bd, type: 3}
+    MeshVariantB: {fileID: 4300000, guid: 8111945ed5cb2cf47b6ddf59e7cc7b8b, type: 3}
+    TintColor: {r: 1, g: 1.2, b: 1.4, a: 1}
+  - OreDefinition: {fileID: 11400000, guid: 2d2cf883687199a4489f8d061d7cb003, type: 2}
+    Weight: 3
+    MeshVariantA: {fileID: 4300000, guid: 0f83ecdf7898079499761b82d8bd7739, type: 3}
+    MeshVariantB: {fileID: 4300000, guid: c0dc20ee49701bf45968e29ad1b01efe, type: 3}
+    TintColor: {r: 1.4, g: 0.9, b: 0.3, a: 1}
+  - OreDefinition: {fileID: 11400000, guid: 85959a9e280c3704a9f40a28dc21f5d5, type: 2}
+    Weight: 1
+    MeshVariantA: {fileID: 4300000, guid: 7cf3388526c2fd94e98571cde1724a27, type: 3}
+    MeshVariantB: {fileID: 4300000, guid: 1c51f10354443044d9c790d1db68be2a, type: 3}
+    TintColor: {r: 1.1, g: 0.3, b: 1.2, a: 1}
+  AsteroidCount: 300
+  FieldRadius: 2000
+  AsteroidSizeMin: 3
+  AsteroidSizeMax: 5
+  RotationSpeedMin: 0
+  RotationSpeedMax: 15
+  Seed: 42
+  MinScaleFraction: 0.3

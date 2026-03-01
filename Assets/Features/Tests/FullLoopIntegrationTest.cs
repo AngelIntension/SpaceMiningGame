@@ -57,7 +57,7 @@ namespace VoidHarvest.Features.Tests
         {
             // US2: Select target asteroid
             int asteroidId = 42;
-            string oreId = "veldspar";
+            string oreId = "luminite";
 
             // US3: Begin mining — reducer sets active session
             _store.Dispatch(new BeginMiningAction(asteroidId, oreId));
@@ -104,12 +104,12 @@ namespace VoidHarvest.Features.Tests
             // Fill cargo to near capacity
             var state = _store.Current;
             float volumePerUnit = 10f;
-            _store.Dispatch(new AddResourceAction("veldspar", 9, volumePerUnit)); // 90/100
+            _store.Dispatch(new AddResourceAction("luminite", 9, volumePerUnit)); // 90/100
 
             var prevInventory = _store.Current.Loop.Inventory;
 
             // Try to add more than remaining capacity
-            _store.Dispatch(new AddResourceAction("veldspar", 2, volumePerUnit)); // 90 + 20 = 110 > 100
+            _store.Dispatch(new AddResourceAction("luminite", 2, volumePerUnit)); // 90 + 20 = 110 > 100
 
             // Inventory unchanged — cargo full
             Assert.AreSame(prevInventory, _store.Current.Loop.Inventory);
@@ -118,7 +118,7 @@ namespace VoidHarvest.Features.Tests
         [Test]
         public void FullLoop_AsteroidDepleted_StopMiningResetsSession()
         {
-            _store.Dispatch(new BeginMiningAction(99, "scordite"));
+            _store.Dispatch(new BeginMiningAction(99, "ferrox"));
 
             // Simulate mining ticks
             for (int i = 0; i < 10; i++)
@@ -136,7 +136,7 @@ namespace VoidHarvest.Features.Tests
         public void ReducerLatency_Under2ms_PerDispatch()
         {
             // Warm up
-            _store.Dispatch(new BeginMiningAction(1, "veldspar"));
+            _store.Dispatch(new BeginMiningAction(1, "luminite"));
             _store.Dispatch(new StopMiningAction());
 
             var sw = Stopwatch.StartNew();
@@ -144,9 +144,9 @@ namespace VoidHarvest.Features.Tests
 
             for (int i = 0; i < iterations; i++)
             {
-                _store.Dispatch(new BeginMiningAction(i, "veldspar"));
+                _store.Dispatch(new BeginMiningAction(i, "luminite"));
                 _store.Dispatch(new MiningTickAction(0.016f, 1f, 1f, 0f, 10f));
-                _store.Dispatch(new AddResourceAction("veldspar", 1, 0.1f));
+                _store.Dispatch(new AddResourceAction("luminite", 1, 0.1f));
                 _store.Dispatch(new StopMiningAction());
             }
 
