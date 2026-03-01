@@ -33,7 +33,7 @@ namespace VoidHarvest.Features.Procedural.Systems
         /// See FR-008: Ore tint, data-model.md AsteroidComponent.PristineTintedColor.
         /// </summary>
         /// <param name="pristineGray">Base gray value (typically 0.314).</param>
-        /// <param name="oreTint">Ore-specific tint color from AsteroidVisualMappingConfig.</param>
+        /// <param name="oreTint">Ore-specific tint color from AsteroidFieldDefinition.</param>
         /// <returns>Tinted pristine color as float4 (RGBA).</returns>
         public static float4 CalculatePristineTintedColor(float pristineGray, Color oreTint)
         {

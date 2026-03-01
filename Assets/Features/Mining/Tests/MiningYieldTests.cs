@@ -98,7 +98,7 @@ namespace VoidHarvest.Features.Mining.Tests
         [Test]
         public void OreIdPassthrough_ReturnedOreIdMatchesInput()
         {
-            const string expectedOreId = "ore_veldspar";
+            const string expectedOreId = "ore_luminite";
             var result = MiningReducer.CalculateYield(expectedOreId, 1f, 1f, 1f, 0f, 1f);
 
             Assert.AreEqual(expectedOreId, result.OreId,

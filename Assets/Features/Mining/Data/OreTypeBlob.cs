@@ -4,20 +4,16 @@ namespace VoidHarvest.Features.Mining.Data
 {
     /// <summary>
     /// Baked ore type data. Burst-accessible via BlobAssetReference.
-    /// Baked from OreTypeDefinition ScriptableObject at initialization.
+    /// Baked from OreDefinition ScriptableObject at initialization.
     /// See MVP-05: Mining beam and yield.
     /// </summary>
     public struct OreTypeBlob
     {
-        /// <summary>Base ore yield per second before modifiers. See MVP-05.</summary>
+        /// <summary>Base ore yield per second before modifiers. See Spec 005.</summary>
         public float BaseYieldPerSecond;
-        /// <summary>Extraction difficulty multiplier (denominator in yield formula). See MVP-05.</summary>
+        /// <summary>Extraction difficulty multiplier (denominator in yield formula). See Spec 005.</summary>
         public float Hardness;
-        /// <summary>Ore tier for progression gating. See MVP-05.</summary>
-        public int Tier;
-        /// <summary>Spawn rarity weight [0, 1]. See MVP-07.</summary>
-        public float Rarity;
-        /// <summary>Cargo volume consumed per unit mined. See MVP-06.</summary>
+        /// <summary>Cargo volume consumed per unit mined. See Spec 005.</summary>
         public float VolumePerUnit;
     }
 

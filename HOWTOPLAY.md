@@ -126,16 +126,16 @@ properties:
 
 | Ore | Rarity | Yield Rate | Hardness | Cargo Volume |
 |-----|--------|------------|----------|--------------|
-| Veldspar | Common (60%) | Fast (10/s) | Low (1.0) | 0.1 m³/unit |
-| Scordite | Uncommon (30%) | Medium (7/s) | Medium (1.5) | 0.15 m³/unit |
-| Pyroxeres | Rare (10%) | Slow (5/s) | High (2.5) | 0.25 m³/unit |
+| Luminite | Common (60%) | Fast (10/s) | Low (1.0) | 0.1 m³/unit |
+| Ferrox | Uncommon (30%) | Medium (7/s) | Medium (1.5) | 0.15 m³/unit |
+| Auralite | Rare (10%) | Slow (5/s) | High (2.5) | 0.25 m³/unit |
 
-- **Veldspar** is the easiest to mine and the most common. Great for
-  filling your hold quickly.
-- **Scordite** yields less per second and takes longer to extract, but
-  is more valuable.
-- **Pyroxeres** is rare and tough to mine, but the most valuable ore
-  in the field.
+- **Luminite** is an ice-blue common ore — the easiest to mine and
+  the most abundant. Great for filling your hold quickly.
+- **Ferrox** is a bronze-orange uncommon ore. It yields less per
+  second and takes longer to extract, but is more valuable.
+- **Auralite** is a rare violet ore, tough to mine but the most
+  valuable resource in the field.
 
 ### Mining Beam
 
@@ -178,7 +178,7 @@ volume that limits how much you can carry.
 - Each ore type is stored as a separate stack showing the type and
   quantity.
 - Total cargo used is the sum of all ore volumes:
-  e.g., 100 Veldspar (0.1 m³ each) = 10 m³ used.
+  e.g., 100 Luminite (0.1 m³ each) = 10 m³ used.
 - When your cargo hold is full, mining stops automatically and a
   **"Cargo Full"** warning appears on screen.
 - Your inventory can hold up to 20 different resource stacks.
@@ -189,13 +189,13 @@ With a Small Mining Barge (100 m³ capacity):
 
 | Ore | Quantity | Volume Each | Total Volume |
 |-----|----------|-------------|-------------|
-| Veldspar | 500 | 0.1 m³ | 50.0 m³ |
-| Scordite | 200 | 0.15 m³ | 30.0 m³ |
-| Pyroxeres | 40 | 0.25 m³ | 10.0 m³ |
+| Luminite | 500 | 0.1 m³ | 50.0 m³ |
+| Ferrox | 200 | 0.15 m³ | 30.0 m³ |
+| Auralite | 40 | 0.25 m³ | 10.0 m³ |
 | **Total** | | | **90.0 m³** |
 
-That leaves 10 m³ of free space — enough for 100 more Veldspar,
-66 more Scordite, or 40 more Pyroxeres.
+That leaves 10 m³ of free space — enough for 100 more Luminite,
+66 more Ferrox, or 40 more Auralite.
 
 ## HUD & UI
 

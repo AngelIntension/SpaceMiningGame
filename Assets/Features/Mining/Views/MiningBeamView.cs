@@ -18,7 +18,7 @@ namespace VoidHarvest.Features.Mining.Views
     [RequireComponent(typeof(LineRenderer))]
     public sealed class MiningBeamView : MonoBehaviour
     {
-        [SerializeField] private OreTypeDefinition[] oreDefinitions;
+        [SerializeField] private OreDefinition[] oreDefinitions;
 
         private IStateStore _stateStore;
         private MiningVFXConfig _vfxConfig;

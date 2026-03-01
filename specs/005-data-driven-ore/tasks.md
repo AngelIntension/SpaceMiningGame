@@ -26,8 +26,8 @@
 
 **Purpose**: Create folder structure for new asset instances
 
-- [ ] T001 Create `Assets/Features/Mining/Data/Ores/` folder for OreDefinition asset instances
-- [ ] T002 [P] Create `Assets/Features/Procedural/Data/Fields/` folder for AsteroidFieldDefinition asset instances
+- [X] T001 Create `Assets/Features/Mining/Data/Ores/` folder for OreDefinition asset instances
+- [X] T002 [P] Create `Assets/Features/Procedural/Data/Fields/` folder for AsteroidFieldDefinition asset instances
 
 ---
 
@@ -39,14 +39,14 @@
 
 ### Tests (TDD — write FIRST, verify FAIL)
 
-- [ ] T003 [P] Write TDD tests for OreRarityTier enum values (Common, Uncommon, Rare exist as enum members) in `Assets/Features/Mining/Tests/OreDefinitionTests.cs`
-- [ ] T004 Write TDD tests for OreDefinition ScriptableObject (all 12 fields exist with correct types; has CreateAssetMenu attribute with path "VoidHarvest/Ore Definition"; positive validation on BaseYieldPerSecond, Hardness, VolumePerUnit) in `Assets/Features/Mining/Tests/OreDefinitionTests.cs`
+- [X] T003 [P] Write TDD tests for OreRarityTier enum values (Common, Uncommon, Rare exist as enum members) in `Assets/Features/Mining/Tests/OreDefinitionTests.cs`
+- [X] T004 Write TDD tests for OreDefinition ScriptableObject (all 12 fields exist with correct types; has CreateAssetMenu attribute with path "VoidHarvest/Ore Definition"; positive validation on BaseYieldPerSecond, Hardness, VolumePerUnit) in `Assets/Features/Mining/Tests/OreDefinitionTests.cs`
 
 ### Implementation
 
-- [ ] T005 [P] Create OreRarityTier enum with values Common, Uncommon, Rare in namespace VoidHarvest.Features.Mining.Data in `Assets/Features/Mining/Data/OreRarityTier.cs`
-- [ ] T006 Create OreDefinition ScriptableObject with all 12 fields (OreId string, DisplayName string, RarityTier OreRarityTier, Icon Sprite, BaseValue float, Description string [TextArea], RarityWeight float [Range(0,1)], BaseYieldPerSecond float, Hardness float, VolumePerUnit float, BeamColor Color, BaseProcessingTimePerUnit float) and `[CreateAssetMenu(menuName = "VoidHarvest/Ore Definition")]` in `Assets/Features/Mining/Data/OreDefinition.cs`
-- [ ] T007 Verify compilation via Unity console (MCP read_console) — zero errors from new types, TDD tests now pass
+- [X] T005 [P] Create OreRarityTier enum with values Common, Uncommon, Rare in namespace VoidHarvest.Features.Mining.Data in `Assets/Features/Mining/Data/OreRarityTier.cs`
+- [X] T006 Create OreDefinition ScriptableObject with all 12 fields (OreId string, DisplayName string, RarityTier OreRarityTier, Icon Sprite, BaseValue float, Description string [TextArea], RarityWeight float [Range(0,1)], BaseYieldPerSecond float, Hardness float, VolumePerUnit float, BeamColor Color, BaseProcessingTimePerUnit float) and `[CreateAssetMenu(menuName = "VoidHarvest/Ore Definition")]` in `Assets/Features/Mining/Data/OreDefinition.cs`
+- [X] T007 Verify compilation via Unity console (MCP read_console) — zero errors from new types, TDD tests now pass
 
 **Checkpoint**: OreRarityTier and OreDefinition data contracts established. All user story phases can now proceed.
 
@@ -60,19 +60,19 @@
 
 ### Tests for User Story 1 (TDD — write FIRST, verify FAIL)
 
-- [ ] T008 [P] [US1] Write TDD tests for OreTypeBlob readonly struct containing only 3 float fields (BaseYieldPerSecond, Hardness, VolumePerUnit — no Tier, no Rarity) in `Assets/Features/Mining/Tests/OreDefinitionTests.cs`
-- [ ] T009 [US1] Write TDD tests for OreTypeBlobBakingSystem baking OreDefinition[] into BlobAsset (verify blob entry count matches OreDefinition count, field values match, GetOreId reverse lookup returns correct OreId strings) in `Assets/Features/Mining/Tests/OreDefinitionTests.cs`
+- [X] T008 [P] [US1] Write TDD tests for OreTypeBlob readonly struct containing only 3 float fields (BaseYieldPerSecond, Hardness, VolumePerUnit — no Tier, no Rarity) in `Assets/Features/Mining/Tests/OreDefinitionTests.cs`
+- [X] T009 [US1] Write TDD tests for OreTypeBlobBakingSystem baking OreDefinition[] into BlobAsset (verify blob entry count matches OreDefinition count, field values match, GetOreId reverse lookup returns correct OreId strings) in `Assets/Features/Mining/Tests/OreDefinitionTests.cs`
 
 ### Implementation for User Story 1
 
-- [ ] T010 [US1] Modify OreTypeBlob readonly struct: remove Tier (int) and Rarity (float) fields, keep only BaseYieldPerSecond (float), Hardness (float), VolumePerUnit (float) in `Assets/Features/Mining/Data/OreTypeBlob.cs`; after modification, verify that `Assets/Features/Mining/Systems/MiningBeamSystem.cs` and `Assets/Features/Mining/Systems/MiningActionDispatchSystem.cs` compile without errors (they should only read BaseYieldPerSecond/Hardness/VolumePerUnit from blob — if they reference removed Tier or Rarity fields, update those usages)
-- [ ] T011 [US1] Modify OreTypeBlobBakingSystem: change SetOreDefinitions() parameter from OreTypeDefinition[] to OreDefinition[], update baking loop to read BaseYieldPerSecond/Hardness/VolumePerUnit from OreDefinition, update GetOreId() to use OreDefinition.OreId in `Assets/Features/Mining/Systems/OreTypeBlobBakingSystem.cs`
-- [ ] T012 [US1] Modify OreTypeDatabaseInitializer: change serialized field from OreTypeDefinition[] to OreDefinition[], update call to OreTypeBlobBakingSystem.SetOreDefinitions() in `Assets/Features/Mining/Views/OreTypeDatabaseInitializer.cs`
-- [ ] T013 [US1] Modify MiningBeamView: change serialized OreTypeDefinition[] to OreDefinition[], update beam color lookup to use OreDefinition.BeamColor by matching OreDefinition.OreId in `Assets/Features/Mining/Views/MiningBeamView.cs`
-- [ ] T014 [P] [US1] Create Luminite.asset OreDefinition instance (OreId="luminite", DisplayName="Luminite", RarityTier=Common, RarityWeight=0.6, BaseYieldPerSecond=10, Hardness=1.0, VolumePerUnit=0.1, BeamColor=(0.6,0.85,1.0,1), BaseValue=10, BaseProcessingTimePerUnit=2.0) via MCP manage_scriptable_object in `Assets/Features/Mining/Data/Ores/`
-- [ ] T015 [P] [US1] Create Ferrox.asset OreDefinition instance (OreId="ferrox", DisplayName="Ferrox", RarityTier=Uncommon, RarityWeight=0.3, BaseYieldPerSecond=7, Hardness=1.5, VolumePerUnit=0.15, BeamColor=(0.8,0.5,0.2,1), BaseValue=25, BaseProcessingTimePerUnit=5.0) via MCP manage_scriptable_object in `Assets/Features/Mining/Data/Ores/`
-- [ ] T016 [P] [US1] Create Auralite.asset OreDefinition instance (OreId="auralite", DisplayName="Auralite", RarityTier=Rare, RarityWeight=0.1, BaseYieldPerSecond=5, Hardness=2.5, VolumePerUnit=0.25, BeamColor=(0.7,0.2,0.9,1), BaseValue=75, BaseProcessingTimePerUnit=10.0) via MCP manage_scriptable_object in `Assets/Features/Mining/Data/Ores/`
-- [ ] T017 [US1] Verify compilation and run OreDefinition + baking tests via MCP — all pass, zero console errors
+- [X] T010 [US1] Modify OreTypeBlob readonly struct: remove Tier (int) and Rarity (float) fields, keep only BaseYieldPerSecond (float), Hardness (float), VolumePerUnit (float) in `Assets/Features/Mining/Data/OreTypeBlob.cs`; after modification, verify that `Assets/Features/Mining/Systems/MiningBeamSystem.cs` and `Assets/Features/Mining/Systems/MiningActionDispatchSystem.cs` compile without errors (they should only read BaseYieldPerSecond/Hardness/VolumePerUnit from blob — if they reference removed Tier or Rarity fields, update those usages)
+- [X] T011 [US1] Modify OreTypeBlobBakingSystem: change SetOreDefinitions() parameter from OreTypeDefinition[] to OreDefinition[], update baking loop to read BaseYieldPerSecond/Hardness/VolumePerUnit from OreDefinition, update GetOreId() to use OreDefinition.OreId in `Assets/Features/Mining/Systems/OreTypeBlobBakingSystem.cs`
+- [X] T012 [US1] Modify OreTypeDatabaseInitializer: change serialized field from OreTypeDefinition[] to OreDefinition[], update call to OreTypeBlobBakingSystem.SetOreDefinitions() in `Assets/Features/Mining/Views/OreTypeDatabaseInitializer.cs`
+- [X] T013 [US1] Modify MiningBeamView: change serialized OreTypeDefinition[] to OreDefinition[], update beam color lookup to use OreDefinition.BeamColor by matching OreDefinition.OreId in `Assets/Features/Mining/Views/MiningBeamView.cs`
+- [X] T014 [P] [US1] Create Luminite.asset OreDefinition instance (OreId="luminite", DisplayName="Luminite", RarityTier=Common, RarityWeight=0.6, BaseYieldPerSecond=10, Hardness=1.0, VolumePerUnit=0.1, BeamColor=(0.6,0.85,1.0,1), BaseValue=10, BaseProcessingTimePerUnit=2.0) via MCP manage_scriptable_object in `Assets/Features/Mining/Data/Ores/`
+- [X] T015 [P] [US1] Create Ferrox.asset OreDefinition instance (OreId="ferrox", DisplayName="Ferrox", RarityTier=Uncommon, RarityWeight=0.3, BaseYieldPerSecond=7, Hardness=1.5, VolumePerUnit=0.15, BeamColor=(0.8,0.5,0.2,1), BaseValue=25, BaseProcessingTimePerUnit=5.0) via MCP manage_scriptable_object in `Assets/Features/Mining/Data/Ores/`
+- [X] T016 [P] [US1] Create Auralite.asset OreDefinition instance (OreId="auralite", DisplayName="Auralite", RarityTier=Rare, RarityWeight=0.1, BaseYieldPerSecond=5, Hardness=2.5, VolumePerUnit=0.25, BeamColor=(0.7,0.2,0.9,1), BaseValue=75, BaseProcessingTimePerUnit=10.0) via MCP manage_scriptable_object in `Assets/Features/Mining/Data/Ores/`
+- [X] T017 [US1] Verify compilation and run OreDefinition + baking tests via MCP — all pass, zero console errors
 
 **Checkpoint**: Three OreDefinition assets created. Baking pipeline reads OreDefinition[]. Mining views reference OreDefinition[]. Designer can create new ore types via Create > VoidHarvest > Ore Definition.
 
@@ -86,20 +86,20 @@
 
 ### Tests for User Story 2 (TDD — write FIRST, verify FAIL)
 
-- [ ] T018 [P] [US2] Write TDD tests for weight normalization pure function: arbitrary weights (7,2,1) normalize to (0.7,0.2,0.1); single entry normalizes to 1.0; zero-weight entries excluded; all-zero-weight returns empty/warns; null OreDefinition entries skipped in `Assets/Features/Procedural/Tests/AsteroidFieldDefinitionTests.cs`
-- [ ] T019 [US2] Write TDD tests for AsteroidFieldDefinition validation: AsteroidCount > 0, FieldRadius > 0, SizeMin <= SizeMax (auto-swap if violated), MinScaleFraction clamped to [0.1, 0.5], zero OreEntries logs warning and spawns nothing in `Assets/Features/Procedural/Tests/AsteroidFieldDefinitionTests.cs`
+- [X] T018 [P] [US2] Write TDD tests for weight normalization pure function: arbitrary weights (7,2,1) normalize to (0.7,0.2,0.1); single entry normalizes to 1.0; zero-weight entries excluded; all-zero-weight returns empty/warns; null OreDefinition entries skipped in `Assets/Features/Procedural/Tests/AsteroidFieldDefinitionTests.cs`
+- [X] T019 [US2] Write TDD tests for AsteroidFieldDefinition validation: AsteroidCount > 0, FieldRadius > 0, SizeMin <= SizeMax (auto-swap if violated), MinScaleFraction clamped to [0.1, 0.5], zero OreEntries logs warning and spawns nothing in `Assets/Features/Procedural/Tests/AsteroidFieldDefinitionTests.cs`
 
 ### Implementation for User Story 2
 
-- [ ] T020 [P] [US2] Create OreFieldEntry serializable struct with fields: OreDefinition (OreDefinition reference), Weight (float), MeshVariantA (Mesh), MeshVariantB (Mesh), TintColor (Color) in namespace VoidHarvest.Features.Procedural.Data; include `// CONSTITUTION DEVIATION: [Serializable] struct (not readonly) — Unity serialization requires mutable fields for Inspector editing` comment in `Assets/Features/Procedural/Data/OreFieldEntry.cs`
-- [ ] T021 [US2] Create AsteroidFieldDefinition ScriptableObject with all fields (FieldName string, OreEntries OreFieldEntry[], AsteroidCount int, FieldRadius float, AsteroidSizeMin float, AsteroidSizeMax float, RotationSpeedMin float, RotationSpeedMax float, Seed uint, MinScaleFraction float [Range(0.1,0.5)]) with `[CreateAssetMenu(menuName = "VoidHarvest/Asteroid Field Definition")]` and a pure static weight normalization method in `Assets/Features/Procedural/Data/AsteroidFieldDefinition.cs`
-- [ ] T022 [US2] Create AsteroidFieldSpawner authoring MonoBehaviour (FieldDefinition reference) with Baker in `Assets/Features/Procedural/Views/AsteroidFieldSpawner.cs`; Baker creates the following baked ECS types (define as nested types or in the same file): AsteroidFieldConfigComponent (IComponentData: count int, radius float, seed uint, sizeMin/sizeMax float, rotMin/rotMax float), AsteroidOreWeightElement (IBufferElementData: normalizedWeight float, oreTypeIndex int), AsteroidVisualMappingElement (IBufferElementData: meshEntityA/B Entity, tintColor float4); also bake MinScaleFraction into an existing or new singleton component
-- [ ] T023 [US2] Modify AsteroidFieldGeneratorJob: replace hard-coded AsteroidFieldConfig parameters with baked component data (count, radius, seed from AsteroidFieldConfigComponent; ore weights from AsteroidOreWeightElement buffer); keep Burst compilation and deterministic seeded RNG in `Assets/Features/Procedural/Systems/AsteroidFieldGeneratorJob.cs`
-- [ ] T024 [US2] Modify AsteroidFieldSystem: read baked AsteroidFieldSpawner components instead of AsteroidFieldConfig.MvpDefault; create asteroid entities using visual data from AsteroidVisualMappingElement buffer (meshes, tints) instead of AsteroidVisualMappingConfig; use RenderMeshUtility.AddComponents for entity creation in `Assets/Features/Procedural/Systems/AsteroidFieldSystem.cs`
-- [ ] T025 [US2] Modify AsteroidPrefabAuthoring: update Baker to consume OreFieldEntry visual data (MeshVariantA, MeshVariantB, TintColor) from the AsteroidFieldDefinition via AsteroidFieldSpawner references, bake mesh prefab entities per ore entry in `Assets/Features/Procedural/Views/AsteroidPrefabAuthoring.cs`
-- [ ] T026 [US2] Create DefaultField.asset AsteroidFieldDefinition instance (FieldName="Default Asteroid Field", AsteroidCount=300, FieldRadius=2000, AsteroidSizeMin=3, AsteroidSizeMax=5, RotationSpeedMin=0, RotationSpeedMax=15, Seed=42, MinScaleFraction=0.3; OreEntries: Luminite weight=6 tint=(1.0,1.2,1.4,1), Ferrox weight=3 tint=(1.4,0.9,0.3,1), Auralite weight=1 tint=(1.1,0.3,1.2,1) with SF_Asteroids-M2 mesh variants) via MCP in `Assets/Features/Procedural/Data/Fields/`
-- [ ] T027 [US2] Verify compilation and run weight normalization + field definition tests via MCP — all pass, zero console errors
-- [ ] T027b [US2] Validate FR-009/SC-009: create a second AsteroidFieldDefinition asset (e.g., RareAuraliteBelt with AsteroidCount=50, Auralite weight=9, Luminite weight=1), place two AsteroidFieldSpawner GameObjects in AsteroidsSubScene referencing different definitions, enter Play mode, verify both fields spawn independently with distinct compositions in `Assets/Features/Procedural/Data/Fields/` and `Assets/Scenes/`
+- [X] T020 [P] [US2] Create OreFieldEntry serializable struct with fields: OreDefinition (OreDefinition reference), Weight (float), MeshVariantA (Mesh), MeshVariantB (Mesh), TintColor (Color) in namespace VoidHarvest.Features.Procedural.Data; include `// CONSTITUTION DEVIATION: [Serializable] struct (not readonly) — Unity serialization requires mutable fields for Inspector editing` comment in `Assets/Features/Procedural/Data/OreFieldEntry.cs`
+- [X] T021 [US2] Create AsteroidFieldDefinition ScriptableObject with all fields (FieldName string, OreEntries OreFieldEntry[], AsteroidCount int, FieldRadius float, AsteroidSizeMin float, AsteroidSizeMax float, RotationSpeedMin float, RotationSpeedMax float, Seed uint, MinScaleFraction float [Range(0.1,0.5)]) with `[CreateAssetMenu(menuName = "VoidHarvest/Asteroid Field Definition")]` and a pure static weight normalization method in `Assets/Features/Procedural/Data/AsteroidFieldDefinition.cs`
+- [X] T022 [US2] Create AsteroidFieldSpawner authoring MonoBehaviour (FieldDefinition reference) with Baker in `Assets/Features/Procedural/Views/AsteroidFieldSpawner.cs`; Baker creates the following baked ECS types (define as nested types or in the same file): AsteroidFieldConfigComponent (IComponentData: count int, radius float, seed uint, sizeMin/sizeMax float, rotMin/rotMax float), AsteroidOreWeightElement (IBufferElementData: normalizedWeight float, oreTypeIndex int), AsteroidVisualMappingElement (IBufferElementData: meshEntityA/B Entity, tintColor float4); also bake MinScaleFraction into an existing or new singleton component
+- [X] T023 [US2] Modify AsteroidFieldGeneratorJob: replace hard-coded AsteroidFieldConfig parameters with baked component data (count, radius, seed from AsteroidFieldConfigComponent; ore weights from AsteroidOreWeightElement buffer); keep Burst compilation and deterministic seeded RNG in `Assets/Features/Procedural/Systems/AsteroidFieldGeneratorJob.cs`
+- [X] T024 [US2] Modify AsteroidFieldSystem: read baked AsteroidFieldSpawner components instead of AsteroidFieldConfig.MvpDefault; create asteroid entities using visual data from AsteroidVisualMappingElement buffer (meshes, tints) instead of AsteroidVisualMappingConfig; use RenderMeshUtility.AddComponents for entity creation in `Assets/Features/Procedural/Systems/AsteroidFieldSystem.cs`
+- [X] T025 [US2] Modify AsteroidPrefabAuthoring: update Baker to consume OreFieldEntry visual data (MeshVariantA, MeshVariantB, TintColor) from the AsteroidFieldDefinition via AsteroidFieldSpawner references, bake mesh prefab entities per ore entry in `Assets/Features/Procedural/Views/AsteroidPrefabAuthoring.cs`
+- [X] T026 [US2] Create DefaultField.asset AsteroidFieldDefinition instance (FieldName="Default Asteroid Field", AsteroidCount=300, FieldRadius=2000, AsteroidSizeMin=3, AsteroidSizeMax=5, RotationSpeedMin=0, RotationSpeedMax=15, Seed=42, MinScaleFraction=0.3; OreEntries: Luminite weight=6 tint=(1.0,1.2,1.4,1), Ferrox weight=3 tint=(1.4,0.9,0.3,1), Auralite weight=1 tint=(1.1,0.3,1.2,1) with SF_Asteroids-M2 mesh variants) via MCP in `Assets/Features/Procedural/Data/Fields/`
+- [X] T027 [US2] Verify compilation and run weight normalization + field definition tests via MCP — all pass, zero console errors
+- [X] T027b [US2] Validate FR-009/SC-009: create a second AsteroidFieldDefinition asset (e.g., RareAuraliteBelt with AsteroidCount=50, Auralite weight=9, Luminite weight=1), place two AsteroidFieldSpawner GameObjects in AsteroidsSubScene referencing different definitions, enter Play mode, verify both fields spawn independently with distinct compositions in `Assets/Features/Procedural/Data/Fields/` and `Assets/Scenes/`
 
 **Checkpoint**: AsteroidFieldDefinition with DefaultField.asset created. Spawner bakes config into ECS. Field generation uses data-driven ore entries. Designer can create distinct asteroid belts via Create > VoidHarvest > Asteroid Field Definition.
 
@@ -113,11 +113,11 @@
 
 ### Implementation for User Story 3
 
-- [ ] T028 [US3] Wire AsteroidFieldSpawner component into AsteroidsSubScene: add GameObject with AsteroidFieldSpawner referencing DefaultField.asset, remove or replace legacy AsteroidFieldConfig-based spawning initialization in `Assets/Scenes/` (AsteroidsSubScene)
-- [ ] T029 [US3] Wire OreTypeDatabaseInitializer in GameScene or ShipSubScene: set OreDefinition[] serialized array to reference Luminite.asset, Ferrox.asset, Auralite.asset (replacing legacy OreTypeDefinition references) in `Assets/Scenes/`
-- [ ] T030 [US3] Wire MiningBeamView in scene: set OreDefinition[] serialized array to reference Luminite.asset, Ferrox.asset, Auralite.asset for beam color lookups in `Assets/Scenes/`
-- [ ] T031 [US3] Enter Play mode and verify full mining pipeline: asteroid spawning with correct ore distribution, mining beam colors match ore BeamColor, HUD target panel shows correct DisplayName, yield rates proportional to BaseYieldPerSecond/Hardness, depletion visuals (scale shrink, emission glow, crumble thresholds) trigger correctly, ore chunks spawn with correct tint, audio feedback plays, inventory updates with correct OreId and VolumePerUnit
-- [ ] T032 [US3] Run full EditMode + PlayMode test suite via MCP run_tests — verify zero regressions across mining, VFX, depletion, inventory, and HUD systems
+- [X] T028 [US3] Wire AsteroidFieldSpawner component into AsteroidsSubScene: add GameObject with AsteroidFieldSpawner referencing DefaultField.asset, remove or replace legacy AsteroidFieldConfig-based spawning initialization in `Assets/Scenes/` (AsteroidsSubScene)
+- [X] T029 [US3] Wire OreTypeDatabaseInitializer in GameScene or ShipSubScene: set OreDefinition[] serialized array to reference Luminite.asset, Ferrox.asset, Auralite.asset (replacing legacy OreTypeDefinition references) in `Assets/Scenes/`
+- [X] T030 [US3] Wire MiningBeamView in scene: set OreDefinition[] serialized array to reference Luminite.asset, Ferrox.asset, Auralite.asset for beam color lookups in `Assets/Scenes/`
+- [X] T031 [US3] Enter Play mode and verify full mining pipeline: asteroid spawning with correct ore distribution, mining beam colors match ore BeamColor, HUD target panel shows correct DisplayName, yield rates proportional to BaseYieldPerSecond/Hardness, depletion visuals (scale shrink, emission glow, crumble thresholds) trigger correctly, ore chunks spawn with correct tint, audio feedback plays, inventory updates with correct OreId and VolumePerUnit
+- [X] T032 [US3] Run full EditMode + PlayMode test suite via MCP run_tests — verify zero regressions across mining, VFX, depletion, inventory, and HUD systems
 
 **Checkpoint**: Full player mining experience works with Luminite, Ferrox, Auralite. All Spec 003 VFX/feedback systems function without regression. Scene loads and plays correctly.
 
@@ -131,14 +131,14 @@
 
 ### Implementation for User Story 4
 
-- [ ] T033 [P] [US4] Delete legacy OreTypeDefinition ScriptableObject class file `Assets/Features/Mining/Data/OreTypeDefinition.cs` and its .meta file
-- [ ] T034 [P] [US4] Delete legacy ore assets (Veldspar.asset, Scordite.asset, Pyroxeres.asset) and their .meta files from `Assets/Features/Mining/Data/` (locate exact paths via Glob search)
-- [ ] T035 [P] [US4] Delete legacy AsteroidFieldConfig record file (and OreDistribution struct if defined in the same file, or its own file if separate) `Assets/Features/Procedural/Data/AsteroidFieldConfig.cs` and any associated .meta files; verify via Glob that no OreDistribution type remains
-- [ ] T036 [P] [US4] Delete legacy AsteroidVisualMappingConfig ScriptableObject class file `Assets/Features/Procedural/Data/AsteroidVisualMappingConfig.cs` and its .meta file
-- [ ] T037 [P] [US4] Delete legacy AsteroidVisualMapping.asset and its .meta file from `Assets/Features/Procedural/Data/` (locate exact path via Glob search)
-- [ ] T038 [US4] Update all existing test files: replace legacy ore IDs ("veldspar", "scordite", "pyroxeres") with new IDs ("luminite", "ferrox", "auralite"); remove references to deleted types (OreTypeDefinition, AsteroidFieldConfig, AsteroidVisualMappingConfig) in `Assets/Features/Mining/Tests/` and `Assets/Features/Procedural/Tests/`
-- [ ] T039 [US4] Search entire codebase (Grep for veldspar|scordite|pyroxeres|OreTypeDefinition|AsteroidFieldConfig|AsteroidVisualMappingConfig|MvpDefault) and remove all remaining references in any C# files, .asset files, or scene files
-- [ ] T040 [US4] Verify compilation — zero errors; run full test suite — all pass; confirm zero legacy references via codebase-wide Grep search
+- [X] T033 [P] [US4] Delete legacy OreTypeDefinition ScriptableObject class file `Assets/Features/Mining/Data/OreTypeDefinition.cs` and its .meta file
+- [X] T034 [P] [US4] Delete legacy ore assets (Veldspar.asset, Scordite.asset, Pyroxeres.asset) and their .meta files from `Assets/Features/Mining/Data/` (locate exact paths via Glob search)
+- [X] T035 [P] [US4] Delete legacy AsteroidFieldConfig record file (and OreDistribution struct if defined in the same file, or its own file if separate) `Assets/Features/Procedural/Data/AsteroidFieldConfig.cs` and any associated .meta files; verify via Glob that no OreDistribution type remains
+- [X] T036 [P] [US4] Delete legacy AsteroidVisualMappingConfig ScriptableObject class file `Assets/Features/Procedural/Data/AsteroidVisualMappingConfig.cs` and its .meta file
+- [X] T037 [P] [US4] Delete legacy AsteroidVisualMapping.asset and its .meta file from `Assets/Features/Procedural/Data/` (locate exact path via Glob search)
+- [X] T038 [US4] Update all existing test files: replace legacy ore IDs ("veldspar", "scordite", "pyroxeres") with new IDs ("luminite", "ferrox", "auralite"); remove references to deleted types (OreTypeDefinition, AsteroidFieldConfig, AsteroidVisualMappingConfig) in `Assets/Features/Mining/Tests/` and `Assets/Features/Procedural/Tests/`
+- [X] T039 [US4] Search entire codebase (Grep for veldspar|scordite|pyroxeres|OreTypeDefinition|AsteroidFieldConfig|AsteroidVisualMappingConfig|MvpDefault) and remove all remaining references in any C# files, .asset files, or scene files
+- [X] T040 [US4] Verify compilation — zero errors; run full test suite — all pass; confirm zero legacy references via codebase-wide Grep search
 
 **Checkpoint**: Legacy ore system completely removed. Project compiles cleanly with only the new data-driven system. Zero legacy references remain.
 
@@ -152,9 +152,9 @@
 
 ### Implementation for User Story 5
 
-- [ ] T041 [P] [US5] Update HOWTOPLAY.md: replace all Veldspar/Scordite/Pyroxeres references with Luminite (Common, ice-blue, high yield, low hardness) / Ferrox (Uncommon, bronze-orange, medium yield, medium hardness) / Auralite (Rare, violet, low yield, high hardness); update mining tips and ore-specific gameplay guidance in `HOWTOPLAY.md`
-- [ ] T042 [P] [US5] Update README.md "What's Implemented" section: mention data-driven ore system (OreDefinition ScriptableObjects, 3 ore types), configurable asteroid fields (AsteroidFieldDefinition ScriptableObjects), and designer-expandable architecture (zero code changes to add ores/fields) in `README.md`
-- [ ] T043 [P] [US5] Add Spec 005 changelog entry documenting migration from legacy ores (Veldspar/Scordite/Pyroxeres) to data-driven OreDefinition system (Luminite/Ferrox/Auralite), replacement of hard-coded AsteroidFieldConfig with AsteroidFieldDefinition SOs, and designer-expandable architecture in `CHANGELOG.md`
+- [X] T041 [P] [US5] Update HOWTOPLAY.md: replace all Veldspar/Scordite/Pyroxeres references with Luminite (Common, ice-blue, high yield, low hardness) / Ferrox (Uncommon, bronze-orange, medium yield, medium hardness) / Auralite (Rare, violet, low yield, high hardness); update mining tips and ore-specific gameplay guidance in `HOWTOPLAY.md`
+- [X] T042 [P] [US5] Update README.md "What's Implemented" section: mention data-driven ore system (OreDefinition ScriptableObjects, 3 ore types), configurable asteroid fields (AsteroidFieldDefinition ScriptableObjects), and designer-expandable architecture (zero code changes to add ores/fields) in `README.md`
+- [X] T043 [P] [US5] Add Spec 005 changelog entry documenting migration from legacy ores (Veldspar/Scordite/Pyroxeres) to data-driven OreDefinition system (Luminite/Ferrox/Auralite), replacement of hard-coded AsteroidFieldConfig with AsteroidFieldDefinition SOs, and designer-expandable architecture in `CHANGELOG.md`
 
 **Checkpoint**: All player-facing documentation reflects the new ore system. No references to legacy ores remain in docs.
 
@@ -164,11 +164,11 @@
 
 **Purpose**: Final validation, performance verification, and quickstart scenario testing
 
-- [ ] T044 Verify Unity console shows zero errors and zero warnings after full migration via MCP read_console
-- [ ] T045 Run full EditMode + PlayMode test suite via MCP run_tests — all tests pass with zero failures; include edge case regression: zero baseYieldPerSecond ore produces no yield (beam connects but extracts nothing)
-- [ ] T046 Performance validation: create a test AsteroidFieldDefinition with AsteroidCount=500, spawn in scene, verify single-frame completion (NFR-001) via Unity Profiler or frame timing
-- [ ] T047 Performance validation: mine ore continuously and verify zero GC allocations per frame in hot path (NFR-002) via Unity Profiler
-- [ ] T048 Validate quickstart.md scenarios end-to-end: create a 4th OreDefinition asset (e.g., Titanite), add it to DefaultField.asset's OreEntries, enter Play mode, verify it spawns and is mineable — all with zero code changes (NFR-003, SC-001, SC-010)
+- [X] T044 Verify Unity console shows zero errors and zero warnings after full migration via MCP read_console
+- [X] T045 Run full EditMode + PlayMode test suite via MCP run_tests — all tests pass with zero failures; include edge case regression: zero baseYieldPerSecond ore produces no yield (beam connects but extracts nothing)
+- [X] T046 Performance validation: create a test AsteroidFieldDefinition with AsteroidCount=500, spawn in scene, verify single-frame completion (NFR-001) via Unity Profiler or frame timing
+- [X] T047 Performance validation: mine ore continuously and verify zero GC allocations per frame in hot path (NFR-002) via Unity Profiler
+- [X] T048 Validate quickstart.md scenarios end-to-end: create a 4th OreDefinition asset (e.g., Titanite), add it to DefaultField.asset's OreEntries, enter Play mode, verify it spawns and is mineable — all with zero code changes (NFR-003, SC-001, SC-010)
 
 ---
 

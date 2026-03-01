@@ -85,12 +85,14 @@ Each feature folder uses `Data/`, `Systems/`, `Views/`, `Tests/` sub-folders.
 - **Ship flight** — 6DOF physics with inertia, flight modes, Burst-compiled math; 3 ship archetypes (Starter, Medium, Heavy Mining Barge)
 - **EVE-style controls** — mouse targeting, double-click align, radial context menus, 8-slot hotbar, keyboard thrust/strafe/roll
 - **3rd-person camera** — orbiting follow camera with zoom (Cinemachine), dynamic nebula skybox with rotation
+- **Data-driven ore system** — OreDefinition ScriptableObjects (Luminite, Ferrox, Auralite) with configurable yield, hardness, rarity, beam colors, and cargo volume; add new ores with zero code changes
 - **Mining** — beam targeting, yield calculation, asteroid depletion with scale/destroy visuals, ore tint colors (ECS systems)
+- **Configurable asteroid fields** — AsteroidFieldDefinition ScriptableObjects with per-field ore weights, visual mapping, and asteroid parameters; designers create distinct asteroid belts via Unity Inspector
 - **Procedural asteroid field** — Burst-compiled job-based generation with ore-to-mesh visual mapping, multi-mesh premium asteroid variants
 - **Resource inventory** — immutable state with pure reducers
 - **HUD** — target info panel, warnings, selection outlines, radial menus
-- **Station prefabs** — initial base presets (Small Mining Relay, Medium Refinery Hub) with test scene
-- **Core infrastructure** — EventBus (UniTask), State Store, VContainer DI; 108 C# files, 21 tests, 27 assembly definitions
+- **Station docking** — approach, magnetic snap, station services menu, undock sequence; 2 station presets (Small Mining Relay, Medium Refinery Hub)
+- **Core infrastructure** — EventBus (UniTask), State Store, VContainer DI; 110+ C# files, 360+ tests, 27 assembly definitions
 
 ## Architecture Principles
 

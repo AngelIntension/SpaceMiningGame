@@ -23,15 +23,15 @@ namespace VoidHarvest.Features.Resources.Tests
         {
             var state = _emptyState with
             {
-                Stacks = _emptyState.Stacks.Add("ore_veldspar",
-                    new ResourceStack("ore_veldspar", 10, 0.5f)),
+                Stacks = _emptyState.Stacks.Add("ore_luminite",
+                    new ResourceStack("ore_luminite", 10, 0.5f)),
                 CurrentVolume = 5f
             };
 
             var result = InventoryReducer.Reduce(state,
-                new AddResourceAction("ore_veldspar", 5, 0.5f));
+                new AddResourceAction("ore_luminite", 5, 0.5f));
 
-            Assert.AreEqual(15, result.Stacks["ore_veldspar"].Quantity);
+            Assert.AreEqual(15, result.Stacks["ore_luminite"].Quantity);
         }
 
         // --- AddResourceAction: creates new stack when resource doesn't exist ---
@@ -40,11 +40,11 @@ namespace VoidHarvest.Features.Resources.Tests
         public void AddResource_NewResource_CreatesStack()
         {
             var result = InventoryReducer.Reduce(_emptyState,
-                new AddResourceAction("ore_veldspar", 10, 0.5f));
+                new AddResourceAction("ore_luminite", 10, 0.5f));
 
-            Assert.IsTrue(result.Stacks.ContainsKey("ore_veldspar"));
-            Assert.AreEqual(10, result.Stacks["ore_veldspar"].Quantity);
-            Assert.AreEqual(0.5f, result.Stacks["ore_veldspar"].VolumePerUnit, 0.001f);
+            Assert.IsTrue(result.Stacks.ContainsKey("ore_luminite"));
+            Assert.AreEqual(10, result.Stacks["ore_luminite"].Quantity);
+            Assert.AreEqual(0.5f, result.Stacks["ore_luminite"].VolumePerUnit, 0.001f);
         }
 
         // --- AddResourceAction: updates CurrentVolume correctly ---
@@ -53,7 +53,7 @@ namespace VoidHarvest.Features.Resources.Tests
         public void AddResource_UpdatesCurrentVolume()
         {
             var result = InventoryReducer.Reduce(_emptyState,
-                new AddResourceAction("ore_veldspar", 10, 2.0f));
+                new AddResourceAction("ore_luminite", 10, 2.0f));
 
             // 10 units * 2.0 volume each = 20.0 added to 0.0 base
             Assert.AreEqual(20f, result.CurrentVolume, 0.001f);
@@ -64,13 +64,13 @@ namespace VoidHarvest.Features.Resources.Tests
         {
             var state = _emptyState with
             {
-                Stacks = _emptyState.Stacks.Add("ore_veldspar",
-                    new ResourceStack("ore_veldspar", 10, 2.0f)),
+                Stacks = _emptyState.Stacks.Add("ore_luminite",
+                    new ResourceStack("ore_luminite", 10, 2.0f)),
                 CurrentVolume = 20f
             };
 
             var result = InventoryReducer.Reduce(state,
-                new AddResourceAction("ore_veldspar", 5, 2.0f));
+                new AddResourceAction("ore_luminite", 5, 2.0f));
 
             // 20.0 existing + (5 * 2.0) = 30.0
             Assert.AreEqual(30f, result.CurrentVolume, 0.001f);
@@ -84,7 +84,7 @@ namespace VoidHarvest.Features.Resources.Tests
             var state = _emptyState with { CurrentVolume = 95f };
 
             var result = InventoryReducer.Reduce(state,
-                new AddResourceAction("ore_veldspar", 10, 2.0f));
+                new AddResourceAction("ore_luminite", 10, 2.0f));
 
             // 95 + (10 * 2.0) = 115 > MaxVolume 100 => rejected
             Assert.AreSame(state, result);
@@ -138,14 +138,14 @@ namespace VoidHarvest.Features.Resources.Tests
         [Test]
         public void RemoveResource_DecreasesQuantity()
         {
-            var stacks = _emptyState.Stacks.Add("ore_veldspar",
-                new ResourceStack("ore_veldspar", 10, 0.5f));
+            var stacks = _emptyState.Stacks.Add("ore_luminite",
+                new ResourceStack("ore_luminite", 10, 0.5f));
             var state = _emptyState with { Stacks = stacks, CurrentVolume = 5f };
 
             var result = InventoryReducer.Reduce(state,
-                new RemoveResourceAction("ore_veldspar", 3));
+                new RemoveResourceAction("ore_luminite", 3));
 
-            Assert.AreEqual(7, result.Stacks["ore_veldspar"].Quantity);
+            Assert.AreEqual(7, result.Stacks["ore_luminite"].Quantity);
         }
 
         // --- RemoveResourceAction: rejects when quantity is insufficient ---
@@ -153,12 +153,12 @@ namespace VoidHarvest.Features.Resources.Tests
         [Test]
         public void RemoveResource_InsufficientQuantity_ReturnsUnchangedState()
         {
-            var stacks = _emptyState.Stacks.Add("ore_veldspar",
-                new ResourceStack("ore_veldspar", 5, 0.5f));
+            var stacks = _emptyState.Stacks.Add("ore_luminite",
+                new ResourceStack("ore_luminite", 5, 0.5f));
             var state = _emptyState with { Stacks = stacks, CurrentVolume = 2.5f };
 
             var result = InventoryReducer.Reduce(state,
-                new RemoveResourceAction("ore_veldspar", 10));
+                new RemoveResourceAction("ore_luminite", 10));
 
             Assert.AreSame(state, result);
         }
@@ -177,14 +177,14 @@ namespace VoidHarvest.Features.Resources.Tests
         [Test]
         public void RemoveResource_LastUnit_RemovesStackFromDictionary()
         {
-            var stacks = _emptyState.Stacks.Add("ore_veldspar",
-                new ResourceStack("ore_veldspar", 5, 2.0f));
+            var stacks = _emptyState.Stacks.Add("ore_luminite",
+                new ResourceStack("ore_luminite", 5, 2.0f));
             var state = _emptyState with { Stacks = stacks, CurrentVolume = 10f };
 
             var result = InventoryReducer.Reduce(state,
-                new RemoveResourceAction("ore_veldspar", 5));
+                new RemoveResourceAction("ore_luminite", 5));
 
-            Assert.IsFalse(result.Stacks.ContainsKey("ore_veldspar"));
+            Assert.IsFalse(result.Stacks.ContainsKey("ore_luminite"));
             Assert.AreEqual(0, result.Stacks.Count);
         }
 
@@ -193,12 +193,12 @@ namespace VoidHarvest.Features.Resources.Tests
         [Test]
         public void RemoveResource_UpdatesCurrentVolume()
         {
-            var stacks = _emptyState.Stacks.Add("ore_veldspar",
-                new ResourceStack("ore_veldspar", 10, 2.0f));
+            var stacks = _emptyState.Stacks.Add("ore_luminite",
+                new ResourceStack("ore_luminite", 10, 2.0f));
             var state = _emptyState with { Stacks = stacks, CurrentVolume = 20f };
 
             var result = InventoryReducer.Reduce(state,
-                new RemoveResourceAction("ore_veldspar", 3));
+                new RemoveResourceAction("ore_luminite", 3));
 
             // 20.0 - (3 * 2.0) = 14.0
             Assert.AreEqual(14f, result.CurrentVolume, 0.001f);
@@ -207,12 +207,12 @@ namespace VoidHarvest.Features.Resources.Tests
         [Test]
         public void RemoveResource_AllUnits_CurrentVolumeReturnsToZero()
         {
-            var stacks = _emptyState.Stacks.Add("ore_veldspar",
-                new ResourceStack("ore_veldspar", 10, 2.0f));
+            var stacks = _emptyState.Stacks.Add("ore_luminite",
+                new ResourceStack("ore_luminite", 10, 2.0f));
             var state = _emptyState with { Stacks = stacks, CurrentVolume = 20f };
 
             var result = InventoryReducer.Reduce(state,
-                new RemoveResourceAction("ore_veldspar", 10));
+                new RemoveResourceAction("ore_luminite", 10));
 
             Assert.AreEqual(0f, result.CurrentVolume, 0.001f);
         }
@@ -232,7 +232,7 @@ namespace VoidHarvest.Features.Resources.Tests
         public void AddResource_ZeroQuantity_ReturnsUnchangedState()
         {
             var result = InventoryReducer.Reduce(_emptyState,
-                new AddResourceAction("ore_veldspar", 0, 0.5f));
+                new AddResourceAction("ore_luminite", 0, 0.5f));
 
             Assert.AreSame(_emptyState, result);
         }

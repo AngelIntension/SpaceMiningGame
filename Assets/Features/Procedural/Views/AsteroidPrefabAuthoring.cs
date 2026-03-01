@@ -3,7 +3,6 @@ using Unity.Mathematics;
 using Unity.Rendering;
 using UnityEngine;
 using VoidHarvest.Features.Mining.Data;
-using VoidHarvest.Features.Procedural.Data;
 
 namespace VoidHarvest.Features.Procedural.Views
 {
@@ -11,34 +10,25 @@ namespace VoidHarvest.Features.Procedural.Views
     /// Authoring component for asteroid prefab entities.
     /// Supports two modes:
     /// 1. Single-prefab (backward compatible): Place on a GO with MeshFilter + MeshRenderer.
-    /// 2. Multi-prefab: Reference mesh variant GameObjects and a visual mapping config.
-    /// The baker creates prefab entities that AsteroidFieldSystem instantiates.
-    /// See MVP-07: Procedural asteroid field, FR-006: Ore-to-mesh mapping.
+    /// 2. Multi-prefab: Reference mesh variant GameObjects for per-ore visual variety.
+    /// The baker creates prefab entities that AsteroidFieldSystem uses for mesh/material data.
+    /// See Spec 005: Data-Driven Ore System, FR-006: Ore-to-mesh mapping.
     /// </summary>
     public class AsteroidPrefabAuthoring : MonoBehaviour
     {
         /// <summary>
         /// Optional: mesh variant prefab GameObjects. Each should have MeshFilter + MeshRenderer
-        /// and an AsteroidVariantAuthoring component. Order: VeldsparA, VeldsparB, ScorditeA,
-        /// ScorditeB, PyroxeresA, PyroxeresB. Leave empty for single-prefab backward compatibility.
+        /// and an AsteroidVariantAuthoring component. Order: 2 per ore type (VariantA, VariantB).
+        /// Leave empty for single-prefab backward compatibility.
         /// See FR-006: Ore-to-mesh mapping.
         /// </summary>
-        [Tooltip("Mesh variant prefabs (6 total: 2 per ore type). Leave empty for single-prefab mode.")]
+        [Tooltip("Mesh variant prefabs (2 per ore type). Leave empty for single-prefab mode.")]
         public GameObject[] MeshVariantPrefabs;
-
-        /// <summary>
-        /// Optional: visual mapping config defining ore→tint mapping and MinScaleFraction.
-        /// Required when using multi-prefab mode.
-        /// See FR-006, FR-008, FR-019.
-        /// </summary>
-        [Tooltip("Visual mapping config (required for multi-prefab mode).")]
-        public AsteroidVisualMappingConfig VisualMappingConfig;
     }
 
     /// <summary>
     /// Singleton component holding the default asteroid prefab entity reference.
-    /// Backward compatible with single-prefab mode.
-    /// See MVP-07.
+    /// See Spec 005.
     /// </summary>
     public struct AsteroidPrefabComponent : IComponentData
     {
@@ -48,7 +38,7 @@ namespace VoidHarvest.Features.Procedural.Views
     /// <summary>
     /// Buffer element holding a mesh variant prefab entity reference.
     /// Order matches AsteroidPrefabAuthoring.MeshVariantPrefabs:
-    /// [0]=VeldsparA, [1]=VeldsparB, [2]=ScorditeA, etc.
+    /// [0]=OreType0_VariantA, [1]=OreType0_VariantB, [2]=OreType1_VariantA, etc.
     /// See FR-006: Ore-to-mesh mapping.
     /// </summary>
     public struct AsteroidMeshPrefabElement : IBufferElementData
@@ -59,7 +49,7 @@ namespace VoidHarvest.Features.Procedural.Views
 
     /// <summary>
     /// Buffer element holding baked visual mapping data for each ore type.
-    /// Order matches AsteroidVisualMappingConfig.Entries.
+    /// Order matches OreEntries in AsteroidFieldDefinition.
     /// See FR-006, FR-008.
     /// </summary>
     public struct AsteroidVisualMappingElement : IBufferElementData
@@ -101,22 +91,13 @@ namespace VoidHarvest.Features.Procedural.Views
             AddComponent(prefabEntity, new AsteroidOreComponent());
 
             // Material property override for depletion visual — must be on prefab archetype
-            // so Entities Graphics sets up per-instance property uploads (MVP-07)
+            // so Entities Graphics sets up per-instance property uploads
             AddComponent(prefabEntity, new URPMaterialPropertyBaseColor
                 { Value = new float4(1f, 1f, 1f, 1f) });
 
             // Create a singleton entity to hold the prefab reference
             var singletonEntity = CreateAdditionalEntity(TransformUsageFlags.None, entityName: "AsteroidPrefabSingleton");
             AddComponent(singletonEntity, new AsteroidPrefabComponent { Prefab = prefabEntity });
-
-            // Bake MinScaleFraction if config is available
-            if (authoring.VisualMappingConfig != null)
-            {
-                AddComponent(singletonEntity, new AsteroidVisualMappingSingleton
-                {
-                    MinScaleFraction = authoring.VisualMappingConfig.MinScaleFraction
-                });
-            }
         }
 
         private void BakeMultiPrefab(AsteroidPrefabAuthoring authoring)
@@ -146,34 +127,11 @@ namespace VoidHarvest.Features.Procedural.Views
                 prefabBuffer.Add(new AsteroidMeshPrefabElement { Prefab = prefabEntity });
             }
 
-            // Backward-compatible: first valid variant is the default prefab
+            // First valid variant is the default prefab
             AddComponent(singletonEntity, new AsteroidPrefabComponent
             {
                 Prefab = firstValidPrefab
             });
-
-            // Bake visual mapping data from config
-            if (authoring.VisualMappingConfig != null)
-            {
-                var config = authoring.VisualMappingConfig;
-
-                AddComponent(singletonEntity, new AsteroidVisualMappingSingleton
-                {
-                    MinScaleFraction = config.MinScaleFraction
-                });
-
-                var mappingBuffer = AddBuffer<AsteroidVisualMappingElement>(singletonEntity);
-                for (int i = 0; i < config.Entries.Length; i++)
-                {
-                    var entry = config.Entries[i];
-                    mappingBuffer.Add(new AsteroidVisualMappingElement
-                    {
-                        TintColor = new float4(entry.TintColor.r, entry.TintColor.g, entry.TintColor.b, entry.TintColor.a),
-                        MeshVariantAIndex = i * 2,
-                        MeshVariantBIndex = i * 2 + 1
-                    });
-                }
-            }
         }
     }
 }

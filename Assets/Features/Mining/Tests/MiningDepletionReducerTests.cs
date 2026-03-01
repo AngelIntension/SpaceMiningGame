@@ -74,7 +74,7 @@ namespace VoidHarvest.Features.Mining.Tests
         public void BeginMiningAction_ResetsDepletionFraction()
         {
             var state = MiningSessionState.Empty with { DepletionFraction = 0.75f };
-            var action = new BeginMiningAction(42, "Veldspar");
+            var action = new BeginMiningAction(42, "Luminite");
 
             var result = MiningReducer.Reduce(state, action);
 

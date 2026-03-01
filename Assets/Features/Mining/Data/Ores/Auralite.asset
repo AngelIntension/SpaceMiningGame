@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e3c1094b922e7884381f1c305dd6ba95, type: 3}
+  m_Name: Auralite
+  m_EditorClassIdentifier: VoidHarvest.Features.Mining::VoidHarvest.Features.Mining.Data.OreDefinition
+  OreId: auralite
+  DisplayName: Auralite
+  RarityTier: 2
+  Icon: {fileID: 0}
+  BaseValue: 75
+  Description: A rare exotic crystal that pulses with violet energy. Extremely hard
+    to extract, but highly valuable. Sought after by advanced refineries.
+  RarityWeight: 0.1
+  BaseYieldPerSecond: 5
+  Hardness: 2.5
+  VolumePerUnit: 0.25
+  BeamColor: {r: 0.7, g: 0.2, b: 0.9, a: 1}
+  BaseProcessingTimePerUnit: 10
