@@ -129,19 +129,22 @@ namespace VoidHarvest.Features.Docking.Systems
                 var toTarget = math.normalizesafe(docking.TargetPortPosition - position.Position);
                 float distance = math.length(docking.TargetPortPosition - position.Position);
 
-                // Simple approach: apply thrust toward port
+                // Approach: rotate toward port, thrust only when well-aligned
                 var forward = math.forward(position.Rotation);
                 var alignTorque = ShipPhysicsMath.ComputeAlignTorque(forward, toTarget, 5f);
-                float alignment = math.max(0f, math.dot(forward, toTarget));
+                float dot = math.dot(forward, toTarget);
+
+                // Only thrust when mostly facing target (>0.5) to prevent spiraling
+                float alignment = math.saturate((dot - 0.5f) * 2f);
                 float throttle = math.saturate(distance / 100f);
-                var thrust = forward * alignment * throttle * 200f;
+                var thrust = toTarget * alignment * throttle * 200f;
 
                 velocity.Velocity += thrust * dt;
-                velocity.Velocity = ShipPhysicsMath.ApplyDamping(velocity.Velocity, 0.5f, dt);
+                velocity.Velocity = ShipPhysicsMath.ApplyDamping(velocity.Velocity, 1.5f, dt);
                 velocity.Velocity = ShipPhysicsMath.ClampSpeed(velocity.Velocity, 100f);
 
                 velocity.AngularVelocity += alignTorque * dt;
-                velocity.AngularVelocity = ShipPhysicsMath.ApplyDamping(velocity.AngularVelocity, 3f, dt);
+                velocity.AngularVelocity = ShipPhysicsMath.ApplyDamping(velocity.AngularVelocity, 5f, dt);
 
                 position.Position += velocity.Velocity * dt;
                 position.Rotation = ShipPhysicsMath.IntegrateRotation(position.Rotation, velocity.AngularVelocity, dt);

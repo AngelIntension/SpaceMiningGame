@@ -168,7 +168,19 @@ namespace VoidHarvest.Features.Ship.Systems
             float sinAngle = math.length(cross);
 
             if (sinAngle < AlignTolerance)
+            {
+                // Anti-parallel: pick arbitrary perpendicular axis to break symmetry
+                float dot = math.dot(currentForward, toTarget);
+                if (dot < -0.9f)
+                {
+                    var up = math.abs(currentForward.y) < 0.9f
+                        ? new float3(0, 1, 0)
+                        : new float3(1, 0, 0);
+                    var perp = math.normalizesafe(math.cross(currentForward, up));
+                    return perp * rotationTorque;
+                }
                 return float3.zero;
+            }
 
             var axis = cross / sinAngle; // normalized rotation axis
             return axis * sinAngle * rotationTorque;

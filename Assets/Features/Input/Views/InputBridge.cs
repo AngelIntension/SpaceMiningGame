@@ -265,7 +265,6 @@ namespace VoidHarvest.Features.Input.Views
             // Try physics raycast first (for stations on Selectable layer)
             if (TryRaycastSelectable(out var hit))
             {
-                Debug.Log($"[InputBridge] Selectable hit: {hit.collider.gameObject.name} (layer={hit.collider.gameObject.layer})");
                 if (isDoubleClick)
                 {
                     _alignPoint = hit.point;
@@ -282,13 +281,11 @@ namespace VoidHarvest.Features.Input.Views
                     {
                         _selectedTargetType = TargetType.Station;
                         _selectedDockingPort = dockingPort;
-                        Debug.Log($"[InputBridge] Station selected: {dockingPort.StationId}, targetId={_selectedTargetId}");
                     }
                     else
                     {
                         _selectedTargetType = TargetType.None;
                         _selectedDockingPort = null;
-                        Debug.Log($"[InputBridge] Selectable hit but no DockingPortComponent found, targetId={_selectedTargetId}");
                     }
 
                     _eventBus?.Publish(new TargetSelectedEvent(_selectedTargetId));
@@ -310,14 +307,12 @@ namespace VoidHarvest.Features.Input.Views
                     _selectedAsteroidEntity = hitEntity;
                     _selectedTargetType = TargetType.Asteroid;
                     _selectedDockingPort = null;
-                    Debug.Log($"[InputBridge] Asteroid selected: entity={hitEntity.Index}");
                     _eventBus?.Publish(new TargetSelectedEvent(_selectedTargetId));
                 }
                 return;
             }
 
             // No hit — clear selection
-            Debug.Log("[InputBridge] No hit — selection cleared");
             _selectedTargetId = -1;
             _selectedAsteroidEntity = Entity.Null;
             _selectedTargetType = TargetType.None;
@@ -333,24 +328,14 @@ namespace VoidHarvest.Features.Input.Views
 
         private void OnRadialMenuRelease(InputAction.CallbackContext ctx)
         {
-            if (_selectedTargetType == TargetType.None)
-            {
-                Debug.Log("[InputBridge] RadialMenu: no target selected, ignoring");
-                return;
-            }
+            if (_selectedTargetType == TargetType.None) return;
 
             // Only open radial menu if right-click was a tap (not a drag for orbit)
             var mouse = Mouse.current;
             if (mouse == null) return;
             Vector2 endPos = mouse.position.ReadValue();
-            float dragDist = Vector2.Distance(_radialMenuStartPos, endPos);
-            if (dragDist > RadialMenuDragThreshold)
-            {
-                Debug.Log($"[InputBridge] RadialMenu: drag detected ({dragDist:F1}px), treating as orbit");
-                return;
-            }
+            if (Vector2.Distance(_radialMenuStartPos, endPos) > RadialMenuDragThreshold) return;
 
-            Debug.Log($"[InputBridge] RadialMenu: opening for targetId={_selectedTargetId}, type={_selectedTargetType}");
             _eventBus?.Publish(new RadialMenuRequestedEvent(_selectedTargetId, _selectedTargetType));
         }
 
