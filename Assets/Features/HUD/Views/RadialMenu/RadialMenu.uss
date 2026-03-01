@@ -100,12 +100,6 @@
     top: 235px;
 }
 
-/* Bottom-Left: Undock */
-.segment-bottom-left {
-    left: 10px;
-    top: 235px;
-}
-
 /* ---- Selected segment highlight ---- */
 .radial-segment--selected {
     background-color: rgba(25, 60, 110, 0.95);

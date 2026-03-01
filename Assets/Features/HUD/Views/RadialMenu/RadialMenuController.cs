@@ -43,7 +43,6 @@ namespace VoidHarvest.Features.HUD.Views
         private Button _segmentMine;
         private Button _segmentKeepAtRange;
         private Button _segmentDock;
-        private Button _segmentUndock;
         private Button _confirmButton;
         private Button _preset25;
         private Button _preset50;
@@ -125,7 +124,6 @@ namespace VoidHarvest.Features.HUD.Views
             _segmentMine = _root.Q<Button>("segment-mine");
             _segmentKeepAtRange = _root.Q<Button>("segment-keep-at-range");
             _segmentDock = _root.Q<Button>("segment-dock");
-            _segmentUndock = _root.Q<Button>("segment-undock");
 
             // Query distance submenu elements
             _distanceSubmenu = _root.Q<VisualElement>("distance-submenu");
@@ -146,7 +144,6 @@ namespace VoidHarvest.Features.HUD.Views
             _segmentMine?.RegisterCallback<ClickEvent>(_ => OnSegmentClicked(ActionMine));
             _segmentKeepAtRange?.RegisterCallback<ClickEvent>(_ => OnSegmentClicked(ActionKeepAtRange));
             _segmentDock?.RegisterCallback<ClickEvent>(_ => OnDockClicked());
-            _segmentUndock?.RegisterCallback<ClickEvent>(_ => OnUndockClicked());
 
             // Bind preset button callbacks
             _preset25?.RegisterCallback<ClickEvent>(_ => OnPresetClicked(25));
@@ -198,6 +195,10 @@ namespace VoidHarvest.Features.HUD.Views
         {
             if (_root == null) return;
 
+            // Suppress radial menu while docked — station services menu handles undock
+            bool isDocked = _stateStore?.Current.Loop.Docking.IsDocked ?? false;
+            if (isDocked) return;
+
             // Position menu at mouse cursor
             var mouse = Mouse.current;
             if (mouse == null) return;
@@ -216,19 +217,7 @@ namespace VoidHarvest.Features.HUD.Views
             ClearSegmentSelection();
 
             // Context-sensitive segment visibility
-            bool isDocked = _stateStore?.Current.Loop.Docking.IsDocked ?? false;
-
-            if (_currentTargetType == TargetType.Station && isDocked)
-            {
-                // Docked at station: only Undock visible
-                SetSegmentVisible(_segmentApproach, false);
-                SetSegmentVisible(_segmentOrbit, false);
-                SetSegmentVisible(_segmentMine, false);
-                SetSegmentVisible(_segmentKeepAtRange, false);
-                SetSegmentVisible(_segmentDock, false);
-                SetSegmentVisible(_segmentUndock, true);
-            }
-            else if (_currentTargetType == TargetType.Station)
+            if (_currentTargetType == TargetType.Station)
             {
                 // Station undocked: Approach, KeepAtRange, Orbit, Dock
                 SetSegmentVisible(_segmentApproach, true);
@@ -236,17 +225,15 @@ namespace VoidHarvest.Features.HUD.Views
                 SetSegmentVisible(_segmentMine, false);
                 SetSegmentVisible(_segmentKeepAtRange, true);
                 SetSegmentVisible(_segmentDock, true);
-                SetSegmentVisible(_segmentUndock, false);
             }
             else
             {
-                // Asteroid or default: Approach, Orbit, Mine, KeepAtRange (unchanged)
+                // Asteroid or default: Approach, Orbit, Mine, KeepAtRange
                 SetSegmentVisible(_segmentApproach, true);
                 SetSegmentVisible(_segmentOrbit, true);
                 SetSegmentVisible(_segmentMine, true);
                 SetSegmentVisible(_segmentKeepAtRange, true);
                 SetSegmentVisible(_segmentDock, false);
-                SetSegmentVisible(_segmentUndock, false);
             }
 
             _isOpen = true;
@@ -398,25 +385,6 @@ namespace VoidHarvest.Features.HUD.Views
             Close();
         }
 
-        private void OnUndockClicked()
-        {
-            if (_stateStore == null) return;
-
-            var dockingState = _stateStore.Current.Loop.Docking;
-            int stationId = dockingState.TargetStationId.GetValueOrDefault(-1);
-
-            // Dispatch BeginUndockingAction via state store
-            _stateStore.Dispatch(new BeginUndockingAction());
-
-            // Initiate undocking at ECS level
-            _inputBridge?.InitiateUndocking();
-
-            // Publish undocking started event
-            _eventBus?.Publish(new UndockingStartedEvent(stationId));
-
-            Close();
-        }
-
         private static void SetSegmentVisible(Button segment, bool visible)
         {
             if (segment == null) return;
@@ -430,7 +398,6 @@ namespace VoidHarvest.Features.HUD.Views
             _segmentMine?.RemoveFromClassList("radial-segment--selected");
             _segmentKeepAtRange?.RemoveFromClassList("radial-segment--selected");
             _segmentDock?.RemoveFromClassList("radial-segment--selected");
-            _segmentUndock?.RemoveFromClassList("radial-segment--selected");
         }
 
         private Button GetSegmentButton(int action)

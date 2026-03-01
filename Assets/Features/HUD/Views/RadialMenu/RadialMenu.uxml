@@ -32,9 +32,6 @@
         <!-- Bottom-Right: Dock (station target only) -->
         <ui:Button name="segment-dock" class="radial-segment segment-bottom-right" text="Dock" />
 
-        <!-- Bottom-Left: Undock (docked at station only) -->
-        <ui:Button name="segment-undock" class="radial-segment segment-bottom-left" text="Undock" />
-
         <!-- Distance sub-menu panel (shown for Approach, Orbit, KeepAtRange) -->
         <ui:VisualElement name="distance-submenu" class="distance-submenu">
             <ui:Label name="distance-title" class="distance-title" text="Set Distance" />
