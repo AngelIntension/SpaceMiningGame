@@ -245,6 +245,96 @@ for each action.
 
 The radial menu is disabled while you are docked at a station.
 
+**Lock Target** is available for all target types (asteroids and
+stations). See Targeting & Locking below for details.
+
+## Targeting & Locking
+
+The targeting system lets you select objects in space and lock onto
+multiple targets simultaneously for tracking.
+
+### Selecting Targets
+
+Left-click any asteroid or station to select it. A corner-bracket
+reticle appears around the target showing:
+
+- **Above**: Target name and type (e.g., "Luminite Asteroid")
+- **Below**: Distance in meters (updates live)
+
+Click empty space to deselect. Click a different object to transfer
+selection.
+
+### Off-Screen Tracking
+
+When your selected target moves off-screen, a directional triangle
+indicator appears at the edge of the screen pointing toward the
+target. The triangle rotates to show the direction you need to turn.
+
+### Locking Targets
+
+To lock a target for persistent tracking:
+
+1. **Left-click** an asteroid or station to select it.
+2. **Right-click** to open the radial menu.
+3. Click **Lock Target** to begin lock acquisition.
+
+During acquisition (default 1.5 seconds):
+
+- A progress ring fills around the reticle.
+- The reticle corners pulse.
+- An acquiring audio tone rises in pitch.
+- The reticle, name, and range labels remain visible underneath.
+
+When complete, you hear a confirmation sound and a brief flash
+appears. A **target card** is added to the HUD.
+
+### Lock Cancellation
+
+Lock acquisition is cancelled if:
+
+- You click a different target or empty space (deselection).
+- The target moves beyond maximum lock range (5,000 meters) during
+  acquisition.
+- The target is destroyed (e.g., asteroid fully depleted).
+
+A failure sound plays when acquisition is cancelled.
+
+### Target Cards
+
+Each locked target gets a card displayed in the upper-right area of
+the HUD. Each card shows:
+
+- A **live viewport** rendering the target object in isolation.
+- The target's **name**.
+- **Range** in meters (updates continuously).
+- A **dismiss button** (X) to unlock the target.
+
+Click a card's body (not the dismiss button) to re-select that locked
+target, transferring your selection to it.
+
+Cards reflow automatically when a target is unlocked — remaining
+cards shift to fill gaps.
+
+### Multi-Target Limits
+
+Each ship has a maximum number of simultaneous target locks:
+
+| Ship | Max Locks | Lock Time | Lock Range |
+|------|-----------|-----------|------------|
+| Small Mining Barge | 3 | 1.5s | 5,000m |
+| Medium Mining Barge | 3 | 1.5s | 5,000m |
+| Heavy Mining Barge | 3 | 2.0s | 5,000m |
+
+Attempting to lock a fourth target when all slots are full produces a
+"slots full" audio cue. Attempting to lock a target that is already
+locked is silently ignored.
+
+### Auto-Clear on Docking
+
+When you dock at a station, all target locks are cleared and target
+cards are removed. Targeting is disabled while docked — you cannot
+select targets or initiate locks until you undock.
+
 ## Station Docking
 
 Two stations are present in the game world:

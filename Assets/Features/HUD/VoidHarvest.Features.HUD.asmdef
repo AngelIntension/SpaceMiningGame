@@ -10,6 +10,7 @@
         "VoidHarvest.Features.Ship",
         "VoidHarvest.Features.Input",
         "VoidHarvest.Features.Docking",
+        "VoidHarvest.Features.Targeting",
         "UniTask",
         "VContainer",
         "Unity.InputSystem",

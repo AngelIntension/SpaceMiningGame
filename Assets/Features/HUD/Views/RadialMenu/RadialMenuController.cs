@@ -10,6 +10,7 @@ using VoidHarvest.Core.State;
 using VoidHarvest.Core.Extensions;
 using VoidHarvest.Features.Docking.Data;
 using VoidHarvest.Features.Input.Views;
+using VoidHarvest.Features.Targeting.Views;
 
 namespace VoidHarvest.Features.HUD.Views
 {
@@ -24,6 +25,7 @@ namespace VoidHarvest.Features.HUD.Views
         private const int ActionMine = 2;
         private const int ActionKeepAtRange = 3;
         private const int ActionDock = 4;
+        private const int ActionLockTarget = 5;
 
         private const float DefaultApproachDistance = 50f;
         private const float DefaultOrbitDistance = 100f;
@@ -43,6 +45,7 @@ namespace VoidHarvest.Features.HUD.Views
         private Button _segmentMine;
         private Button _segmentKeepAtRange;
         private Button _segmentDock;
+        private Button _segmentLockTarget;
         private Button _confirmButton;
         private Button _preset25;
         private Button _preset50;
@@ -62,6 +65,7 @@ namespace VoidHarvest.Features.HUD.Views
 
         // Reference to InputBridge for SetRadialChoice callback
         private InputBridge _inputBridge;
+        private TargetingController _targetingController;
 
         /// <summary>
         /// DI injection point for the state store. See MVP-04: Right-click radial menu.
@@ -82,6 +86,7 @@ namespace VoidHarvest.Features.HUD.Views
                 Debug.LogWarning("[RadialMenuController] InputBridge not found in scene. " +
                                  "Radial menu commands will not reach the ship.");
             }
+            _targetingController = FindObjectOfType<TargetingController>();
 
             // Subscribe to radial menu events from InputBridge
             if (_eventBus != null)
@@ -124,6 +129,7 @@ namespace VoidHarvest.Features.HUD.Views
             _segmentMine = _root.Q<Button>("segment-mine");
             _segmentKeepAtRange = _root.Q<Button>("segment-keep-at-range");
             _segmentDock = _root.Q<Button>("segment-dock");
+            _segmentLockTarget = _root.Q<Button>("segment-lock-target");
 
             // Query distance submenu elements
             _distanceSubmenu = _root.Q<VisualElement>("distance-submenu");
@@ -144,6 +150,7 @@ namespace VoidHarvest.Features.HUD.Views
             _segmentMine?.RegisterCallback<ClickEvent>(_ => OnSegmentClicked(ActionMine));
             _segmentKeepAtRange?.RegisterCallback<ClickEvent>(_ => OnSegmentClicked(ActionKeepAtRange));
             _segmentDock?.RegisterCallback<ClickEvent>(_ => OnDockClicked());
+            _segmentLockTarget?.RegisterCallback<ClickEvent>(_ => OnLockTargetClicked());
 
             // Bind preset button callbacks
             _preset25?.RegisterCallback<ClickEvent>(_ => OnPresetClicked(25));
@@ -217,9 +224,12 @@ namespace VoidHarvest.Features.HUD.Views
             ClearSegmentSelection();
 
             // Context-sensitive segment visibility
+            // Lock Target is visible for all target types (FR-034)
+            SetSegmentVisible(_segmentLockTarget, true);
+
             if (_currentTargetType == TargetType.Station)
             {
-                // Station undocked: Approach, KeepAtRange, Orbit, Dock
+                // Station undocked: Approach, KeepAtRange, Orbit, Lock, Dock
                 SetSegmentVisible(_segmentApproach, true);
                 SetSegmentVisible(_segmentOrbit, true);
                 SetSegmentVisible(_segmentMine, false);
@@ -228,7 +238,7 @@ namespace VoidHarvest.Features.HUD.Views
             }
             else
             {
-                // Asteroid or default: Approach, Orbit, Mine, KeepAtRange
+                // Asteroid or default: Approach, Orbit, Mine, KeepAtRange, Lock
                 SetSegmentVisible(_segmentApproach, true);
                 SetSegmentVisible(_segmentOrbit, true);
                 SetSegmentVisible(_segmentMine, true);
@@ -385,6 +395,12 @@ namespace VoidHarvest.Features.HUD.Views
             Close();
         }
 
+        private void OnLockTargetClicked()
+        {
+            _targetingController?.AttemptLockOnSelected();
+            Close();
+        }
+
         private static void SetSegmentVisible(Button segment, bool visible)
         {
             if (segment == null) return;
@@ -398,6 +414,7 @@ namespace VoidHarvest.Features.HUD.Views
             _segmentMine?.RemoveFromClassList("radial-segment--selected");
             _segmentKeepAtRange?.RemoveFromClassList("radial-segment--selected");
             _segmentDock?.RemoveFromClassList("radial-segment--selected");
+            _segmentLockTarget?.RemoveFromClassList("radial-segment--selected");
         }
 
         private Button GetSegmentButton(int action)
@@ -409,6 +426,7 @@ namespace VoidHarvest.Features.HUD.Views
                 ActionMine => _segmentMine,
                 ActionKeepAtRange => _segmentKeepAtRange,
                 ActionDock => _segmentDock,
+                ActionLockTarget => _segmentLockTarget,
                 _ => null
             };
         }

@@ -13,6 +13,7 @@ using VoidHarvest.Features.Ship.Data;
 using VoidHarvest.Features.Mining.Data;
 using VoidHarvest.Features.Mining.Systems;
 using VoidHarvest.Features.Docking.Data;
+using VoidHarvest.Features.Targeting.Data;
 
 namespace VoidHarvest.Features.Input.Views
 {
@@ -286,6 +287,10 @@ namespace VoidHarvest.Features.Input.Views
             bool isDoubleClick = (now - _lastClickTime) < DoubleClickWindow;
             _lastClickTime = now;
 
+            // Suppress selection while docked
+            bool isDocked = _stateStore?.Current.Loop.Docking.IsDocked ?? false;
+            if (isDocked) return;
+
             // Try physics raycast first (for stations on Selectable layer)
             if (TryRaycastSelectable(out var hit))
             {
@@ -299,9 +304,19 @@ namespace VoidHarvest.Features.Input.Views
                     _selectedTargetId = hit.collider.gameObject.GetInstanceID();
                     _selectedAsteroidEntity = Entity.Null;
 
-                    // Check if hit object has a DockingPortComponent (station)
+                    // Check for ITargetable (generic targeting) or DockingPortComponent (legacy)
+                    var targetable = hit.collider.GetComponentInChildren<ITargetable>();
                     var dockingPort = hit.collider.GetComponentInChildren<DockingPortComponent>();
-                    if (dockingPort != null)
+
+                    if (targetable != null)
+                    {
+                        _selectedTargetType = targetable.TargetType;
+                        _selectedDockingPort = dockingPort;
+                        _stateStore?.Dispatch(new SelectTargetAction(
+                            targetable.TargetId, targetable.TargetType,
+                            targetable.DisplayName, targetable.TypeLabel));
+                    }
+                    else if (dockingPort != null)
                     {
                         _selectedTargetType = TargetType.Station;
                         _selectedDockingPort = dockingPort;
@@ -331,6 +346,20 @@ namespace VoidHarvest.Features.Input.Views
                     _selectedAsteroidEntity = hitEntity;
                     _selectedTargetType = TargetType.Asteroid;
                     _selectedDockingPort = null;
+
+                    // Build display name and ore type from ECS data
+                    string displayName = "Asteroid";
+                    string oreTypeName = "";
+                    if (_entityManager.HasComponent<AsteroidOreComponent>(hitEntity))
+                    {
+                        int oreTypeId = _entityManager.GetComponentData<AsteroidOreComponent>(hitEntity).OreTypeId;
+                        oreTypeName = OreDisplayNames.Get(oreTypeId);
+                        if (!string.IsNullOrEmpty(oreTypeName))
+                            displayName = oreTypeName + " Asteroid";
+                    }
+
+                    _stateStore?.Dispatch(new SelectTargetAction(
+                        hitEntity.Index, TargetType.Asteroid, displayName, oreTypeName));
                     _eventBus?.Publish(new TargetSelectedEvent(_selectedTargetId));
                 }
                 return;
@@ -341,6 +370,7 @@ namespace VoidHarvest.Features.Input.Views
             _selectedAsteroidEntity = Entity.Null;
             _selectedTargetType = TargetType.None;
             _selectedDockingPort = null;
+            _stateStore?.Dispatch(new ClearSelectionAction());
             _eventBus?.Publish(new TargetSelectedEvent(-1));
         }
 

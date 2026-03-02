@@ -29,6 +29,9 @@
         <!-- Left: Keep at Range -->
         <ui:Button name="segment-keep-at-range" class="radial-segment segment-left" text="Keep at&#10;Range" />
 
+        <!-- Top-Left: Lock Target -->
+        <ui:Button name="segment-lock-target" class="radial-segment segment-top-left" text="Lock&#10;Target" />
+
         <!-- Bottom-Right: Dock (station target only) -->
         <ui:Button name="segment-dock" class="radial-segment segment-bottom-right" text="Dock" />
 
