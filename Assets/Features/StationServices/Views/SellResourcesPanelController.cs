@@ -6,6 +6,7 @@ using VContainer;
 using VoidHarvest.Core.EventBus;
 using VoidHarvest.Core.EventBus.Events;
 using VoidHarvest.Core.State;
+using VoidHarvest.Features.Mining.Data;
 using VoidHarvest.Features.StationServices.Data;
 
 namespace VoidHarvest.Features.StationServices.Views
@@ -116,7 +117,7 @@ namespace VoidHarvest.Features.StationServices.Views
                     if (_errorLabel != null) _errorLabel.text = "";
                     foreach (var kvp in storage.Stacks)
                     {
-                        var btn = new Button { text = $"{kvp.Key}: {kvp.Value.Quantity}" };
+                        var btn = new Button { text = $"{OreDefinitionRegistry.GetDisplayName(kvp.Key)}: {kvp.Value.Quantity}" };
                         btn.AddToClassList("item-row");
                         var resId = kvp.Key;
                         if (resId == _selectedResource) btn.AddToClassList("item-row--selected");

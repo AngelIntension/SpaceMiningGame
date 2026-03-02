@@ -3,6 +3,7 @@ using UnityEngine.UIElements;
 using VContainer;
 using VoidHarvest.Core.EventBus;
 using VoidHarvest.Core.State;
+using VoidHarvest.Features.Mining.Data;
 using VoidHarvest.Features.StationServices.Data;
 
 namespace VoidHarvest.Features.StationServices.Views
@@ -51,12 +52,12 @@ namespace VoidHarvest.Features.StationServices.Views
             _jobId = job.JobId;
 
             if (_oreInfoLabel != null)
-                _oreInfoLabel.text = $"{job.OreId} x{job.InputQuantity}";
+                _oreInfoLabel.text = $"{OreDefinitionRegistry.GetDisplayName(job.OreId)} x{job.InputQuantity}";
 
             _outputsList?.Clear();
             foreach (var output in job.GeneratedOutputs)
             {
-                var label = new Label { text = $"{output.MaterialId}: {output.Quantity}" };
+                var label = new Label { text = $"{OreDefinitionRegistry.GetDisplayName(output.MaterialId)}: {output.Quantity}" };
                 label.AddToClassList("item-row");
                 _outputsList?.Add(label);
             }

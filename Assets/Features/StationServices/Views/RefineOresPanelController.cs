@@ -127,6 +127,8 @@ namespace VoidHarvest.Features.StationServices.Views
                     choices.Add(kvp.Key);
             }
             _oreDropdown.choices = choices;
+            _oreDropdown.formatSelectedValueCallback = id => OreDefinitionRegistry.GetDisplayName(id);
+            _oreDropdown.formatListItemCallback = id => OreDefinitionRegistry.GetDisplayName(id);
         }
 
         private void PopulateJobLists(StationServicesState services)
@@ -143,13 +145,13 @@ namespace VoidHarvest.Features.StationServices.Views
                 {
                     float progress = job.Progress(currentTime);
                     float remaining = job.RemainingTime(currentTime);
-                    var label = new Label { text = $"{job.OreId} x{job.InputQuantity} — {progress:P0} ({remaining:F0}s)" };
+                    var label = new Label { text = $"{OreDefinitionRegistry.GetDisplayName(job.OreId)} x{job.InputQuantity} — {progress:P0} ({remaining:F0}s)" };
                     label.AddToClassList("item-row");
                     _activeJobsList?.Add(label);
                 }
                 else if (job.Status == RefiningJobStatus.Completed)
                 {
-                    var btn = new Button { text = $"{job.OreId} x{job.InputQuantity} — COMPLETE (click to review)" };
+                    var btn = new Button { text = $"{OreDefinitionRegistry.GetDisplayName(job.OreId)} x{job.InputQuantity} — COMPLETE (click to review)" };
                     btn.AddToClassList("item-row");
                     var capturedJob = job;
                     btn.RegisterCallback<ClickEvent>(_ => OnCompletedJobClicked?.Invoke(capturedJob));
