@@ -9,12 +9,12 @@ using VoidHarvest.Core.EventBus.Events;
 using VoidHarvest.Core.State;
 using VoidHarvest.Features.Docking.Data;
 
-namespace VoidHarvest.Features.Docking.Views
+namespace VoidHarvest.Features.StationServices.Views
 {
     /// <summary>
     /// Controls the station services menu UI. Opens on dock completion,
     /// closes on undock start. View layer only — no game state.
-    /// See Spec 004 US3: Station Services Menu.
+    /// See Spec 006: Station Services.
     /// </summary>
     public sealed class StationServicesMenuController : MonoBehaviour
     {

@@ -22,8 +22,8 @@ namespace VoidHarvest.Features.Mining.Data
         /// <summary>Inventory/UI icon. Nullable — stored for future use.</summary>
         public Sprite Icon;
 
-        /// <summary>Base market value per unit. Stored for future economy integration.</summary>
-        public float BaseValue;
+        /// <summary>Base market value per unit in integer credits.</summary>
+        public int BaseValue;
 
         /// <summary>Flavor text for tooltips. Stored for future use.</summary>
         [TextArea]

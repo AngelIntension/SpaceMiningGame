@@ -86,8 +86,8 @@ namespace VoidHarvest.Features.Mining.Tests
         [Test]
         public void OreDefinition_HasBaseValueField()
         {
-            _oreDefinition.BaseValue = 42f;
-            Assert.AreEqual(42f, _oreDefinition.BaseValue);
+            _oreDefinition.BaseValue = 42;
+            Assert.AreEqual(42, _oreDefinition.BaseValue);
         }
 
         [Test]

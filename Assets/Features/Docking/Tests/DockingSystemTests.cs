@@ -33,7 +33,7 @@ namespace VoidHarvest.Features.Docking.Tests
                     ExploreState.Empty,
                     MiningSessionState.Empty,
                     InventoryState.Empty,
-                    RefiningState.Empty,
+                    StationServicesState.Empty,
                     TechTreeState.Empty,
                     FleetState.Empty,
                     BaseState.Empty,
