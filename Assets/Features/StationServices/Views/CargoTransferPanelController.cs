@@ -30,7 +30,6 @@ namespace VoidHarvest.Features.StationServices.Views
         private Label _errorLabel;
         private Button _btnToStation;
         private Button _btnToShip;
-        private Button _btnBack;
 
         private string _selectedShipResource;
         private string _selectedStationResource;
@@ -58,7 +57,6 @@ namespace VoidHarvest.Features.StationServices.Views
             _errorLabel = _root.Q<Label>("cargo-error");
             _btnToStation = _root.Q<Button>("btn-to-station");
             _btnToShip = _root.Q<Button>("btn-to-ship");
-            _btnBack = _root.Q<Button>("btn-back");
 
             _quantitySlider?.RegisterValueChangedCallback(evt =>
             {
@@ -74,8 +72,6 @@ namespace VoidHarvest.Features.StationServices.Views
 
             RefreshUI();
         }
-
-        public Button BackButton => _btnBack;
 
         public void Cleanup()
         {

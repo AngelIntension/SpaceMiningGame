@@ -23,9 +23,6 @@
 
         <!-- Content area — panels stacked, only one visible at a time -->
         <ui:ScrollView name="services-content" class="services-content">
-            <!-- Main menu placeholder (visible when no sub-panel active) -->
-            <ui:Label name="services-placeholder" text="Select a service above" class="services-placeholder" />
-
             <!-- Cargo Transfer Panel -->
             <ui:VisualElement name="panel-cargo" class="sub-panel" style="display: none;">
                 <ui:Label text="Cargo Transfer" class="panel-title" />
@@ -47,7 +44,6 @@
                     </ui:VisualElement>
                 </ui:VisualElement>
                 <ui:Label name="cargo-error" class="error-label" />
-                <ui:Button name="btn-back-cargo" text="Back" class="back-btn" />
             </ui:VisualElement>
 
             <!-- Sell Resources Panel -->
@@ -66,7 +62,6 @@
                         <ui:Button name="btn-cancel-sell" text="Cancel" class="back-btn" />
                     </ui:VisualElement>
                 </ui:VisualElement>
-                <ui:Button name="btn-back-market" text="Back" class="back-btn" />
             </ui:VisualElement>
 
             <!-- Refine Ores Panel -->
@@ -84,7 +79,6 @@
                 <ui:ScrollView name="active-jobs-list" class="item-list" />
                 <ui:Label text="Completed Jobs" class="section-header" />
                 <ui:ScrollView name="completed-jobs-list" class="item-list" />
-                <ui:Button name="btn-back-refinery" text="Back" class="back-btn" />
             </ui:VisualElement>
 
             <!-- Basic Repair Panel -->
@@ -95,7 +89,6 @@
                 <ui:Label name="repair-cost" text="Cost: 0 credits" class="preview-label" />
                 <ui:Label name="repair-status" text="" class="status-label" />
                 <ui:Button name="btn-repair" text="Repair to 100%" class="action-btn" />
-                <ui:Button name="btn-back-repair" text="Back" class="back-btn" />
             </ui:VisualElement>
 
             <!-- Refining Job Summary (modal overlay) -->

@@ -28,7 +28,6 @@ namespace VoidHarvest.Features.StationServices.Views
         private Label _costLabel;
         private Label _statusLabel;
         private Button _btnRepair;
-        private Button _btnBack;
         private CancellationTokenSource _stateCts;
         private StationServicesState _lastServices;
         private ShipState _lastShip;
@@ -51,7 +50,6 @@ namespace VoidHarvest.Features.StationServices.Views
             _costLabel = _root.Q<Label>("repair-cost");
             _statusLabel = _root.Q<Label>("repair-status");
             _btnRepair = _root.Q<Button>("btn-repair");
-            _btnBack = _root.Q<Button>("btn-back");
 
             _btnRepair?.RegisterCallback<ClickEvent>(_ => OnRepairClicked());
 
@@ -61,8 +59,6 @@ namespace VoidHarvest.Features.StationServices.Views
 
             RefreshUI();
         }
-
-        public Button BackButton => _btnBack;
 
         public void Cleanup()
         {

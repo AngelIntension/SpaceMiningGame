@@ -31,7 +31,6 @@ namespace VoidHarvest.Features.StationServices.Views
         private VisualElement _confirmOverlay;
         private Button _btnConfirmSell;
         private Button _btnCancelSell;
-        private Button _btnBack;
 
         private string _selectedResource;
         private int _selectedBaseValue;
@@ -59,7 +58,6 @@ namespace VoidHarvest.Features.StationServices.Views
             _confirmOverlay = _root.Q<VisualElement>("sell-confirm-overlay");
             _btnConfirmSell = _root.Q<Button>("btn-confirm-sell");
             _btnCancelSell = _root.Q<Button>("btn-cancel-sell");
-            _btnBack = _root.Q<Button>("btn-back");
 
             _quantitySlider?.RegisterValueChangedCallback(evt =>
             {
@@ -77,8 +75,6 @@ namespace VoidHarvest.Features.StationServices.Views
 
             RefreshUI();
         }
-
-        public Button BackButton => _btnBack;
 
         public void Cleanup()
         {

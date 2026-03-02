@@ -30,7 +30,6 @@ namespace VoidHarvest.Features.StationServices.Views
         private VisualElement _root;
         private Label _stationName;
         private Label _stationType;
-        private Label _placeholder;
         private Button _tabCargo;
         private Button _tabMarket;
         private Button _tabRefinery;
@@ -84,8 +83,6 @@ namespace VoidHarvest.Features.StationServices.Views
             // Header
             _stationName = _root.Q<Label>("station-name");
             _stationType = _root.Q<Label>("station-type");
-            _placeholder = _root.Q<Label>("services-placeholder");
-
             // Tabs
             _tabCargo = _root.Q<Button>("tab-cargo");
             _tabMarket = _root.Q<Button>("tab-market");
@@ -106,12 +103,6 @@ namespace VoidHarvest.Features.StationServices.Views
             _tabRefinery?.RegisterCallback<ClickEvent>(_ => ShowPanel("Refinery"));
             _tabRepair?.RegisterCallback<ClickEvent>(_ => ShowPanel("Repair"));
             _undockButton?.RegisterCallback<ClickEvent>(_ => OnUndockClicked());
-
-            // Back button callbacks
-            _panelCargo?.Q<Button>("btn-back-cargo")?.RegisterCallback<ClickEvent>(_ => ShowMainMenu());
-            _panelMarket?.Q<Button>("btn-back-market")?.RegisterCallback<ClickEvent>(_ => ShowMainMenu());
-            _panelRefinery?.Q<Button>("btn-back-refinery")?.RegisterCallback<ClickEvent>(_ => ShowMainMenu());
-            _panelRepair?.Q<Button>("btn-back-repair")?.RegisterCallback<ClickEvent>(_ => ShowMainMenu());
 
             // Header drag-to-move
             _header = _root.Q<VisualElement>("services-header");
@@ -192,8 +183,8 @@ namespace VoidHarvest.Features.StationServices.Views
             _root.style.top = new StyleLength(new Length(50, LengthUnit.Percent));
             _root.style.translate = new Translate(Length.Percent(-50), Length.Percent(-50));
 
-            // Show main menu
-            ShowMainMenu();
+            // Default to Cargo tab
+            ShowPanel("Cargo");
 
             _root.style.display = DisplayStyle.Flex;
         }
@@ -263,18 +254,9 @@ namespace VoidHarvest.Features.StationServices.Views
             _creditIndicator?.Cleanup();
         }
 
-        private void ShowMainMenu()
-        {
-            HideAllPanels();
-            if (_placeholder != null) _placeholder.style.display = DisplayStyle.Flex;
-            ClearActiveTab();
-        }
-
         private void ShowPanel(string panelName)
         {
             HideAllPanels();
-            if (_placeholder != null) _placeholder.style.display = DisplayStyle.None;
-
             ClearActiveTab();
 
             switch (panelName)

@@ -35,7 +35,6 @@ namespace VoidHarvest.Features.StationServices.Views
         private Button _btnStartJob;
         private ScrollView _activeJobsList;
         private ScrollView _completedJobsList;
-        private Button _btnBack;
 
         private string _selectedOreId;
         private int _selectedCostPerUnit;
@@ -69,7 +68,6 @@ namespace VoidHarvest.Features.StationServices.Views
             _btnStartJob = _root.Q<Button>("btn-start-job");
             _activeJobsList = _root.Q<ScrollView>("active-jobs-list");
             _completedJobsList = _root.Q<ScrollView>("completed-jobs-list");
-            _btnBack = _root.Q<Button>("btn-back");
 
             _oreDropdown?.RegisterValueChangedCallback(evt => OnOreSelected(evt.newValue));
             _quantitySlider?.RegisterValueChangedCallback(evt =>
@@ -85,8 +83,6 @@ namespace VoidHarvest.Features.StationServices.Views
 
             RefreshUI();
         }
-
-        public Button BackButton => _btnBack;
 
         public void Cleanup()
         {
