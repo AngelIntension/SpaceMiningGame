@@ -83,7 +83,7 @@ Each locked target's HUD card contains a live viewport showing only the targeted
 
 ### User Story 5 — Lock Time Computation (Priority: P5)
 
-Each ship has a configurable base lock time (default 1.5 seconds). The system computes the actual lock duration through a dedicated calculation that, for this version, simply returns the base lock time. The calculation method is designed to accept the target as input so that future versions can factor in distance, target size, sensor upgrades, or other modifiers without restructuring.
+Each ship has a configurable base lock time (default 1.5 seconds). The system computes the actual lock time through a dedicated calculation that, for this version, simply returns the base lock time. The calculation method is designed to accept the target as input so that future versions can factor in distance, target size, sensor upgrades, or other modifiers without restructuring.
 
 **Why this priority**: This is a data-driven configuration concern. The default value works out of the box; the extensible calculation method is a design-for-the-future investment that requires minimal effort now.
 
@@ -142,7 +142,7 @@ All player-facing documentation is updated to reflect the new targeting and lock
 **Locking**
 
 - **FR-008**: The radial menu MUST include a "Lock Target" segment when a targetable object is selected (visible for all target types: asteroids and stations).
-- **FR-009**: Activating "Lock Target" MUST begin a timed lock acquisition lasting the ship's calculated lock duration.
+- **FR-009**: Activating "Lock Target" MUST begin a timed lock acquisition lasting the ship's calculated lock time.
 - **FR-010**: During lock acquisition, the system MUST display a progress indicator around the reticle (progress arc or ring) and pulse the reticle corners.
 - **FR-011**: During lock acquisition, the system MUST play a rising-tone audio cue that completes on successful lock.
 - **FR-012**: On successful lock completion, the system MUST play a confirmation audio cue and display a brief visual confirmation effect on the reticle.
@@ -154,7 +154,7 @@ All player-facing documentation is updated to reflect the new targeting and lock
 **Lock Time**
 
 - **FR-017**: Each ship MUST have a configurable base lock time (designer-editable, default 1.5 seconds).
-- **FR-018**: The system MUST calculate the actual lock duration through a dedicated computation that accepts the target as input, returning the base lock time for this version.
+- **FR-018**: The system MUST calculate the actual lock time through a dedicated computation that accepts the target as input, returning the base lock time for this version.
 - **FR-019**: The lock timer MUST be accurate to within ±0.1 seconds of the calculated duration.
 
 **Multi-Target Management**

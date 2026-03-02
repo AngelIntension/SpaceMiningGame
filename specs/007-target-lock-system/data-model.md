@@ -128,7 +128,7 @@ All actions are `sealed record` types implementing `ITargetingAction`.
 | `LockFailedEvent` | `TargetId: int`, `Reason: LockFailReason` | Lock cancelled (deselect, out-of-range, destroyed) |
 | `LockSlotsFullEvent` | _(none)_ | Player attempts lock at max capacity |
 | `TargetLostEvent` | `TargetId: int` | Locked target destroyed (asteroid depleted) |
-| `AllLocksCleared` | _(none)_ | All locks cleared (docking, ship swap) |
+| `AllLocksClearedEvent` | _(none)_ | All locks cleared (docking, ship swap) |
 
 ### LockFailReason (enum)
 

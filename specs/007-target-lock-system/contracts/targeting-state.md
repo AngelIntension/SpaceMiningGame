@@ -59,7 +59,7 @@ Cross-cutting: `CompleteDockingAction` and `CompleteUndockingAction` handlers in
 | `LockFailedEvent` | TargetId, Reason (LockFailReason) | Lock cancelled (deselect, out-of-range, destroyed) |
 | `LockSlotsFullEvent` | _(none)_ | Player attempts lock at max capacity |
 | `TargetLostEvent` | TargetId | Locked target destroyed (asteroid depleted) |
-| `AllLocksCleared` | _(none)_ | All locks cleared (docking, ship swap) |
+| `AllLocksClearedEvent` | _(none)_ | All locks cleared (docking, ship swap) |
 
 ## State Query Patterns
 
