@@ -268,6 +268,7 @@ As a pilot who has queued refining jobs, I want to receive notifications when jo
 - Q: Does a completed-but-unreviewed job still occupy a refining slot? → A: No — slots are freed immediately on completion. New jobs can start while completed jobs await review.
 - Q: What are the mandatory starter raw materials and refining configurations? → A: 6 raw materials (Luminite Ingots, Energium Dust, Ferrox Slabs, Conductive Residue, Auralite Shards, Quantum Essence) with concrete per-ore refining yields and additive variance offsets. Variance model is additive (base + offset), not multiplicative.
 - Q: How is yield variance applied — single roll per job or per-unit? → A: Per-unit rolling. Each input unit gets an independent random offset roll; results are summed. Larger batches trend toward average yields (EVE-style).
+- Q: Should credits be integer or floating-point? → A: Integer (`int`). No fractional credits. All prices (sell values, refining costs, repair costs) are also whole numbers. Repair cost uses ceiling rounding from the float integrity calculation.
 
 ## Success Criteria *(mandatory)*
 
