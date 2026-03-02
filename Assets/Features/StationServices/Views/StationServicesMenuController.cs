@@ -9,6 +9,7 @@ using VoidHarvest.Core.EventBus;
 using VoidHarvest.Core.State;
 using VoidHarvest.Core.EventBus.Events;
 using VoidHarvest.Features.Docking.Data;
+using VoidHarvest.Features.Input.Views;
 using VoidHarvest.Features.StationServices.Data;
 
 namespace VoidHarvest.Features.StationServices.Views
@@ -56,6 +57,8 @@ namespace VoidHarvest.Features.StationServices.Views
         private VisualElement _header;
         private bool _isDragging;
         private Vector2 _dragOffset;
+
+        private InputBridge _inputBridge;
 
         [Inject]
         public void Construct(
@@ -113,11 +116,17 @@ namespace VoidHarvest.Features.StationServices.Views
                 _header.RegisterCallback<PointerUpEvent>(OnHeaderPointerUp);
             }
 
+            // Block scroll-wheel zoom when pointer is over the menu
+            _root.RegisterCallback<PointerEnterEvent>(_ => _inputBridge?.SetPointerOverScrollUI(true));
+            _root.RegisterCallback<PointerLeaveEvent>(_ => _inputBridge?.SetPointerOverScrollUI(false));
+
             _root.style.display = DisplayStyle.None;
         }
 
         private void Start()
         {
+            _inputBridge = FindObjectOfType<InputBridge>();
+
             // Get sub-controllers from sibling components
             _cargoController = GetComponent<CargoTransferPanelController>();
             _sellController = GetComponent<SellResourcesPanelController>();

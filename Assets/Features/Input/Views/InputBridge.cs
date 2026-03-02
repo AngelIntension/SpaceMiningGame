@@ -56,6 +56,7 @@ namespace VoidHarvest.Features.Input.Views
         private Features.Camera.Views.CameraView _cameraView;
         private Entity _selectedAsteroidEntity;
         private bool _radialMenuOpen;
+        private int _uiScrollBlockCount;
         private TargetType _selectedTargetType = TargetType.None;
         private DockingPortComponent _selectedDockingPort;
 
@@ -248,9 +249,9 @@ namespace VoidHarvest.Features.Input.Views
                 }
             }
 
-            // Zoom: scroll wheel
+            // Zoom: scroll wheel (skip when pointer is over a scrollable UI panel)
             float zoomDelta = _zoomAction?.ReadValue<float>() ?? 0f;
-            if (Mathf.Abs(zoomDelta) > 0.001f)
+            if (Mathf.Abs(zoomDelta) > 0.001f && _uiScrollBlockCount <= 0)
             {
                 _stateStore.Dispatch(new ZoomAction(-zoomDelta * 2f));
                 _cameraView?.NotifyManualZoom();
@@ -266,6 +267,16 @@ namespace VoidHarvest.Features.Input.Views
         /// Called by RadialMenuController to prevent clicks on UI from clearing selection.
         /// </summary>
         public void SetRadialMenuOpen(bool open) => _radialMenuOpen = open;
+
+        /// <summary>
+        /// Called by UI panels with scroll content to block scroll-wheel zoom
+        /// while the pointer is over them. Ref-counted for overlapping panels.
+        /// </summary>
+        public void SetPointerOverScrollUI(bool over)
+        {
+            _uiScrollBlockCount += over ? 1 : -1;
+            if (_uiScrollBlockCount < 0) _uiScrollBlockCount = 0;
+        }
 
         private void OnSelect(InputAction.CallbackContext ctx)
         {

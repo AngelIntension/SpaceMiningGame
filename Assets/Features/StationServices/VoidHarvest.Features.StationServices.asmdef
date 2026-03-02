@@ -8,6 +8,7 @@
         "VoidHarvest.Features.Mining",
         "VoidHarvest.Features.Resources",
         "VoidHarvest.Features.Docking",
+        "VoidHarvest.Features.Input",
         "VoidHarvest.Features.Ship",
         "VContainer",
         "UniTask",
