@@ -23,6 +23,7 @@ namespace VoidHarvest.Features.Ship.Systems
                     AngularVelocity = a.AngularVelocity,
                     FlightMode = a.FlightMode
                 },
+                RepairHullAction a => state with { HullIntegrity = a.NewIntegrity },
                 _ => state
             };
     }

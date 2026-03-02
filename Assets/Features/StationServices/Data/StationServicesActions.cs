@@ -52,11 +52,4 @@ namespace VoidHarvest.Features.StationServices.Data
     public sealed record RepairShipAction(
         int Cost, float NewIntegrity
     ) : IStationServicesAction;
-
-    /// <summary>
-    /// Ship action to set hull integrity. Dispatched by CompositeReducer during repair.
-    /// </summary>
-    public sealed record RepairHullAction(
-        float NewIntegrity
-    ) : IShipAction;
 }

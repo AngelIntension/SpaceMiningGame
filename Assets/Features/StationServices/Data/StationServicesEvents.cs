@@ -30,6 +30,18 @@ namespace VoidHarvest.Features.StationServices.Data
         }
     }
 
+    public readonly struct RefiningJobCollectedEvent
+    {
+        public readonly int StationId;
+        public readonly string JobId;
+
+        public RefiningJobCollectedEvent(int stationId, string jobId)
+        {
+            StationId = stationId;
+            JobId = jobId;
+        }
+    }
+
     public readonly struct ResourcesSoldEvent
     {
         public readonly string ResourceId;

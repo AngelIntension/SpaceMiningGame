@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
 using Cysharp.Threading.Tasks;
@@ -5,16 +6,17 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using VContainer;
 using VoidHarvest.Core.EventBus;
-using VoidHarvest.Core.EventBus.Events;
 using VoidHarvest.Core.State;
+using VoidHarvest.Core.EventBus.Events;
 using VoidHarvest.Features.Docking.Data;
+using VoidHarvest.Features.StationServices.Data;
 
 namespace VoidHarvest.Features.StationServices.Views
 {
     /// <summary>
     /// Controls the station services menu UI. Opens on dock completion,
-    /// closes on undock start. View layer only — no game state.
-    /// See Spec 006: Station Services.
+    /// closes on undock start. Manages sub-panel navigation and controllers.
+    /// See Spec 006: Station Services, FR-001 through FR-006.
     /// </summary>
     public sealed class StationServicesMenuController : MonoBehaviour
     {
@@ -22,24 +24,44 @@ namespace VoidHarvest.Features.StationServices.Views
 
         private IStateStore _stateStore;
         private IEventBus _eventBus;
+        private StationServicesConfigMap _configMap;
         private CancellationTokenSource _eventCts;
 
         private VisualElement _root;
         private Label _stationName;
         private Label _stationType;
         private Label _placeholder;
-        private Button _tabRefinery;
-        private Button _tabMarket;
-        private Button _tabRepair;
         private Button _tabCargo;
+        private Button _tabMarket;
+        private Button _tabRefinery;
+        private Button _tabRepair;
         private Button _undockButton;
+
+        private VisualElement _panelCargo;
+        private VisualElement _panelMarket;
+        private VisualElement _panelRefinery;
+        private VisualElement _panelRepair;
+        private VisualElement _summaryOverlay;
+
+        private CargoTransferPanelController _cargoController;
+        private SellResourcesPanelController _sellController;
+        private RefineOresPanelController _refineController;
+        private BasicRepairPanelController _repairController;
+        private RefiningJobSummaryController _summaryController;
+        private CreditBalanceIndicator _creditIndicator;
+
+        private int _dockedStationId;
         private Button _activeTab;
 
         [Inject]
-        public void Construct(IStateStore stateStore, IEventBus eventBus)
+        public void Construct(
+            IStateStore stateStore,
+            IEventBus eventBus,
+            StationServicesConfigMap configMap)
         {
             _stateStore = stateStore;
             _eventBus = eventBus;
+            _configMap = configMap;
         }
 
         private void OnEnable()
@@ -54,26 +76,51 @@ namespace VoidHarvest.Features.StationServices.Views
                 return;
             }
 
+            // Header
             _stationName = _root.Q<Label>("station-name");
             _stationType = _root.Q<Label>("station-type");
             _placeholder = _root.Q<Label>("services-placeholder");
-            _tabRefinery = _root.Q<Button>("tab-refinery");
-            _tabMarket = _root.Q<Button>("tab-market");
-            _tabRepair = _root.Q<Button>("tab-repair");
+
+            // Tabs
             _tabCargo = _root.Q<Button>("tab-cargo");
+            _tabMarket = _root.Q<Button>("tab-market");
+            _tabRefinery = _root.Q<Button>("tab-refinery");
+            _tabRepair = _root.Q<Button>("tab-repair");
             _undockButton = _root.Q<Button>("undock-button");
 
-            _tabRefinery?.RegisterCallback<ClickEvent>(_ => OnTabClicked(_tabRefinery, "Refinery"));
-            _tabMarket?.RegisterCallback<ClickEvent>(_ => OnTabClicked(_tabMarket, "Market"));
-            _tabRepair?.RegisterCallback<ClickEvent>(_ => OnTabClicked(_tabRepair, "Repair"));
-            _tabCargo?.RegisterCallback<ClickEvent>(_ => OnTabClicked(_tabCargo, "Cargo"));
+            // Panels
+            _panelCargo = _root.Q<VisualElement>("panel-cargo");
+            _panelMarket = _root.Q<VisualElement>("panel-market");
+            _panelRefinery = _root.Q<VisualElement>("panel-refinery");
+            _panelRepair = _root.Q<VisualElement>("panel-repair");
+            _summaryOverlay = _root.Q<VisualElement>("refining-summary-overlay");
+
+            // Tab callbacks
+            _tabCargo?.RegisterCallback<ClickEvent>(_ => ShowPanel("Cargo"));
+            _tabMarket?.RegisterCallback<ClickEvent>(_ => ShowPanel("Market"));
+            _tabRefinery?.RegisterCallback<ClickEvent>(_ => ShowPanel("Refinery"));
+            _tabRepair?.RegisterCallback<ClickEvent>(_ => ShowPanel("Repair"));
             _undockButton?.RegisterCallback<ClickEvent>(_ => OnUndockClicked());
+
+            // Back button callbacks
+            _panelCargo?.Q<Button>("btn-back-cargo")?.RegisterCallback<ClickEvent>(_ => ShowMainMenu());
+            _panelMarket?.Q<Button>("btn-back-market")?.RegisterCallback<ClickEvent>(_ => ShowMainMenu());
+            _panelRefinery?.Q<Button>("btn-back-refinery")?.RegisterCallback<ClickEvent>(_ => ShowMainMenu());
+            _panelRepair?.Q<Button>("btn-back-repair")?.RegisterCallback<ClickEvent>(_ => ShowMainMenu());
 
             _root.style.display = DisplayStyle.None;
         }
 
         private void Start()
         {
+            // Get sub-controllers from sibling components
+            _cargoController = GetComponent<CargoTransferPanelController>();
+            _sellController = GetComponent<SellResourcesPanelController>();
+            _refineController = GetComponent<RefineOresPanelController>();
+            _repairController = GetComponent<BasicRepairPanelController>();
+            _summaryController = GetComponent<RefiningJobSummaryController>();
+            _creditIndicator = GetComponent<CreditBalanceIndicator>();
+
             if (_eventBus != null)
             {
                 _eventCts = new CancellationTokenSource();
@@ -86,6 +133,7 @@ namespace VoidHarvest.Features.StationServices.Views
         {
             _eventCts?.Cancel();
             _eventCts?.Dispose();
+            CleanupControllers();
         }
 
         private async UniTaskVoid ListenForDockingCompleted(CancellationToken ct)
@@ -107,8 +155,9 @@ namespace VoidHarvest.Features.StationServices.Views
         private void Open(int stationId)
         {
             if (_root == null) return;
+            _dockedStationId = stationId;
 
-            // Query station info from world state
+            // Station info
             var stations = _stateStore?.Current.World.Stations;
             var station = stations?.FirstOrDefault(s => s.Id == stationId);
 
@@ -118,42 +167,149 @@ namespace VoidHarvest.Features.StationServices.Views
             if (_stationType != null)
                 _stationType.text = station != null ? FormatStationType(station) : "Unknown Type";
 
-            // Default to first tab
-            OnTabClicked(_tabRefinery, "Refinery");
+            // Configure tab availability based on station services
+            ConfigureTabAvailability(station);
+
+            // Initialize sub-controllers
+            InitializeControllers(stationId);
+
+            // Show main menu
+            ShowMainMenu();
 
             _root.style.display = DisplayStyle.Flex;
         }
 
-        /// <summary>
-        /// Closes the station services menu.
-        /// </summary>
         public void Close()
         {
             if (_root == null) return;
             _root.style.display = DisplayStyle.None;
             _activeTab = null;
+            CleanupControllers();
         }
 
-        /// <summary>
-        /// Whether the services menu is currently visible.
-        /// </summary>
         public bool IsOpen => _root != null && _root.style.display == DisplayStyle.Flex;
 
-        private void OnTabClicked(Button tab, string tabName)
+        private void ConfigureTabAvailability(StationData station)
         {
-            // Clear active state from all tabs
-            _tabRefinery?.RemoveFromClassList("services-tab--active");
-            _tabMarket?.RemoveFromClassList("services-tab--active");
-            _tabRepair?.RemoveFromClassList("services-tab--active");
-            _tabCargo?.RemoveFromClassList("services-tab--active");
+            var services = station?.AvailableServices ?? ImmutableArray<string>.Empty;
 
-            // Set active tab
+            SetTabEnabled(_tabCargo, services.Contains("Cargo"));
+            SetTabEnabled(_tabMarket, services.Contains("Market"));
+            SetTabEnabled(_tabRefinery, services.Contains("Refinery"));
+            SetTabEnabled(_tabRepair, services.Contains("Repair"));
+        }
+
+        private static void SetTabEnabled(Button tab, bool enabled)
+        {
+            if (tab == null) return;
+            tab.SetEnabled(enabled);
+            if (enabled)
+                tab.RemoveFromClassList("services-tab--disabled");
+            else
+                tab.AddToClassList("services-tab--disabled");
+        }
+
+        private void InitializeControllers(int stationId)
+        {
+            _creditIndicator?.Initialize(_root.Q<Label>("credit-balance"));
+
+            if (_cargoController != null && _panelCargo != null)
+                _cargoController.Initialize(_panelCargo, stationId);
+
+            if (_sellController != null && _panelMarket != null)
+                _sellController.Initialize(_panelMarket, stationId);
+
+            if (_refineController != null && _panelRefinery != null)
+            {
+                _refineController.Initialize(_panelRefinery, stationId);
+                _refineController.OnCompletedJobClicked = job =>
+                {
+                    _summaryController?.Open(job, stationId);
+                };
+            }
+
+            if (_repairController != null && _panelRepair != null)
+                _repairController.Initialize(_panelRepair, stationId);
+
+            if (_summaryController != null && _summaryOverlay != null)
+                _summaryController.Initialize(_summaryOverlay);
+        }
+
+        private void CleanupControllers()
+        {
+            _cargoController?.Cleanup();
+            _sellController?.Cleanup();
+            _refineController?.Cleanup();
+            _repairController?.Cleanup();
+            _creditIndicator?.Cleanup();
+        }
+
+        private void ShowMainMenu()
+        {
+            HideAllPanels();
+            if (_placeholder != null) _placeholder.style.display = DisplayStyle.Flex;
+            ClearActiveTab();
+        }
+
+        private void ShowPanel(string panelName)
+        {
+            HideAllPanels();
+            if (_placeholder != null) _placeholder.style.display = DisplayStyle.None;
+
+            ClearActiveTab();
+
+            switch (panelName)
+            {
+                case "Cargo":
+                    Show(_panelCargo);
+                    SetActiveTab(_tabCargo);
+                    break;
+                case "Market":
+                    Show(_panelMarket);
+                    SetActiveTab(_tabMarket);
+                    break;
+                case "Refinery":
+                    Show(_panelRefinery);
+                    SetActiveTab(_tabRefinery);
+                    break;
+                case "Repair":
+                    Show(_panelRepair);
+                    SetActiveTab(_tabRepair);
+                    break;
+            }
+        }
+
+        private void HideAllPanels()
+        {
+            Hide(_panelCargo);
+            Hide(_panelMarket);
+            Hide(_panelRefinery);
+            Hide(_panelRepair);
+        }
+
+        private void ClearActiveTab()
+        {
+            _tabCargo?.RemoveFromClassList("services-tab--active");
+            _tabMarket?.RemoveFromClassList("services-tab--active");
+            _tabRefinery?.RemoveFromClassList("services-tab--active");
+            _tabRepair?.RemoveFromClassList("services-tab--active");
+            _activeTab = null;
+        }
+
+        private void SetActiveTab(Button tab)
+        {
             tab?.AddToClassList("services-tab--active");
             _activeTab = tab;
+        }
 
-            // Update placeholder text
-            if (_placeholder != null)
-                _placeholder.text = $"{tabName} — Coming Soon";
+        private static void Show(VisualElement el)
+        {
+            if (el != null) el.style.display = DisplayStyle.Flex;
+        }
+
+        private static void Hide(VisualElement el)
+        {
+            if (el != null) el.style.display = DisplayStyle.None;
         }
 
         private void OnUndockClicked()

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:VisualElement name="cargo-transfer-root" class="sub-panel">
+        <ui:VisualElement name="cargo-columns" class="cargo-columns">
+            <!-- Ship cargo column -->
+            <ui:VisualElement name="ship-cargo" class="cargo-column">
+                <ui:Label text="Ship Cargo" class="column-header" />
+                <ui:ScrollView name="ship-items" class="item-list" />
+                <ui:Label name="ship-volume" text="Volume: 0 / 100" class="volume-label" />
+            </ui:VisualElement>
+
+            <!-- Transfer controls -->
+            <ui:VisualElement name="transfer-controls" class="transfer-controls">
+                <ui:Button name="btn-to-station" text="→" class="transfer-btn" />
+                <ui:SliderInt name="quantity-slider" low-value="1" high-value="100" value="1" class="quantity-slider" />
+                <ui:Label name="quantity-label" text="Qty: 1" class="quantity-label" />
+                <ui:Button name="btn-to-ship" text="←" class="transfer-btn" />
+            </ui:VisualElement>
+
+            <!-- Station storage column -->
+            <ui:VisualElement name="station-storage" class="cargo-column">
+                <ui:Label text="Station Storage" class="column-header" />
+                <ui:ScrollView name="station-items" class="item-list" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <ui:Label name="cargo-error" text="" class="error-label" />
+
+        <ui:VisualElement class="panel-footer">
+            <ui:Button name="btn-back" text="Back" class="back-button" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

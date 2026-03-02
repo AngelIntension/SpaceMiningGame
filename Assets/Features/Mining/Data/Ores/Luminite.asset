@@ -25,3 +25,13 @@ MonoBehaviour:
   VolumePerUnit: 0.1
   BeamColor: {r: 0.6, g: 0.85, b: 1, a: 1}
   BaseProcessingTimePerUnit: 2
+  RefiningOutputs:
+  - Material: {fileID: 11400000, guid: 461e2e2bff601c44f9862bdb80d044db, type: 2}
+    BaseYieldPerUnit: 4
+    VarianceMin: -1
+    VarianceMax: 2
+  - Material: {fileID: 11400000, guid: 7454f00a4fe87314483a0ee62f162136, type: 2}
+    BaseYieldPerUnit: 2
+    VarianceMin: 0
+    VarianceMax: 1
+  RefiningCreditCostPerUnit: 5

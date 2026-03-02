@@ -268,13 +268,62 @@ radial menu.
 
 ### Station Services Menu
 
-When docked, a menu appears with the station name and four service
-tabs:
+When docked, a menu appears with the station name, your credit
+balance, and four service tabs. Available services depend on the
+station type.
 
-- **Refinery** — Process raw ore into refined materials (coming soon)
-- **Market** — Buy and sell resources (coming soon)
-- **Repair** — Restore hull integrity (coming soon)
-- **Cargo** — Manage your inventory (coming soon)
+#### Cargo Transfer
+
+Move ore and materials between your ship's cargo hold and the
+station's storage. Select an item, choose a quantity with the slider,
+then click the transfer arrow. Ship capacity is enforced — attempting
+to transfer more than your cargo hold can fit is rejected.
+
+#### Sell Resources (Market)
+
+Sell items from station storage for credits. Select a resource, set
+the quantity, and review the credit preview before confirming. Credits
+use integer arithmetic — no fractional credits. If you can't afford
+the full amount, a hint shows the maximum you can sell.
+
+#### Refine Ores (Refinery)
+
+Convert raw ore into refined materials through time-based refining
+jobs. Select an ore type and quantity, review the credit cost, and
+start a job. Each station has a limit on concurrent active refining
+slots. Active jobs show progress with remaining time. When a job
+completes, click it to review the generated materials, then collect
+them into station storage.
+
+**Refining outputs per ore type:**
+
+| Ore | Output Materials | Credit Cost/Unit |
+|-----|-----------------|-----------------|
+| Luminite | Luminite Ingots, Energium Dust | 5 |
+| Ferrox | Ferrox Slabs, Conductive Residue | 15 |
+| Auralite | Auralite Shards, Quantum Essence | 40 |
+
+Yields vary per unit due to built-in variance — results are
+deterministic per job but differ between jobs.
+
+#### Basic Repair
+
+Restore your ship's hull integrity to 100% for credits. The cost
+scales with damage: `ceil((1 - currentHP) × RepairCostPerHP)`. Not
+all stations offer repair — the Small Mining Relay has no repair bay.
+
+#### Credits
+
+Your credit balance is shown in the header and updates in real time.
+Earn credits by selling resources. Spend credits on refining jobs and
+hull repairs. You start with 0 credits.
+
+#### Station Capabilities
+
+| Station | Cargo | Market | Refinery | Repair | Refining Slots | Speed |
+|---------|-------|--------|----------|--------|---------------|-------|
+| Small Mining Relay | Yes | No | Yes | No | 2 | 1.0x |
+| Medium Refinery Hub | Yes | Yes | Yes | Yes | 4 | 1.5x |
 
 At the bottom of the menu is the **Undock** button.
 
@@ -367,7 +416,11 @@ Ship swapping at stations is planned for a future update.
 4. **Watch** your cargo fill and the asteroid deplete
 5. **Dock** at a station when your hold is full (right-click station
    → Dock)
-6. **Repeat** with a new asteroid field
+6. **Transfer** ore from ship to station via Cargo Transfer
+7. **Sell** resources for credits, or **Refine** ore into valuable
+   raw materials
+8. **Repair** your hull if damaged (at stations with repair bays)
+9. **Undock** and repeat
 
 ### Key Bindings at a Glance
 
