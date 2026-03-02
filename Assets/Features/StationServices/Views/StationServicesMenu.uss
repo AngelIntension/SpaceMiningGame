@@ -200,12 +200,6 @@
     align-self: stretch;
 }
 
-.qty-label {
-    color: rgba(200, 230, 255, 0.8);
-    font-size: 12px;
-    -unity-text-align: middle-center;
-}
-
 .preview-label {
     color: rgba(255, 220, 100, 0.85);
     font-size: 13px;

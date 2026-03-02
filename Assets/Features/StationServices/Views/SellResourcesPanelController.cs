@@ -24,7 +24,6 @@ namespace VoidHarvest.Features.StationServices.Views
         private VisualElement _root;
         private ScrollView _itemList;
         private SliderInt _quantitySlider;
-        private Label _quantityLabel;
         private Label _previewLabel;
         private Label _errorLabel;
         private Button _btnSell;
@@ -51,7 +50,6 @@ namespace VoidHarvest.Features.StationServices.Views
 
             _itemList = _root.Q<ScrollView>("sell-item-list");
             _quantitySlider = _root.Q<SliderInt>("sell-quantity-slider");
-            _quantityLabel = _root.Q<Label>("sell-quantity-label");
             _previewLabel = _root.Q<Label>("sell-preview");
             _errorLabel = _root.Q<Label>("sell-error");
             _btnSell = _root.Q<Button>("btn-sell");
@@ -59,11 +57,7 @@ namespace VoidHarvest.Features.StationServices.Views
             _btnConfirmSell = _root.Q<Button>("btn-confirm-sell");
             _btnCancelSell = _root.Q<Button>("btn-cancel-sell");
 
-            _quantitySlider?.RegisterValueChangedCallback(evt =>
-            {
-                if (_quantityLabel != null) _quantityLabel.text = $"Qty: {evt.newValue}";
-                UpdatePreview();
-            });
+            _quantitySlider?.RegisterValueChangedCallback(evt => UpdatePreview());
 
             _btnSell?.RegisterCallback<ClickEvent>(_ => ShowConfirmation());
             _btnConfirmSell?.RegisterCallback<ClickEvent>(_ => OnConfirmSell());

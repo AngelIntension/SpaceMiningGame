@@ -27,7 +27,6 @@ namespace VoidHarvest.Features.StationServices.Views
         private VisualElement _root;
         private DropdownField _oreDropdown;
         private SliderInt _quantitySlider;
-        private Label _quantityLabel;
         private Label _costLabel;
         private Label _affordableHint;
         private Label _outputsPreview;
@@ -60,7 +59,6 @@ namespace VoidHarvest.Features.StationServices.Views
 
             _oreDropdown = _root.Q<DropdownField>("ore-dropdown");
             _quantitySlider = _root.Q<SliderInt>("refine-quantity-slider");
-            _quantityLabel = _root.Q<Label>("refine-quantity-label");
             _costLabel = _root.Q<Label>("refine-cost");
             _affordableHint = _root.Q<Label>("refine-affordable-hint");
             _outputsPreview = _root.Q<Label>("refine-outputs-preview");
@@ -70,11 +68,7 @@ namespace VoidHarvest.Features.StationServices.Views
             _completedJobsList = _root.Q<ScrollView>("completed-jobs-list");
 
             _oreDropdown?.RegisterValueChangedCallback(evt => OnOreSelected(evt.newValue));
-            _quantitySlider?.RegisterValueChangedCallback(evt =>
-            {
-                if (_quantityLabel != null) _quantityLabel.text = $"Qty: {evt.newValue}";
-                UpdatePreview();
-            });
+            _quantitySlider?.RegisterValueChangedCallback(evt => UpdatePreview());
             _btnStartJob?.RegisterCallback<ClickEvent>(_ => OnStartJob());
 
             _stateCts?.Cancel();

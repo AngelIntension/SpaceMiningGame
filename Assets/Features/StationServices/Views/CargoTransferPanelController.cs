@@ -25,7 +25,6 @@ namespace VoidHarvest.Features.StationServices.Views
         private ScrollView _shipItems;
         private ScrollView _stationItems;
         private SliderInt _quantitySlider;
-        private Label _quantityLabel;
         private Label _shipVolume;
         private Label _errorLabel;
         private Button _btnToStation;
@@ -52,16 +51,10 @@ namespace VoidHarvest.Features.StationServices.Views
             _shipItems = _root.Q<ScrollView>("ship-items");
             _stationItems = _root.Q<ScrollView>("station-items");
             _quantitySlider = _root.Q<SliderInt>("quantity-slider");
-            _quantityLabel = _root.Q<Label>("quantity-label");
             _shipVolume = _root.Q<Label>("ship-volume");
             _errorLabel = _root.Q<Label>("cargo-error");
             _btnToStation = _root.Q<Button>("btn-to-station");
             _btnToShip = _root.Q<Button>("btn-to-ship");
-
-            _quantitySlider?.RegisterValueChangedCallback(evt =>
-            {
-                if (_quantityLabel != null) _quantityLabel.text = $"Qty: {evt.newValue}";
-            });
 
             _btnToStation?.RegisterCallback<ClickEvent>(_ => OnTransferToStation());
             _btnToShip?.RegisterCallback<ClickEvent>(_ => OnTransferToShip());
@@ -186,7 +179,6 @@ namespace VoidHarvest.Features.StationServices.Views
         private void ResetSlider()
         {
             if (_quantitySlider == null) return;
-            if (_quantityLabel != null) _quantityLabel.text = "Qty: 1";
             var state = _stateStore.Current;
 
             if (_selectedShipResource != null && state.Loop.Inventory.Stacks.TryGetValue(_selectedShipResource, out var shipStack))

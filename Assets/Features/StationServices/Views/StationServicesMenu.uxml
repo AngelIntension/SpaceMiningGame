@@ -33,8 +33,6 @@
                         <ui:ScrollView name="ship-items" class="item-list" />
                     </ui:VisualElement>
                     <ui:VisualElement class="cargo-controls">
-                        <ui:SliderInt name="quantity-slider" low-value="1" high-value="100" value="1" class="qty-slider" />
-                        <ui:Label name="quantity-label" text="Qty: 1" class="qty-label" />
                         <ui:Button name="btn-to-station" text="→ Station" class="transfer-btn" />
                         <ui:Button name="btn-to-ship" text="← Ship" class="transfer-btn" />
                     </ui:VisualElement>
@@ -43,6 +41,7 @@
                         <ui:ScrollView name="station-items" class="item-list" />
                     </ui:VisualElement>
                 </ui:VisualElement>
+                <ui:SliderInt name="quantity-slider" low-value="1" high-value="100" value="1" show-input-field="true" class="qty-slider" />
                 <ui:Label name="cargo-error" class="error-label" />
             </ui:VisualElement>
 
@@ -50,8 +49,7 @@
             <ui:VisualElement name="panel-market" class="sub-panel" style="display: none;">
                 <ui:Label text="Sell Resources" class="panel-title" />
                 <ui:ScrollView name="sell-item-list" class="item-list" />
-                <ui:SliderInt name="sell-quantity-slider" low-value="1" high-value="100" value="1" class="qty-slider" />
-                <ui:Label name="sell-quantity-label" text="Qty: 1" class="qty-label" />
+                <ui:SliderInt name="sell-quantity-slider" low-value="1" high-value="100" value="1" show-input-field="true" class="qty-slider" />
                 <ui:Label name="sell-preview" text="" class="preview-label" />
                 <ui:Label name="sell-error" class="error-label" />
                 <ui:Button name="btn-sell" text="Sell" class="action-btn" />
@@ -68,8 +66,7 @@
             <ui:VisualElement name="panel-refinery" class="sub-panel" style="display: none;">
                 <ui:Label text="Refine Ores" class="panel-title" />
                 <ui:DropdownField name="ore-dropdown" label="Ore Type" class="ore-dropdown" />
-                <ui:SliderInt name="refine-quantity-slider" low-value="1" high-value="100" value="1" class="qty-slider" />
-                <ui:Label name="refine-quantity-label" text="Qty: 1" class="qty-label" />
+                <ui:SliderInt name="refine-quantity-slider" low-value="1" high-value="100" value="1" show-input-field="true" class="qty-slider" />
                 <ui:Label name="refine-cost" text="Cost: 0 credits" class="preview-label" />
                 <ui:Label name="refine-affordable-hint" text="" class="hint-label" />
                 <ui:Label name="refine-outputs-preview" text="" class="preview-label" />
