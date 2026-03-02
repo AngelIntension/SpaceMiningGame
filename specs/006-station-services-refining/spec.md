@@ -54,14 +54,14 @@ As a pilot docked at a station, I want to queue refining jobs that convert ore f
 
 1. **Given** station storage contains 100 Luminite, the station has available refining job slots, and the player has sufficient credits, **When** the player selects Refine Ores, chooses Luminite, sets quantity to 50, and starts the job, **Then** 50 Luminite is removed from station storage, the refining cost is deducted from the player's credit balance, and a new job appears in the active jobs list with a progress bar and estimated completion time.
 2. **Given** a refining job is running for 50 Luminite, **When** the processing time elapses, **Then** the job transitions to "Completed" status in the job list (visually distinct from active jobs), a completion audio cue plays, and a notification appears if the player is docked. Materials are NOT yet added to station storage.
-9. **Given** a completed refining job is visible in the job list, **When** the player clicks the completed job, **Then** a summary window opens showing all generated materials with names, quantities, and yield variance results.
-10. **Given** the job summary window is open, **When** the player closes it, **Then** the generated materials are transferred to station storage and the job is removed from the list, freeing the slot.
-3. **Given** all refining job slots are occupied, **When** the player attempts to start a new refining job, **Then** the "Start Job" button is disabled and a message indicates no available slots.
-4. **Given** a refining job is in progress, **When** the player undocks and later re-docks, **Then** the job continues running in the background and its updated progress is accurately displayed.
-5. **Given** the Refine Ores panel is open, **When** the player views the job list, **Then** each active job shows: ore type, quantity, progress bar, elapsed/remaining time, ETA, and expected output preview.
-6. **Given** the player has insufficient credits to cover the refining job cost, **When** the player attempts to start a refining job, **Then** the "Start Job" button is disabled and a message indicates "Insufficient credits" along with the required cost.
-7. **Given** the player is configuring a refining job, **When** the player adjusts the ore quantity, **Then** a live cost preview updates in real-time showing the total credit cost and expected outputs before confirmation.
-8. **Given** the Refine Ores panel is open, **When** the player selects an ore type, **Then** the panel displays the ore's refining outputs (material names and base quantities per unit) as defined in the ore definition — no recipe selection is needed.
+3. **Given** a completed refining job is visible in the job list, **When** the player clicks the completed job, **Then** a summary window opens showing all generated materials with names, quantities, and yield variance results.
+4. **Given** the job summary window is open, **When** the player closes it, **Then** the generated materials are transferred to station storage and the job is removed from the list, freeing the slot.
+5. **Given** all refining job slots are occupied, **When** the player attempts to start a new refining job, **Then** the "Start Job" button is disabled and a message indicates no available slots.
+6. **Given** a refining job is in progress, **When** the player undocks and later re-docks, **Then** the job continues running in the background and its updated progress is accurately displayed.
+7. **Given** the Refine Ores panel is open, **When** the player views the job list, **Then** each active job shows: ore type, quantity, progress bar, elapsed/remaining time, ETA, and expected output preview.
+8. **Given** the player has insufficient credits to cover the refining job cost, **When** the player attempts to start a refining job, **Then** the "Start Job" button is disabled and a message indicates "Insufficient credits" along with the required cost.
+9. **Given** the player is configuring a refining job, **When** the player adjusts the ore quantity, **Then** a live cost preview updates in real-time showing the total credit cost and expected outputs before confirmation. If the player's credit balance can only afford a partial quantity, the maximum affordable quantity is displayed as a hint.
+10. **Given** the Refine Ores panel is open, **When** the player selects an ore type, **Then** the panel displays the ore's refining outputs (material names and base quantities per unit) as defined in the ore definition — no recipe selection is needed.
 
 ---
 
@@ -126,7 +126,7 @@ As a pilot who has queued refining jobs, I want to receive notifications when jo
 - What happens if a refining job was started and the game session ends? Job state must persist and resume correctly on the next session. (Note: Save/load system is currently out of scope for Phase 0; job persistence within a single game session across dock/undock cycles is required. Cross-session persistence will be addressed when save/load ships.)
 - What happens when transferring a quantity that exceeds available stock? The system caps the transfer at the available quantity. The UI prevents selecting more than is available.
 - What happens if the player has enough ore but not enough credits to refine? The "Start Job" button is disabled with an "Insufficient credits" message showing the required amount. The player must sell resources first to fund refining.
-- What happens if the player has credits for a partial quantity but not the full selected amount? The UI shows the maximum affordable quantity as a hint. The player can reduce the quantity to match their budget.
+- What happens if the player has credits for a partial quantity but not the full selected amount? The UI shows the maximum affordable quantity as a hint (FR-057). The player can reduce the quantity to match their budget.
 
 ## Requirements *(mandatory)*
 
@@ -185,6 +185,7 @@ As a pilot who has queued refining jobs, I want to receive notifications when jo
 - **FR-047**: Each ore definition MUST define a configurable refining credit cost per unit. The total job cost MUST equal the cost per unit multiplied by the input quantity.
 - **FR-048**: The Refine Ores panel MUST display a live cost preview that updates in real-time as the player adjusts the ore quantity, showing the total credit cost alongside the player's current balance.
 - **FR-049**: The system MUST prevent starting a refining job when the player's credit balance is less than the total job cost.
+- **FR-057**: When the player's credit balance cannot cover the full selected refining quantity, the Refine Ores panel MUST display the maximum affordable quantity as a hint (floor of credits / cost per unit).
 
 **Ore Refining Outputs (embedded in Ore Definitions)**
 
@@ -208,13 +209,13 @@ As a pilot who has queued refining jobs, I want to receive notifications when jo
 **Basic Repair**
 
 - **FR-037**: Basic Repair MUST restore the active ship's hull integrity to 100% in a single transaction.
-- **FR-038**: Repair cost MUST be calculated as: damage amount (1.0 - current integrity) multiplied by the station's configurable repair cost per HP.
+- **FR-038**: Repair cost MUST be calculated as: damage amount (1.0 - current integrity) multiplied by the station's configurable repair cost per HP, using ceiling rounding to the nearest integer (no fractional credits).
 - **FR-039**: The system MUST prevent repair when the player has insufficient credits or when hull integrity is already at 100%.
 - **FR-040**: Upon confirmed repair, hull integrity MUST update immediately, credits MUST be deducted, and a visual effect and audio cue MUST play.
 
 **Station Configuration**
 
-- **FR-041**: Each station MUST be configurable via an editor asset defining: available services, maximum concurrent refining job slots, refining speed multiplier, and repair cost per HP.
+- **FR-041**: Each station MUST be configurable via an editor asset defining: maximum concurrent refining job slots, refining speed multiplier, and repair cost per HP (station capabilities). Service availability (which menu buttons are enabled) is determined by the pre-existing `StationData.AvailableServices` field using the string mapping: `"Refinery"` → Refine Ores, `"Market"` → Sell Resources, `"Repair"` → Basic Repair, `"Cargo"` → Cargo Transfer.
 - **FR-042**: Station configuration MUST be assignable per station instance, allowing different stations to offer different service tiers.
 
 **Visual and Audio Feedback**

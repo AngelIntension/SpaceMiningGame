@@ -71,7 +71,8 @@ Assets/
 │   │   ├── Systems/
 │   │   │   ├── StationServicesReducer.cs   # Pure reducer for station services state
 │   │   │   ├── StationStorageReducer.cs    # Pure helper for storage add/remove
-│   │   │   └── RefiningMath.cs             # Pure yield calculation with per-unit rolling
+│   │   │   ├── RefiningMath.cs             # Pure yield calculation with per-unit rolling
+│   │   │   └── RepairMath.cs              # Pure repair cost calculation (ceiling rounding)
 │   │   ├── Views/
 │   │   │   ├── StationServicesMenuController.cs  # Main menu (moved from Docking, expanded)
 │   │   │   ├── CargoTransferPanelController.cs   # Bidirectional transfer UI
@@ -137,7 +138,7 @@ Assets/
 
 | Assembly | Change | New References |
 |----------|--------|---------------|
-| **VoidHarvest.Features.StationServices** | NEW | Core.Extensions, Core.State, Core.EventBus, Features.Mining, Features.Resources, Features.Docking, Features.Ship, VContainer, UniTask, Unity.Mathematics |
+| **VoidHarvest.Features.StationServices** | NEW | Core.Extensions, Core.State, Core.EventBus, Features.Mining, Features.Resources, Features.Docking, Features.Ship, VContainer, UniTask, Unity.Mathematics, System.Collections.Immutable |
 | **VoidHarvest.Features.Mining** | MODIFIED | +Features.Resources (for RawMaterialDefinition ref in RefiningOutputEntry) |
 | **VoidHarvest.Features.StationServices.Tests** | NEW | StationServices, Core.State, Core.Extensions, Features.Mining, Features.Resources, nunit.framework |
 

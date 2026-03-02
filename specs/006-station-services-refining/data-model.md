@@ -190,14 +190,14 @@ GameServicesConfig (ScriptableObject) — Assets/Features/StationServices/Data/
 
 | Asset | MaterialId | DisplayName | BaseValue | VolumePerUnit |
 |-------|-----------|-------------|-----------|---------------|
-| LuminiteIngots.asset | luminite_ingots | Luminite Ingots | TBD | TBD |
-| EnergiumDust.asset | energium_dust | Energium Dust | TBD | TBD |
-| FerroxSlabs.asset | ferrox_slabs | Ferrox Slabs | TBD | TBD |
-| ConductiveResidue.asset | conductive_residue | Conductive Residue | TBD | TBD |
-| AuraliteShards.asset | auralite_shards | Auralite Shards | TBD | TBD |
-| QuantumEssence.asset | quantum_essence | Quantum Essence | TBD | TBD |
+| LuminiteIngots.asset | luminite_ingots | Luminite Ingots | 20 | 0.5 |
+| EnergiumDust.asset | energium_dust | Energium Dust | 15 | 0.3 |
+| FerroxSlabs.asset | ferrox_slabs | Ferrox Slabs | 50 | 1.0 |
+| ConductiveResidue.asset | conductive_residue | Conductive Residue | 30 | 0.4 |
+| AuraliteShards.asset | auralite_shards | Auralite Shards | 100 | 0.8 |
+| QuantumEssence.asset | quantum_essence | Quantum Essence | 200 | 0.2 |
 
-BaseValue (int) and VolumePerUnit to be set during implementation based on game balance (designer tunable).
+BaseValue (int) and VolumePerUnit are placeholder values for initial game balance (designer tunable via inspector).
 
 ### Ore Refining Output Configurations
 
@@ -248,6 +248,7 @@ StartRefiningJobAction
 ├── TotalCost: int             # Total credit cost (integer)
 ├── TotalDuration: float
 ├── OutputConfigs: ImmutableArray<RefiningOutputConfig>
+├── MaxActiveSlots: int        # Station's max concurrent active jobs (from StationServicesConfig)
 └── StartTime: float
 
 CompleteRefiningJobAction
@@ -369,6 +370,9 @@ Algorithm (per output config):
 Post-processing:
   Floor all quantities at 0 (already handled per-unit)
   Round down to nearest integer (already integer math)
+
+Seed derivation:
+  seed = (uint)jobId.GetHashCode()  # Deterministic per job for reproducible test results
 ```
 
 ### RefiningMath.CalculateJobDuration
