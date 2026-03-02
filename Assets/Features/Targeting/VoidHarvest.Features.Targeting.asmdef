@@ -8,6 +8,7 @@
         "VoidHarvest.Features.Ship",
         "VoidHarvest.Features.Mining",
         "Unity.Entities",
+        "Unity.Entities.Graphics",
         "Unity.Entities.Hybrid",
         "Unity.Mathematics",
         "Unity.Burst",

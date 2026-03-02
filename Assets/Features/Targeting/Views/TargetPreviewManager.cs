@@ -6,6 +6,7 @@ using VoidHarvest.Core.State;
 using VoidHarvest.Features.Targeting.Data;
 using VoidHarvest.Features.Mining.Data;
 using Unity.Entities;
+using Unity.Rendering;
 using Unity.Transforms;
 
 namespace VoidHarvest.Features.Targeting.Views
@@ -178,49 +179,83 @@ namespace VoidHarvest.Features.Targeting.Views
             if (!_ecsReady) TryInitializeECS();
             if (!_ecsReady) return null;
 
-            float radius = 1f;
-            Color tint = Color.gray;
-
-            // Get radius from ECS
             var query = _entityManager.CreateEntityQuery(
                 typeof(AsteroidComponent), typeof(LocalTransform));
             var entities = query.ToEntityArray(Unity.Collections.Allocator.Temp);
+
+            Entity targetEntity = Entity.Null;
+            AsteroidComponent asteroidData = default;
+
             for (int i = 0; i < entities.Length; i++)
             {
                 if (entities[i].Index == targetId)
                 {
-                    var asteroid = _entityManager.GetComponentData<AsteroidComponent>(entities[i]);
-                    radius = asteroid.Radius;
-
-                    if (_entityManager.HasComponent<AsteroidOreComponent>(entities[i]))
-                    {
-                        int oreId = _entityManager.GetComponentData<AsteroidOreComponent>(entities[i]).OreTypeId;
-                        tint = GetOreTint(oreId);
-                    }
+                    targetEntity = entities[i];
+                    asteroidData = _entityManager.GetComponentData<AsteroidComponent>(entities[i]);
                     break;
                 }
             }
             entities.Dispose();
 
-            // Create sphere primitive as visual stand-in
-            var go = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            go.name = $"AsteroidPreview_{targetId}";
-            go.transform.position = position;
-            go.transform.localScale = Vector3.one * radius * 2f;
+            if (targetEntity == Entity.Null) return null;
 
-            // Remove collider (preview only)
-            var col = go.GetComponent<Collider>();
-            if (col != null) Destroy(col);
+            // Extract actual mesh and material from the entity's RenderMeshArray
+            Mesh mesh = null;
+            Material material = null;
 
-            // Tint the material
-            var renderer = go.GetComponent<Renderer>();
-            if (renderer != null)
+            if (_entityManager.HasComponent<RenderMeshArray>(targetEntity))
             {
-                var mat = new Material(renderer.sharedMaterial);
-                mat.color = tint;
-                renderer.material = mat;
+                var rma = _entityManager.GetSharedComponentManaged<RenderMeshArray>(targetEntity);
+                if (rma.MeshReferences != null && rma.MeshReferences.Length > 0)
+                    mesh = rma.MeshReferences[0].Value;
+                if (rma.MaterialReferences != null && rma.MaterialReferences.Length > 0)
+                    material = rma.MaterialReferences[0].Value;
             }
 
+            var tintColor = new Color(
+                asteroidData.PristineTintedColor.x,
+                asteroidData.PristineTintedColor.y,
+                asteroidData.PristineTintedColor.z,
+                asteroidData.PristineTintedColor.w);
+
+            GameObject go;
+
+            if (mesh != null)
+            {
+                go = new GameObject($"AsteroidPreview_{targetId}");
+                var meshFilter = go.AddComponent<MeshFilter>();
+                meshFilter.sharedMesh = mesh;
+                var meshRenderer = go.AddComponent<MeshRenderer>();
+
+                var previewMat = material != null
+                    ? new Material(material)
+                    : new Material(Shader.Find("Universal Render Pipeline/Lit"));
+                previewMat.SetColor("_BaseColor", tintColor);
+                meshRenderer.material = previewMat;
+
+                float previewScale = asteroidData.Radius * asteroidData.MeshNormFactor;
+                go.transform.localScale = Vector3.one * previewScale;
+            }
+            else
+            {
+                // Fallback to sphere primitive if mesh unavailable
+                go = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+                go.name = $"AsteroidPreview_{targetId}";
+                go.transform.localScale = Vector3.one * asteroidData.Radius * 2f;
+
+                var col = go.GetComponent<Collider>();
+                if (col != null) Destroy(col);
+
+                var renderer = go.GetComponent<Renderer>();
+                if (renderer != null)
+                {
+                    var mat = new Material(renderer.sharedMaterial);
+                    mat.color = tintColor;
+                    renderer.material = mat;
+                }
+            }
+
+            go.transform.position = position;
             go.transform.SetParent(transform);
             return go;
         }
@@ -292,17 +327,6 @@ namespace VoidHarvest.Features.Targeting.Views
                 bounds.Encapsulate(renderers[i].bounds);
 
             return bounds.extents.magnitude * 2.5f;
-        }
-
-        private static Color GetOreTint(int oreTypeId)
-        {
-            return oreTypeId switch
-            {
-                0 => new Color(0.4f, 0.7f, 0.3f, 1f),  // Luminite (green)
-                1 => new Color(0.6f, 0.35f, 0.2f, 1f),  // Ferrox (orange-brown)
-                2 => new Color(0.5f, 0.3f, 0.8f, 1f),   // Auralite (purple)
-                _ => Color.gray
-            };
         }
 
         private static void SetLayerRecursive(GameObject go, int layer)
