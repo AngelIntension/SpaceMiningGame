@@ -5,6 +5,8 @@
         "VoidHarvest.Features.StationServices",
         "VoidHarvest.Core.State",
         "VoidHarvest.Core.Extensions",
+        "VoidHarvest.Core.EventBus",
+        "UniTask",
         "VoidHarvest.Features.Mining",
         "VoidHarvest.Features.Resources",
         "UnityEngine.TestRunner",
