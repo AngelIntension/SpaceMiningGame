@@ -139,7 +139,7 @@ namespace VoidHarvest.Features.StationServices.Views
             _selectedShipResource = resId;
             _selectedStationResource = null;
             ApplySelectionClasses();
-            UpdateSliderMax();
+            ResetSlider();
         }
 
         private void SelectStationResource(string resId)
@@ -147,7 +147,7 @@ namespace VoidHarvest.Features.StationServices.Views
             _selectedStationResource = resId;
             _selectedShipResource = null;
             ApplySelectionClasses();
-            UpdateSliderMax();
+            ResetSlider();
         }
 
         private void ApplySelectionClasses()
@@ -183,22 +183,23 @@ namespace VoidHarvest.Features.StationServices.Views
             }
         }
 
-        private void UpdateSliderMax()
+        private void ResetSlider()
         {
             if (_quantitySlider == null) return;
+            if (_quantityLabel != null) _quantityLabel.text = "Qty: 1";
             var state = _stateStore.Current;
 
             if (_selectedShipResource != null && state.Loop.Inventory.Stacks.TryGetValue(_selectedShipResource, out var shipStack))
             {
                 _quantitySlider.highValue = Mathf.Max(1, shipStack.Quantity);
-                _quantitySlider.value = Mathf.Min(_quantitySlider.value, _quantitySlider.highValue);
+                _quantitySlider.value = 1;
             }
             else if (_selectedStationResource != null
                 && state.Loop.StationServices.StationStorages.TryGetValue(_dockedStationId, out var storage)
                 && storage.Stacks.TryGetValue(_selectedStationResource, out var stationStack))
             {
                 _quantitySlider.highValue = Mathf.Max(1, stationStack.Quantity);
-                _quantitySlider.value = Mathf.Min(_quantitySlider.value, _quantitySlider.highValue);
+                _quantitySlider.value = 1;
             }
         }
 
