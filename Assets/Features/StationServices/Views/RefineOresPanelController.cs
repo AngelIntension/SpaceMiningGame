@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using VContainer;
 using VoidHarvest.Core.EventBus;
+using VoidHarvest.Core.EventBus.Events;
 using VoidHarvest.Core.State;
 using VoidHarvest.Features.StationServices.Data;
 using VoidHarvest.Features.StationServices.Systems;
@@ -38,6 +39,7 @@ namespace VoidHarvest.Features.StationServices.Views
         private string _selectedOreId;
         private int _selectedCostPerUnit;
         private CancellationTokenSource _stateCts;
+        private StationServicesState _lastServices;
 
         // Callback for when a completed job is clicked (opens summary)
         public System.Action<RefiningJobState> OnCompletedJobClicked;
@@ -93,8 +95,12 @@ namespace VoidHarvest.Features.StationServices.Views
 
         private async UniTaskVoid ListenForStateChanges(CancellationToken ct)
         {
-            await foreach (var _ in _stateStore.OnStateChanged.WithCancellation(ct))
+            await foreach (var evt in _eventBus.Subscribe<StateChangedEvent<GameState>>().WithCancellation(ct))
             {
+                var svc = evt.CurrentState.Loop.StationServices;
+                if (ReferenceEquals(svc, _lastServices))
+                    continue;
+                _lastServices = svc;
                 RefreshUI();
             }
         }

@@ -1,10 +1,10 @@
-using System.Linq;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UIElements;
 using VContainer;
 using VoidHarvest.Core.EventBus;
+using VoidHarvest.Core.EventBus.Events;
 using VoidHarvest.Core.State;
 using VoidHarvest.Features.StationServices.Data;
 
@@ -34,6 +34,8 @@ namespace VoidHarvest.Features.StationServices.Views
         private string _selectedShipResource;
         private string _selectedStationResource;
         private CancellationTokenSource _stateCts;
+        private InventoryState _lastInventory;
+        private StationServicesState _lastServices;
 
         [Inject]
         public void Construct(IStateStore stateStore, IEventBus eventBus)
@@ -83,8 +85,14 @@ namespace VoidHarvest.Features.StationServices.Views
 
         private async UniTaskVoid ListenForStateChanges(CancellationToken ct)
         {
-            await foreach (var _ in _stateStore.OnStateChanged.WithCancellation(ct))
+            await foreach (var evt in _eventBus.Subscribe<StateChangedEvent<GameState>>().WithCancellation(ct))
             {
+                var inv = evt.CurrentState.Loop.Inventory;
+                var svc = evt.CurrentState.Loop.StationServices;
+                if (ReferenceEquals(inv, _lastInventory) && ReferenceEquals(svc, _lastServices))
+                    continue;
+                _lastInventory = inv;
+                _lastServices = svc;
                 RefreshUI();
             }
         }
@@ -103,7 +111,8 @@ namespace VoidHarvest.Features.StationServices.Views
                 var btn = new Button { text = $"{kvp.Key}: {kvp.Value.Quantity}" };
                 btn.AddToClassList("item-row");
                 var resId = kvp.Key;
-                btn.RegisterCallback<ClickEvent>(_ => { _selectedShipResource = resId; _selectedStationResource = null; UpdateSliderMax(); });
+                if (resId == _selectedShipResource) btn.AddToClassList("item-row--selected");
+                btn.RegisterCallback<ClickEvent>(_ => SelectShipResource(resId));
                 _shipItems?.Add(btn);
             }
 
@@ -119,12 +128,62 @@ namespace VoidHarvest.Features.StationServices.Views
                     var btn = new Button { text = $"{kvp.Key}: {kvp.Value.Quantity}" };
                     btn.AddToClassList("item-row");
                     var resId = kvp.Key;
-                    btn.RegisterCallback<ClickEvent>(_ => { _selectedStationResource = resId; _selectedShipResource = null; UpdateSliderMax(); });
+                    if (resId == _selectedStationResource) btn.AddToClassList("item-row--selected");
+                    btn.RegisterCallback<ClickEvent>(_ => SelectStationResource(resId));
                     _stationItems?.Add(btn);
                 }
             }
 
             if (_errorLabel != null) _errorLabel.text = "";
+        }
+
+        private void SelectShipResource(string resId)
+        {
+            _selectedShipResource = resId;
+            _selectedStationResource = null;
+            ApplySelectionClasses();
+            UpdateSliderMax();
+        }
+
+        private void SelectStationResource(string resId)
+        {
+            _selectedStationResource = resId;
+            _selectedShipResource = null;
+            ApplySelectionClasses();
+            UpdateSliderMax();
+        }
+
+        private void ApplySelectionClasses()
+        {
+            if (_shipItems != null)
+            {
+                foreach (var child in _shipItems.Children())
+                {
+                    if (child is Button btn)
+                    {
+                        var resId = btn.text.Split(':')[0];
+                        if (resId == _selectedShipResource)
+                            btn.AddToClassList("item-row--selected");
+                        else
+                            btn.RemoveFromClassList("item-row--selected");
+                    }
+                }
+            }
+
+            if (_stationItems != null)
+            {
+                foreach (var child in _stationItems.Children())
+                {
+                    if (child is Button btn)
+                    {
+                        var resId = btn.text.Split(':')[0];
+                        if (resId == _selectedStationResource)
+                            btn.AddToClassList("item-row--selected");
+                        else
+                            btn.RemoveFromClassList("item-row--selected");
+                    }
+                }
+            }
         }
 
         private void UpdateSliderMax()

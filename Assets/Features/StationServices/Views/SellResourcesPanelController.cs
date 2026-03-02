@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using VContainer;
 using VoidHarvest.Core.EventBus;
+using VoidHarvest.Core.EventBus.Events;
 using VoidHarvest.Core.State;
 using VoidHarvest.Features.StationServices.Data;
 
@@ -34,6 +35,7 @@ namespace VoidHarvest.Features.StationServices.Views
         private string _selectedResource;
         private int _selectedBaseValue;
         private CancellationTokenSource _stateCts;
+        private StationServicesState _lastServices;
 
         [Inject]
         public void Construct(IStateStore stateStore, IEventBus eventBus)
@@ -86,8 +88,12 @@ namespace VoidHarvest.Features.StationServices.Views
 
         private async UniTaskVoid ListenForStateChanges(CancellationToken ct)
         {
-            await foreach (var _ in _stateStore.OnStateChanged.WithCancellation(ct))
+            await foreach (var evt in _eventBus.Subscribe<StateChangedEvent<GameState>>().WithCancellation(ct))
             {
+                var svc = evt.CurrentState.Loop.StationServices;
+                if (ReferenceEquals(svc, _lastServices))
+                    continue;
+                _lastServices = svc;
                 RefreshUI();
             }
         }
@@ -110,11 +116,10 @@ namespace VoidHarvest.Features.StationServices.Views
                     if (_errorLabel != null) _errorLabel.text = "";
                     foreach (var kvp in storage.Stacks)
                     {
-                        // Base value lookup would use OreDefinition/RawMaterialDefinition
-                        // For now, use resource ID as display
                         var btn = new Button { text = $"{kvp.Key}: {kvp.Value.Quantity}" };
                         btn.AddToClassList("item-row");
                         var resId = kvp.Key;
+                        if (resId == _selectedResource) btn.AddToClassList("item-row--selected");
                         btn.RegisterCallback<ClickEvent>(_ => SelectResource(resId));
                         _itemList?.Add(btn);
                     }
@@ -128,6 +133,21 @@ namespace VoidHarvest.Features.StationServices.Views
             // TODO: Look up base value from OreDefinition or RawMaterialDefinition
             // For now, use a default; real implementation will use SO lookup
             _selectedBaseValue = 10;
+
+            if (_itemList != null)
+            {
+                foreach (var child in _itemList.Children())
+                {
+                    if (child is Button btn)
+                    {
+                        var resId = btn.text.Split(':')[0];
+                        if (resId == _selectedResource)
+                            btn.AddToClassList("item-row--selected");
+                        else
+                            btn.RemoveFromClassList("item-row--selected");
+                    }
+                }
+            }
 
             var services = _stateStore.Current.Loop.StationServices;
             if (services.StationStorages.TryGetValue(_dockedStationId, out var storage)

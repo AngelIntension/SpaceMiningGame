@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using VContainer;
 using VoidHarvest.Core.EventBus;
+using VoidHarvest.Core.EventBus.Events;
 using VoidHarvest.Core.State;
 
 namespace VoidHarvest.Features.StationServices.Views
@@ -46,7 +47,7 @@ namespace VoidHarvest.Features.StationServices.Views
 
         private async UniTaskVoid ListenForStateChanges(CancellationToken ct)
         {
-            await foreach (var _ in _stateStore.OnStateChanged.WithCancellation(ct))
+            await foreach (var _ in _eventBus.Subscribe<StateChangedEvent<GameState>>().WithCancellation(ct))
             {
                 UpdateDisplay();
             }

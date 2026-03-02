@@ -196,9 +196,17 @@
     color: rgb(255, 255, 255);
 }
 
+.item-row--selected {
+    background-color: rgba(40, 100, 140, 0.85);
+    color: rgb(255, 255, 255);
+    border-left-width: 2px;
+    border-left-color: rgb(100, 200, 255);
+}
+
 /* Sliders & labels */
 .qty-slider {
     margin: 6px 0;
+    align-self: stretch;
 }
 
 .qty-label {

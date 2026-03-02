@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using VContainer;
 using VoidHarvest.Core.EventBus;
+using VoidHarvest.Core.EventBus.Events;
 using VoidHarvest.Core.State;
 using VoidHarvest.Features.StationServices.Data;
 using VoidHarvest.Features.StationServices.Systems;
@@ -29,6 +30,8 @@ namespace VoidHarvest.Features.StationServices.Views
         private Button _btnRepair;
         private Button _btnBack;
         private CancellationTokenSource _stateCts;
+        private StationServicesState _lastServices;
+        private ShipState _lastShip;
 
         [Inject]
         public void Construct(IStateStore stateStore, IEventBus eventBus, StationServicesConfigMap configMap)
@@ -70,8 +73,14 @@ namespace VoidHarvest.Features.StationServices.Views
 
         private async UniTaskVoid ListenForStateChanges(CancellationToken ct)
         {
-            await foreach (var _ in _stateStore.OnStateChanged.WithCancellation(ct))
+            await foreach (var evt in _eventBus.Subscribe<StateChangedEvent<GameState>>().WithCancellation(ct))
             {
+                var svc = evt.CurrentState.Loop.StationServices;
+                var ship = evt.CurrentState.ActiveShipPhysics;
+                if (ReferenceEquals(svc, _lastServices) && ReferenceEquals(ship, _lastShip))
+                    continue;
+                _lastServices = svc;
+                _lastShip = ship;
                 RefreshUI();
             }
         }
