@@ -771,7 +771,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 19bcf3a8d221659419bb33792a1e3fd0, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: VoidHarvest.Features.StationServices::VoidHarvest.Features.StationServices.Views.StationServicesMenuController
   uiDocument: {fileID: 729069249}
 --- !u!114 &729069249
@@ -822,7 +822,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e25b4fc0b099a6549bff097659b320c0, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: VoidHarvest.Features.StationServices::VoidHarvest.Features.StationServices.Views.CargoTransferPanelController
 --- !u!114 &729069252
 MonoBehaviour:
@@ -834,7 +834,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8f0c2b3cd8e50024abaaaea618aef4b2, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: VoidHarvest.Features.StationServices::VoidHarvest.Features.StationServices.Views.SellResourcesPanelController
 --- !u!114 &729069253
 MonoBehaviour:
@@ -846,7 +846,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 64381c80cf6bd7a4ca76fc856eaabcec, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: VoidHarvest.Features.StationServices::VoidHarvest.Features.StationServices.Views.RefineOresPanelController
 --- !u!114 &729069254
 MonoBehaviour:
@@ -858,7 +858,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e32f5704b9d851247ab30a5687c021a9, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: VoidHarvest.Features.StationServices::VoidHarvest.Features.StationServices.Views.BasicRepairPanelController
 --- !u!114 &729069255
 MonoBehaviour:
@@ -870,7 +870,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 89ee7042d3f0f3f46a7f02b1ebb701f3, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: VoidHarvest.Features.StationServices::VoidHarvest.Features.StationServices.Views.RefiningJobSummaryController
 --- !u!114 &729069256
 MonoBehaviour:
@@ -882,7 +882,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 28b7b717b063ebc47a4c37f1202e39f2, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: VoidHarvest.Features.StationServices::VoidHarvest.Features.StationServices.Views.CreditBalanceIndicator
 --- !u!114 &729069257
 MonoBehaviour:
@@ -894,7 +894,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0a42dbcf89071d64d8b0626994157603, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: VoidHarvest.Features.StationServices::VoidHarvest.Features.StationServices.Views.RefiningJobTicker
 --- !u!1 &832575517
 GameObject:
@@ -1726,6 +1726,7 @@ GameObject:
   - component: {fileID: 1537462338}
   - component: {fileID: 1537462337}
   - component: {fileID: 1537462339}
+  - component: {fileID: 1537462340}
   m_Layer: 0
   m_Name: InputBridge
   m_TagString: Untagged
@@ -1858,6 +1859,18 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &1537462340
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1537462336}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d2e359bb5f82f9948a1388548d1492ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: VoidHarvest.Features.Input::VoidHarvest.Features.Input.Views.DebugHullDamage
 --- !u!1 &1597571234
 GameObject:
   m_ObjectHideFlags: 0
