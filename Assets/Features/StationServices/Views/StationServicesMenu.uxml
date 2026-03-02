@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <Style src="StationServicesMenu.uss" />
+    <ui:VisualElement name="services-root" class="services-root">
+        <!-- Header -->
+        <ui:VisualElement name="services-header" class="services-header">
+            <ui:VisualElement class="header-row">
+                <ui:VisualElement class="header-info">
+                    <ui:Label name="station-name" text="STATION" class="station-name" />
+                    <ui:Label name="station-type" text="Type" class="station-type" />
+                </ui:VisualElement>
+                <ui:Label name="credit-balance" text="Credits: 0" class="credit-balance" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <!-- Tab bar -->
+        <ui:VisualElement name="services-tab-bar" class="services-tab-bar">
+            <ui:Button name="tab-cargo" text="Cargo" class="services-tab" />
+            <ui:Button name="tab-market" text="Market" class="services-tab" />
+            <ui:Button name="tab-refinery" text="Refinery" class="services-tab" />
+            <ui:Button name="tab-repair" text="Repair" class="services-tab" />
+        </ui:VisualElement>
+
+        <!-- Content area — panels stacked, only one visible at a time -->
+        <ui:ScrollView name="services-content" class="services-content">
+            <!-- Cargo Transfer Panel -->
+            <ui:VisualElement name="panel-cargo" class="sub-panel" style="display: none;">
+                <ui:Label text="Cargo Transfer" class="panel-title" />
+                <ui:VisualElement class="cargo-columns">
+                    <ui:VisualElement class="cargo-column">
+                        <ui:Label text="Ship Cargo" class="column-header" />
+                        <ui:Label name="ship-volume" text="Volume: 0 / 0" class="volume-label" />
+                        <ui:ScrollView name="ship-items" class="item-list" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="cargo-controls">
+                        <ui:Button name="btn-to-station" text="→ Station" class="transfer-btn" />
+                        <ui:Button name="btn-to-ship" text="← Ship" class="transfer-btn" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="cargo-column">
+                        <ui:Label text="Station Storage" class="column-header" />
+                        <ui:ScrollView name="station-items" class="item-list" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:SliderInt name="quantity-slider" low-value="1" high-value="100" value="1" show-input-field="true" class="qty-slider" />
+                <ui:Label name="cargo-error" class="error-label" />
+            </ui:VisualElement>
+
+            <!-- Sell Resources Panel -->
+            <ui:VisualElement name="panel-market" class="sub-panel" style="display: none;">
+                <ui:Label text="Sell Resources" class="panel-title" />
+                <ui:ScrollView name="sell-item-list" class="item-list" />
+                <ui:SliderInt name="sell-quantity-slider" low-value="1" high-value="100" value="1" show-input-field="true" class="qty-slider" />
+                <ui:Label name="sell-preview" text="" class="preview-label" />
+                <ui:Label name="sell-error" class="error-label" />
+                <ui:Button name="btn-sell" text="Sell" class="action-btn" />
+                <ui:VisualElement name="sell-confirm-overlay" class="confirm-overlay" style="display: none;">
+                    <ui:Label text="Confirm Sale?" class="confirm-text" />
+                    <ui:VisualElement class="confirm-buttons">
+                        <ui:Button name="btn-confirm-sell" text="Confirm" class="action-btn confirm-btn" />
+                        <ui:Button name="btn-cancel-sell" text="Cancel" class="back-btn" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+
+            <!-- Refine Ores Panel -->
+            <ui:VisualElement name="panel-refinery" class="sub-panel" style="display: none;">
+                <ui:Label text="Refine Ores" class="panel-title" />
+                <ui:DropdownField name="ore-dropdown" label="Ore Type" class="ore-dropdown" />
+                <ui:SliderInt name="refine-quantity-slider" low-value="1" high-value="100" value="1" show-input-field="true" class="qty-slider" />
+                <ui:Label name="refine-cost" text="Cost: 0 credits" class="preview-label" />
+                <ui:Label name="refine-affordable-hint" text="" class="hint-label" />
+                <ui:Label name="refine-outputs-preview" text="" class="preview-label" />
+                <ui:Label name="refine-error" class="error-label" />
+                <ui:Button name="btn-start-job" text="Start Refining Job" class="action-btn" />
+                <ui:Label text="Active Jobs" class="section-header" />
+                <ui:ScrollView name="active-jobs-list" class="item-list" />
+                <ui:Label text="Completed Jobs" class="section-header" />
+                <ui:ScrollView name="completed-jobs-list" class="item-list" />
+            </ui:VisualElement>
+
+            <!-- Basic Repair Panel -->
+            <ui:VisualElement name="panel-repair" class="sub-panel" style="display: none;">
+                <ui:Label text="Basic Repair" class="panel-title" />
+                <ui:Label name="hull-label" text="Hull Integrity: 100%" class="hull-label" />
+                <ui:ProgressBar name="hull-bar" value="100" class="hull-bar" />
+                <ui:Label name="repair-cost" text="Cost: 0 credits" class="preview-label" />
+                <ui:Label name="repair-status" text="" class="status-label" />
+                <ui:Button name="btn-repair" text="Repair to 100%" class="action-btn" />
+            </ui:VisualElement>
+
+            <!-- Refining Job Summary (modal overlay) -->
+            <ui:VisualElement name="refining-summary-overlay" class="summary-overlay" style="display: none;">
+                <ui:VisualElement class="summary-panel">
+                    <ui:Label name="summary-header" text="Refining Complete" class="panel-title" />
+                    <ui:Label name="summary-ore-info" text="" class="preview-label" />
+                    <ui:Label text="Generated Materials:" class="section-header" />
+                    <ui:ScrollView name="summary-outputs" class="item-list" />
+                    <ui:Button name="btn-close-summary" text="Collect &amp; Close" class="action-btn" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:ScrollView>
+
+        <!-- Footer with undock button -->
+        <ui:VisualElement name="services-footer" class="services-footer">
+            <ui:Button name="undock-button" text="UNDOCK" class="undock-button" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

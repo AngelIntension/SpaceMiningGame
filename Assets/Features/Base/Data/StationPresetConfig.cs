@@ -27,6 +27,7 @@ namespace VoidHarvest.Features.Base.Data
         /// <summary>Ordered list of module placements composing this station. See FR-013, FR-014.</summary>
         [Tooltip("Module composition for this station preset.")]
         public StationModuleEntry[] Modules;
+
     }
 
     /// <summary>

@@ -22,8 +22,8 @@ namespace VoidHarvest.Features.Mining.Data
         /// <summary>Inventory/UI icon. Nullable — stored for future use.</summary>
         public Sprite Icon;
 
-        /// <summary>Base market value per unit. Stored for future economy integration.</summary>
-        public float BaseValue;
+        /// <summary>Base market value per unit in integer credits.</summary>
+        public int BaseValue;
 
         /// <summary>Flavor text for tooltips. Stored for future use.</summary>
         [TextArea]
@@ -45,7 +45,15 @@ namespace VoidHarvest.Features.Mining.Data
         /// <summary>Mining laser color when extracting this ore.</summary>
         public Color BeamColor;
 
-        /// <summary>Refining time per unit in seconds. Stored for future use.</summary>
+        /// <summary>Refining time per unit in seconds.</summary>
         public float BaseProcessingTimePerUnit;
+
+        /// <summary>Array of raw material outputs produced when refining this ore.</summary>
+        [SerializeField]
+        public RefiningOutputEntry[] RefiningOutputs = System.Array.Empty<RefiningOutputEntry>();
+
+        /// <summary>Credit cost per unit of ore refined (integer).</summary>
+        [SerializeField]
+        public int RefiningCreditCostPerUnit;
     }
 }

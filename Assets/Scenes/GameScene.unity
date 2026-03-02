@@ -197,6 +197,8 @@ MonoBehaviour:
   dockingConfig: {fileID: 11400000, guid: 828e08e033e3ec24497f57f82ece191c, type: 2}
   dockingVFXConfig: {fileID: 11400000, guid: 925ef3bdfb04a7a4b8bcf517e00706c9, type: 2}
   dockingAudioConfig: {fileID: 11400000, guid: 7fd96f0185cb7c74db4372eaec51fd77, type: 2}
+  stationServicesConfigMap: {fileID: 11400000, guid: 0f659ae2e54c2d94fb2c3017149071d4, type: 2}
+  gameServicesConfig: {fileID: 11400000, guid: b84a89a6b27ab85439d5ec802106f7f1, type: 2}
 --- !u!1 &330585543
 GameObject:
   m_ObjectHideFlags: 0
@@ -745,6 +747,13 @@ GameObject:
   - component: {fileID: 729069250}
   - component: {fileID: 729069249}
   - component: {fileID: 729069248}
+  - component: {fileID: 729069251}
+  - component: {fileID: 729069252}
+  - component: {fileID: 729069253}
+  - component: {fileID: 729069254}
+  - component: {fileID: 729069255}
+  - component: {fileID: 729069256}
+  - component: {fileID: 729069257}
   m_Layer: 0
   m_Name: StationServicesMenu
   m_TagString: Untagged
@@ -761,9 +770,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 729069247}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ef26b9ece1a269546a27629991fa6a2e, type: 3}
+  m_Script: {fileID: 11500000, guid: 19bcf3a8d221659419bb33792a1e3fd0, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: VoidHarvest.Features.Docking::VoidHarvest.Features.Docking.Views.StationServicesMenuController
+  m_EditorClassIdentifier: VoidHarvest.Features.StationServices::VoidHarvest.Features.StationServices.Views.StationServicesMenuController
   uiDocument: {fileID: 729069249}
 --- !u!114 &729069249
 MonoBehaviour:
@@ -779,7 +788,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEngine.dll::UnityEngine.UIElements.UIDocument
   m_PanelSettings: {fileID: 11400000, guid: e5daa92228a0b72429cb360ea45bf759, type: 2}
   m_ParentUI: {fileID: 0}
-  sourceAsset: {fileID: 9197481963319205126, guid: 22379418e6279b3439e6851837128393, type: 3}
+  sourceAsset: {fileID: 9197481963319205126, guid: baf52075b5d167145b33d0be60ef94bd, type: 3}
   m_SortingOrder: 20
   m_Position: 0
   m_WorldSpaceSizeMode: 1
@@ -803,6 +812,90 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &729069251
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 729069247}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e25b4fc0b099a6549bff097659b320c0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: VoidHarvest.Features.StationServices::VoidHarvest.Features.StationServices.Views.CargoTransferPanelController
+--- !u!114 &729069252
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 729069247}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f0c2b3cd8e50024abaaaea618aef4b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: VoidHarvest.Features.StationServices::VoidHarvest.Features.StationServices.Views.SellResourcesPanelController
+--- !u!114 &729069253
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 729069247}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64381c80cf6bd7a4ca76fc856eaabcec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: VoidHarvest.Features.StationServices::VoidHarvest.Features.StationServices.Views.RefineOresPanelController
+--- !u!114 &729069254
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 729069247}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e32f5704b9d851247ab30a5687c021a9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: VoidHarvest.Features.StationServices::VoidHarvest.Features.StationServices.Views.BasicRepairPanelController
+--- !u!114 &729069255
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 729069247}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 89ee7042d3f0f3f46a7f02b1ebb701f3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: VoidHarvest.Features.StationServices::VoidHarvest.Features.StationServices.Views.RefiningJobSummaryController
+--- !u!114 &729069256
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 729069247}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 28b7b717b063ebc47a4c37f1202e39f2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: VoidHarvest.Features.StationServices::VoidHarvest.Features.StationServices.Views.CreditBalanceIndicator
+--- !u!114 &729069257
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 729069247}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a42dbcf89071d64d8b0626994157603, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: VoidHarvest.Features.StationServices::VoidHarvest.Features.StationServices.Views.RefiningJobTicker
 --- !u!1 &832575517
 GameObject:
   m_ObjectHideFlags: 0
@@ -1633,6 +1726,7 @@ GameObject:
   - component: {fileID: 1537462338}
   - component: {fileID: 1537462337}
   - component: {fileID: 1537462339}
+  - component: {fileID: 1537462340}
   m_Layer: 0
   m_Name: InputBridge
   m_TagString: Untagged
@@ -1765,6 +1859,18 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &1537462340
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1537462336}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d2e359bb5f82f9948a1388548d1492ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: VoidHarvest.Features.Input::VoidHarvest.Features.Input.Views.DebugHullDamage
 --- !u!1 &1597571234
 GameObject:
   m_ObjectHideFlags: 0

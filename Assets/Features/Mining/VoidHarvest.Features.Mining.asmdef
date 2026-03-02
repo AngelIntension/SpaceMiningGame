@@ -6,6 +6,7 @@
         "VoidHarvest.Core.State",
         "VoidHarvest.Core.EventBus",
         "VoidHarvest.Features.Ship",
+        "VoidHarvest.Features.Resources",
         "Unity.Entities",
         "Unity.Entities.Graphics",
         "Unity.Mathematics",

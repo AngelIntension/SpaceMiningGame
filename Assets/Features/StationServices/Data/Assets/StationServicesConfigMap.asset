@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 23497741a05e3954baf505f703a2f2e1, type: 3}
+  m_Name: StationServicesConfigMap
+  m_EditorClassIdentifier: VoidHarvest.Features.StationServices::VoidHarvest.Features.StationServices.Data.StationServicesConfigMap
+  Bindings:
+  - StationId: 1
+    Config: {fileID: 11400000, guid: e55fc74de3a410b4e9f805bcd53a28c9, type: 2}
+  - StationId: 2
+    Config: {fileID: 11400000, guid: 7ae7af4e78ee9d944ad8ff1f88b03339, type: 2}

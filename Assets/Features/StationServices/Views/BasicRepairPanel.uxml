@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:VisualElement name="basic-repair-root" class="sub-panel">
+        <!-- Hull integrity display -->
+        <ui:VisualElement name="hull-status" class="hull-status">
+            <ui:Label name="hull-label" text="Hull Integrity: 100%" class="hull-label" />
+            <ui:ProgressBar name="hull-bar" value="100" class="hull-bar" />
+        </ui:VisualElement>
+
+        <!-- Repair cost -->
+        <ui:Label name="repair-cost" text="Cost: 0 credits" class="credit-preview" />
+        <ui:Label name="repair-status" text="" class="status-label" />
+
+        <ui:Button name="btn-repair" text="Repair to 100%" class="action-button" />
+
+        <ui:VisualElement class="panel-footer">
+            <ui:Button name="btn-back" text="Back" class="back-button" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

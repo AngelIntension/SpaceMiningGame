@@ -1,0 +1,26 @@
+{
+    "name": "VoidHarvest.Features.StationServices",
+    "rootNamespace": "VoidHarvest.Features.StationServices",
+    "references": [
+        "VoidHarvest.Core.Extensions",
+        "VoidHarvest.Core.State",
+        "VoidHarvest.Core.EventBus",
+        "VoidHarvest.Features.Mining",
+        "VoidHarvest.Features.Resources",
+        "VoidHarvest.Features.Docking",
+        "VoidHarvest.Features.Input",
+        "VoidHarvest.Features.Ship",
+        "VContainer",
+        "UniTask",
+        "Unity.Mathematics"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

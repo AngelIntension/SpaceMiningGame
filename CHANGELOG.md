@@ -4,6 +4,86 @@ All notable changes to VoidHarvest are documented in this file.
 
 ## [Unreleased]
 
+### Spec 006 — Station Services Menu & Data-Driven Refining
+
+**Feature**: Full station economy loop — cargo transfer, resource selling,
+time-based ore refining with yield variance, hull repair, and credits system.
+
+#### Added
+- `StationServicesState` sealed record in Core/State — credits (int), per-station
+  storage (ImmutableDictionary), per-station refining jobs.
+- `StationServicesReducer` pure static reducer handling 11 action types:
+  cargo transfer, sell resources, start/complete/collect refining jobs,
+  station storage CRUD, credit management, repair.
+- `RefiningMath` pure static class — deterministic per-unit yield rolling
+  with `Unity.Mathematics.Random`, job duration and cost calculations.
+- `RepairMath` pure static class — ceiling-rounded repair cost from hull
+  integrity percentage.
+- `RefiningJobTicker` MonoBehaviour — tracks active refining job timers,
+  dispatches `CompleteRefiningJobAction` with deterministic outputs on
+  completion.
+- `StationServicesMenuController` — UI Toolkit panel navigation with 4
+  service tabs (Cargo Transfer, Sell Resources, Refine Ores, Basic Repair),
+  per-station service enable/disable, credit balance header indicator.
+- `CargoTransferPanelController` — bidirectional ship/station resource
+  transfer with capacity enforcement.
+- `SellResourcesPanelController` — sell resources from station storage for
+  integer credits with live preview and confirmation.
+- `RefineOresPanelController` — start time-based refining jobs, live cost
+  preview, max affordable quantity hint, active/completed job lists.
+- `RefiningJobSummaryController` — modal showing generated materials on job
+  completion, dispatches collect action on close.
+- `BasicRepairPanelController` — one-click hull repair for credits with
+  ceiling-rounded cost display.
+- `CreditBalanceIndicator` — persistent credit display across all menu
+  panels, updates reactively on state change.
+- `RefiningNotificationIndicator` + `RefiningNotificationTracker` — HUD
+  badge showing count of pending completed refining jobs, visible when
+  undocked.
+- `StationServicesConfig` ScriptableObject — per-station max refining slots,
+  speed multiplier, repair cost per HP.
+- `GameServicesConfig` ScriptableObject — starting credits.
+- `StationServicesConfigMap` ScriptableObject — maps station IDs to their
+  service configs.
+- `RawMaterialDefinition` ScriptableObject — material ID, display name,
+  description, base value, volume per unit.
+- 6 raw material assets: Luminite Ingots, Energium Dust, Ferrox Slabs,
+  Conductive Residue, Auralite Shards, Quantum Essence.
+- 2 station service config assets: SmallMiningRelayServices (2 slots, 1.0x
+  speed, no repair), MediumRefineryHubServices (4 slots, 1.5x speed, repair).
+- `RefiningOutputEntry` serializable struct on `OreDefinition` — per-ore
+  refining output configuration with base yield and variance range.
+- `RefiningCreditCostPerUnit` field on `OreDefinition` — cost per unit to
+  refine each ore type.
+- 6 station services events: RefiningJobStarted, RefiningJobCompleted,
+  RefiningJobCollected, ResourcesSold, CargoTransferred, ShipRepaired,
+  CreditsChanged — all zero-allocation readonly structs.
+- `RepairHullAction` in Core/State — cross-assembly action for ship hull
+  repair (avoids circular Ship→StationServices dependency).
+- UXML/USS layouts for all 4 service panels plus refining job summary modal.
+- Station Services section in HOWTOPLAY.md.
+
+#### Changed
+- `GameState.GameLoopState` — replaced empty `RefiningState` with
+  `StationServicesState` containing credits, station storages, refining jobs.
+- `CompositeReducer` in `RootLifetimeScope` — handles cross-cutting actions
+  (TransferToStation, TransferToShip, RepairShip) that span multiple state
+  slices atomically.
+- `ShipStateReducer` — added `RepairHullAction` handler to set hull
+  integrity.
+- `OreDefinition` ScriptableObject — added `RefiningOutputs` array and
+  `RefiningCreditCostPerUnit` int field. `BaseValue` changed from float to
+  int.
+- `StationServicesMenuController` — migrated from Docking/Views to
+  StationServices/Views, rewritten with full panel management.
+- Ore definition assets (Luminite, Ferrox, Auralite) — configured refining
+  outputs and credit costs.
+
+#### Test Impact
+- 420 tests pass (was 360; 60 new tests for station services reducers,
+  refining math, refining job lifecycle, repair math, cargo transfer,
+  sell resources, and refining notifications).
+
 ### Spec 005 — Data-Driven Ore System & Asteroid Spawning Refactor
 
 **Migration**: Replaced hard-coded ore types (Veldspar, Scordite, Pyroxeres)

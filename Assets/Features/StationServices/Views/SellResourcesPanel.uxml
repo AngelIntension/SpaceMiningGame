@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:VisualElement name="sell-resources-root" class="sub-panel">
+        <ui:ScrollView name="sell-item-list" class="item-list" />
+
+        <ui:VisualElement name="sell-controls" class="sell-controls">
+            <ui:SliderInt name="sell-quantity-slider" low-value="1" high-value="100" value="1" class="quantity-slider" />
+            <ui:Label name="sell-quantity-label" text="Qty: 1" class="quantity-label" />
+            <ui:Label name="sell-preview" text="Total: 0 credits" class="credit-preview" />
+            <ui:Button name="btn-sell" text="Sell" class="action-button" />
+        </ui:VisualElement>
+
+        <!-- Confirmation overlay -->
+        <ui:VisualElement name="sell-confirm-overlay" class="confirm-overlay" style="display: none;">
+            <ui:Label name="confirm-text" text="Confirm sale?" class="confirm-text" />
+            <ui:VisualElement class="confirm-buttons">
+                <ui:Button name="btn-confirm-sell" text="Confirm Sale" class="confirm-button" />
+                <ui:Button name="btn-cancel-sell" text="Cancel" class="cancel-button" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <ui:Label name="sell-error" text="" class="error-label" />
+
+        <ui:VisualElement class="panel-footer">
+            <ui:Button name="btn-back" text="Back" class="back-button" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

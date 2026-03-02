@@ -86,8 +86,8 @@ namespace VoidHarvest.Features.Mining.Tests
         [Test]
         public void OreDefinition_HasBaseValueField()
         {
-            _oreDefinition.BaseValue = 42f;
-            Assert.AreEqual(42f, _oreDefinition.BaseValue);
+            _oreDefinition.BaseValue = 42;
+            Assert.AreEqual(42, _oreDefinition.BaseValue);
         }
 
         [Test]
@@ -176,13 +176,13 @@ namespace VoidHarvest.Features.Mining.Tests
         }
 
         [Test]
-        public void OreDefinition_HasExactly12Fields()
+        public void OreDefinition_HasExactly14Fields()
         {
-            // Verify OreDefinition has exactly the expected 12 public fields
+            // Verify OreDefinition has exactly the expected 14 public fields (12 original + RefiningOutputs + RefiningCreditCostPerUnit)
             var fields = typeof(OreDefinition).GetFields(
                 System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
-            Assert.AreEqual(12, fields.Length,
-                $"Expected 12 fields but found {fields.Length}: {string.Join(", ", System.Array.ConvertAll(fields, f => f.Name))}");
+            Assert.AreEqual(14, fields.Length,
+                $"Expected 14 fields but found {fields.Length}: {string.Join(", ", System.Array.ConvertAll(fields, f => f.Name))}");
         }
     }
 

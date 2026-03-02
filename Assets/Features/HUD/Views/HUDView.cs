@@ -172,7 +172,7 @@ namespace VoidHarvest.Features.HUD.Views
                 _resourceList.Clear();
                 foreach (var kvp in gameState.Loop.Inventory.Stacks)
                 {
-                    var label = new Label($"{OreDisplayNames.Get(kvp.Key)}: {kvp.Value.Quantity}");
+                    var label = new Label($"{OreDefinitionRegistry.GetDisplayName(kvp.Key)}: {kvp.Value.Quantity}");
                     label.AddToClassList("hud-label");
                     _resourceList.Add(label);
                 }

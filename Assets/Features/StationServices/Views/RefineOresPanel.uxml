@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:VisualElement name="refine-ores-root" class="sub-panel">
+        <!-- Ore selector -->
+        <ui:VisualElement name="refine-selector" class="refine-selector">
+            <ui:DropdownField name="ore-dropdown" label="Ore Type" class="ore-dropdown" />
+            <ui:SliderInt name="refine-quantity-slider" low-value="1" high-value="100" value="1" class="quantity-slider" />
+            <ui:Label name="refine-quantity-label" text="Qty: 1" class="quantity-label" />
+        </ui:VisualElement>
+
+        <!-- Live preview -->
+        <ui:VisualElement name="refine-preview" class="refine-preview">
+            <ui:Label name="refine-cost" text="Cost: 0 credits" class="credit-preview" />
+            <ui:Label name="refine-affordable-hint" text="" class="affordable-hint" />
+            <ui:Label name="refine-outputs-preview" text="Expected outputs:" class="outputs-preview" />
+        </ui:VisualElement>
+
+        <ui:Button name="btn-start-job" text="Start Job" class="action-button" />
+
+        <!-- Active jobs list -->
+        <ui:Label text="Active Jobs" class="section-header" />
+        <ui:ScrollView name="active-jobs-list" class="item-list" />
+
+        <!-- Completed jobs list -->
+        <ui:Label text="Completed Jobs" class="section-header" />
+        <ui:ScrollView name="completed-jobs-list" class="item-list" />
+
+        <ui:Label name="refine-error" text="" class="error-label" />
+
+        <ui:VisualElement class="panel-footer">
+            <ui:Button name="btn-back" text="Back" class="back-button" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

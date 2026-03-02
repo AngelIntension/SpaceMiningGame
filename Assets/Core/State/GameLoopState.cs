@@ -7,7 +7,7 @@ namespace VoidHarvest.Core.State
         ExploreState Explore,
         MiningSessionState Mining,
         InventoryState Inventory,
-        RefiningState Refining,
+        StationServicesState StationServices,
         TechTreeState TechTree,
         FleetState Fleet,
         BaseState Base,

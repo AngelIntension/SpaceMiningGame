@@ -1,0 +1,355 @@
+.services-root {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    translate: -50% -50%;
+    width: 560px;
+    min-height: 420px;
+    max-height: 80%;
+    background-color: rgba(8, 12, 24, 0.94);
+    border-color: rgba(0, 200, 255, 0.4);
+    border-width: 2px;
+    border-radius: 6px;
+    padding: 0;
+    display: none;
+}
+
+/* Header (drag handle) */
+.services-header {
+    padding: 14px 20px 10px;
+    border-bottom-width: 1px;
+    border-bottom-color: rgba(0, 200, 255, 0.2);
+    background-color: rgba(0, 40, 80, 0.3);
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    cursor: move;
+}
+
+.header-row {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.header-info {
+    flex-shrink: 1;
+}
+
+.station-name {
+    color: rgb(255, 255, 255);
+    font-size: 18px;
+    -unity-font-style: bold;
+    letter-spacing: 1px;
+}
+
+.station-type {
+    color: rgba(0, 200, 255, 0.8);
+    font-size: 12px;
+    letter-spacing: 1px;
+    margin-top: 2px;
+}
+
+.credit-balance {
+    color: rgba(255, 220, 100, 0.9);
+    font-size: 14px;
+    -unity-font-style: bold;
+    -unity-text-align: upper-right;
+    min-width: 120px;
+}
+
+/* Tab bar */
+.services-tab-bar {
+    flex-direction: row;
+    padding: 8px 12px 0;
+    border-bottom-width: 1px;
+    border-bottom-color: rgba(0, 200, 255, 0.15);
+}
+
+.services-tab {
+    flex-grow: 1;
+    height: 36px;
+    margin: 0 2px;
+    background-color: rgba(20, 30, 50, 0.6);
+    border-color: rgba(0, 200, 255, 0.25);
+    border-width: 1px;
+    border-bottom-width: 0;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    color: rgba(180, 220, 255, 0.7);
+    font-size: 12px;
+    -unity-font-style: bold;
+}
+
+.services-tab:hover {
+    background-color: rgba(30, 50, 80, 0.8);
+    border-color: rgba(0, 220, 255, 0.5);
+    color: rgba(220, 240, 255, 0.9);
+}
+
+.services-tab--active {
+    background-color: rgba(0, 60, 100, 0.5);
+    border-color: rgba(0, 200, 255, 0.5);
+    color: rgb(255, 255, 255);
+}
+
+/* Content area */
+.services-content {
+    flex-grow: 1;
+    padding: 16px 20px 16px 20px;
+    min-height: 200px;
+}
+
+/* Push content away from the vertical scrollbar */
+.services-content #unity-content-container {
+    padding-right: 14px;
+}
+
+/* Sub-panel shared */
+.sub-panel {
+    flex-grow: 1;
+}
+
+.panel-title {
+    color: rgba(0, 200, 255, 0.9);
+    font-size: 15px;
+    -unity-font-style: bold;
+    margin-bottom: 10px;
+    letter-spacing: 1px;
+}
+
+.section-header {
+    color: rgba(180, 220, 255, 0.7);
+    font-size: 12px;
+    -unity-font-style: bold;
+    margin-top: 10px;
+    margin-bottom: 4px;
+}
+
+.column-header {
+    color: rgba(180, 220, 255, 0.8);
+    font-size: 12px;
+    -unity-font-style: bold;
+    margin-bottom: 4px;
+}
+
+/* Cargo transfer layout */
+.cargo-columns {
+    flex-direction: row;
+    flex-grow: 1;
+    min-height: 140px;
+}
+
+.cargo-column {
+    flex-grow: 1;
+    flex-basis: 0;
+}
+
+.cargo-controls {
+    width: 90px;
+    padding: 0 6px;
+    align-items: center;
+    justify-content: center;
+}
+
+.volume-label {
+    color: rgba(180, 220, 255, 0.6);
+    font-size: 11px;
+    margin-bottom: 4px;
+}
+
+/* Item list */
+.item-list {
+    min-height: 60px;
+    max-height: 140px;
+    background-color: rgba(0, 10, 20, 0.4);
+    border-color: rgba(0, 200, 255, 0.15);
+    border-width: 1px;
+    border-radius: 3px;
+    padding: 4px;
+}
+
+.item-row {
+    height: 24px;
+    margin: 1px 0;
+    padding: 0 6px;
+    background-color: rgba(20, 40, 60, 0.5);
+    border-radius: 2px;
+    color: rgba(200, 230, 255, 0.85);
+    font-size: 12px;
+    -unity-text-align: middle-left;
+    border-width: 0;
+}
+
+.item-row:hover {
+    background-color: rgba(30, 60, 90, 0.7);
+    color: rgb(255, 255, 255);
+}
+
+.item-row--selected {
+    background-color: rgba(40, 100, 140, 0.85);
+    color: rgb(255, 255, 255);
+    border-left-width: 2px;
+    border-left-color: rgb(100, 200, 255);
+}
+
+/* Sliders & labels */
+.qty-slider {
+    margin: 6px 0;
+    align-self: stretch;
+}
+
+.preview-label {
+    color: rgba(255, 220, 100, 0.85);
+    font-size: 13px;
+    margin: 4px 0;
+}
+
+.hint-label {
+    color: rgba(255, 160, 80, 0.8);
+    font-size: 11px;
+}
+
+.error-label {
+    color: rgba(255, 80, 80, 0.9);
+    font-size: 12px;
+    min-height: 16px;
+}
+
+.status-label {
+    color: rgba(180, 220, 255, 0.7);
+    font-size: 12px;
+    margin: 4px 0;
+}
+
+.hull-label {
+    color: rgba(200, 230, 255, 0.9);
+    font-size: 14px;
+    margin-bottom: 6px;
+}
+
+.hull-bar {
+    height: 20px;
+    margin-bottom: 8px;
+}
+
+/* Buttons */
+.action-btn {
+    height: 32px;
+    margin-top: 8px;
+    background-color: rgba(0, 100, 160, 0.7);
+    border-color: rgba(0, 200, 255, 0.4);
+    border-width: 1px;
+    border-radius: 4px;
+    color: rgb(220, 240, 255);
+    font-size: 13px;
+    -unity-font-style: bold;
+}
+
+.action-btn:hover {
+    background-color: rgba(0, 130, 200, 0.9);
+    border-color: rgba(0, 220, 255, 0.7);
+}
+
+.action-btn:disabled {
+    opacity: 0.4;
+    background-color: rgba(30, 40, 60, 0.5);
+}
+
+.transfer-btn {
+    height: 28px;
+    margin: 4px 0;
+    background-color: rgba(0, 80, 120, 0.6);
+    border-color: rgba(0, 200, 255, 0.3);
+    border-width: 1px;
+    border-radius: 3px;
+    color: rgba(200, 230, 255, 0.9);
+    font-size: 11px;
+    -unity-font-style: bold;
+}
+
+.transfer-btn:hover {
+    background-color: rgba(0, 110, 160, 0.8);
+}
+
+/* Confirm overlay */
+.confirm-overlay {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    justify-content: center;
+    align-items: center;
+}
+
+.confirm-text {
+    color: rgb(255, 255, 255);
+    font-size: 16px;
+    -unity-font-style: bold;
+    margin-bottom: 16px;
+}
+
+.confirm-buttons {
+    flex-direction: row;
+}
+
+.confirm-btn {
+    margin-right: 8px;
+}
+
+/* Summary overlay */
+.summary-overlay {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.75);
+    justify-content: center;
+    align-items: center;
+}
+
+.summary-panel {
+    width: 340px;
+    min-height: 200px;
+    background-color: rgba(8, 16, 32, 0.95);
+    border-color: rgba(0, 200, 255, 0.5);
+    border-width: 2px;
+    border-radius: 6px;
+    padding: 20px;
+}
+
+/* Dropdown */
+.ore-dropdown {
+    margin: 4px 0;
+}
+
+/* Footer */
+.services-footer {
+    padding: 10px 20px;
+    border-top-width: 1px;
+    border-top-color: rgba(0, 200, 255, 0.2);
+    flex-direction: row;
+    justify-content: flex-end;
+}
+
+.undock-button {
+    width: 120px;
+    height: 36px;
+    background-color: rgba(180, 40, 40, 0.7);
+    border-color: rgba(255, 80, 80, 0.5);
+    border-width: 1px;
+    border-radius: 4px;
+    color: rgb(255, 220, 220);
+    font-size: 13px;
+    -unity-font-style: bold;
+    letter-spacing: 1px;
+}
+
+.undock-button:hover {
+    background-color: rgba(200, 50, 50, 0.9);
+    border-color: rgba(255, 100, 100, 0.8);
+}

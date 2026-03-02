@@ -43,6 +43,7 @@ namespace VoidHarvest.Features.Mining.Systems
                         oreIdToDisplayName[oreId] = displayName;
                 }
                 OreDisplayNames.SetLookups(displayNames, oreIdToDisplayName);
+                OreDefinitionRegistry.SetDefinitions(definitions);
             }
         }
 
