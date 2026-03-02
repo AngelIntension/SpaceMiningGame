@@ -53,6 +53,11 @@ namespace VoidHarvest.Features.StationServices.Views
         private int _dockedStationId;
         private Button _activeTab;
 
+        // Drag state
+        private VisualElement _header;
+        private bool _isDragging;
+        private Vector2 _dragOffset;
+
         [Inject]
         public void Construct(
             IStateStore stateStore,
@@ -107,6 +112,15 @@ namespace VoidHarvest.Features.StationServices.Views
             _panelMarket?.Q<Button>("btn-back-market")?.RegisterCallback<ClickEvent>(_ => ShowMainMenu());
             _panelRefinery?.Q<Button>("btn-back-refinery")?.RegisterCallback<ClickEvent>(_ => ShowMainMenu());
             _panelRepair?.Q<Button>("btn-back-repair")?.RegisterCallback<ClickEvent>(_ => ShowMainMenu());
+
+            // Header drag-to-move
+            _header = _root.Q<VisualElement>("services-header");
+            if (_header != null)
+            {
+                _header.RegisterCallback<PointerDownEvent>(OnHeaderPointerDown);
+                _header.RegisterCallback<PointerMoveEvent>(OnHeaderPointerMove);
+                _header.RegisterCallback<PointerUpEvent>(OnHeaderPointerUp);
+            }
 
             _root.style.display = DisplayStyle.None;
         }
@@ -172,6 +186,11 @@ namespace VoidHarvest.Features.StationServices.Views
 
             // Initialize sub-controllers
             InitializeControllers(stationId);
+
+            // Reset position to center
+            _root.style.left = new StyleLength(new Length(50, LengthUnit.Percent));
+            _root.style.top = new StyleLength(new Length(50, LengthUnit.Percent));
+            _root.style.translate = new Translate(Length.Percent(-50), Length.Percent(-50));
 
             // Show main menu
             ShowMainMenu();
@@ -329,6 +348,44 @@ namespace VoidHarvest.Features.StationServices.Views
                 return "Outpost";
 
             return string.Join(" / ", station.AvailableServices);
+        }
+
+        // --- Drag-to-move ---
+
+        private void OnHeaderPointerDown(PointerDownEvent evt)
+        {
+            if (evt.button != 0) return;
+            _isDragging = true;
+
+            // Convert centered CSS positioning to absolute pixel coords on first drag
+            var bounds = _root.worldBound;
+            _root.style.left = bounds.x;
+            _root.style.top = bounds.y;
+            _root.style.translate = new Translate(0, 0);
+
+            _dragOffset = new Vector2(evt.position.x - bounds.x, evt.position.y - bounds.y);
+            _header.CapturePointer(evt.pointerId);
+            evt.StopPropagation();
+        }
+
+        private void OnHeaderPointerMove(PointerMoveEvent evt)
+        {
+            if (!_isDragging) return;
+
+            float newLeft = evt.position.x - _dragOffset.x;
+            float newTop = evt.position.y - _dragOffset.y;
+
+            _root.style.left = newLeft;
+            _root.style.top = newTop;
+            evt.StopPropagation();
+        }
+
+        private void OnHeaderPointerUp(PointerUpEvent evt)
+        {
+            if (!_isDragging) return;
+            _isDragging = false;
+            _header.ReleasePointer(evt.pointerId);
+            evt.StopPropagation();
         }
     }
 }

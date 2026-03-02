@@ -22,7 +22,7 @@
         </ui:VisualElement>
 
         <!-- Content area — panels stacked, only one visible at a time -->
-        <ui:VisualElement name="services-content" class="services-content">
+        <ui:ScrollView name="services-content" class="services-content">
             <!-- Main menu placeholder (visible when no sub-panel active) -->
             <ui:Label name="services-placeholder" text="Select a service above" class="services-placeholder" />
 
@@ -108,7 +108,7 @@
                     <ui:Button name="btn-close-summary" text="Collect &amp; Close" class="action-btn" />
                 </ui:VisualElement>
             </ui:VisualElement>
-        </ui:VisualElement>
+        </ui:ScrollView>
 
         <!-- Footer with undock button -->
         <ui:VisualElement name="services-footer" class="services-footer">

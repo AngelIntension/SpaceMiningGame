@@ -7,6 +7,7 @@ using VContainer;
 using VoidHarvest.Core.EventBus;
 using VoidHarvest.Core.EventBus.Events;
 using VoidHarvest.Core.State;
+using VoidHarvest.Features.Mining.Data;
 using VoidHarvest.Features.StationServices.Data;
 using VoidHarvest.Features.StationServices.Systems;
 
@@ -160,8 +161,8 @@ namespace VoidHarvest.Features.StationServices.Views
         private void OnOreSelected(string oreId)
         {
             _selectedOreId = oreId;
-            // TODO: Look up OreDefinition for cost and output configs
-            _selectedCostPerUnit = 5; // Placeholder
+            var oreDef = OreDefinitionRegistry.Get(oreId);
+            _selectedCostPerUnit = oreDef != null ? oreDef.RefiningCreditCostPerUnit : 0;
 
             var services = _stateStore.Current.Loop.StationServices;
             if (services.StationStorages.TryGetValue(_dockedStationId, out var storage)
@@ -210,11 +211,11 @@ namespace VoidHarvest.Features.StationServices.Views
             int maxSlots = config != null ? config.MaxConcurrentRefiningSlots : 3;
             float speedMult = config != null ? config.RefiningSpeedMultiplier : 1f;
 
-            // TODO: Get BaseProcessingTimePerUnit from OreDefinition
-            float duration = RefiningMath.CalculateJobDuration(qty, 5f, speedMult);
+            var oreDef = OreDefinitionRegistry.Get(_selectedOreId);
+            float baseTime = oreDef != null ? oreDef.BaseProcessingTimePerUnit : 5f;
+            float duration = RefiningMath.CalculateJobDuration(qty, baseTime, speedMult);
 
-            // TODO: Build output configs from OreDefinition.RefiningOutputs
-            var outputConfigs = ImmutableArray<RefiningOutputConfig>.Empty;
+            var outputConfigs = BuildOutputConfigs(oreDef);
 
             var before = _stateStore.Current;
             _stateStore.Dispatch(new StartRefiningJobAction(
@@ -226,6 +227,24 @@ namespace VoidHarvest.Features.StationServices.Views
                 var lastJob = jobs[jobs.Length - 1];
                 _eventBus?.Publish(new RefiningJobStartedEvent(_dockedStationId, lastJob.JobId));
             }
+        }
+
+        private static ImmutableArray<RefiningOutputConfig> BuildOutputConfigs(OreDefinition oreDef)
+        {
+            if (oreDef == null || oreDef.RefiningOutputs == null || oreDef.RefiningOutputs.Length == 0)
+                return ImmutableArray<RefiningOutputConfig>.Empty;
+
+            var builder = ImmutableArray.CreateBuilder<RefiningOutputConfig>(oreDef.RefiningOutputs.Length);
+            foreach (var entry in oreDef.RefiningOutputs)
+            {
+                if (entry.Material == null) continue;
+                builder.Add(new RefiningOutputConfig(
+                    entry.Material.MaterialId,
+                    entry.BaseYieldPerUnit,
+                    entry.VarianceMin,
+                    entry.VarianceMax));
+            }
+            return builder.ToImmutable();
         }
     }
 }
