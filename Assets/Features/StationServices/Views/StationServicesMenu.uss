@@ -94,12 +94,6 @@
     color: rgb(255, 255, 255);
 }
 
-.services-tab--disabled {
-    opacity: 0.35;
-    background-color: rgba(15, 20, 30, 0.4);
-    color: rgba(120, 140, 160, 0.5);
-}
-
 /* Content area */
 .services-content {
     flex-grow: 1;

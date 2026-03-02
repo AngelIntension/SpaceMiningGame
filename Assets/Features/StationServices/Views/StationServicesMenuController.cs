@@ -212,11 +212,7 @@ namespace VoidHarvest.Features.StationServices.Views
         private static void SetTabEnabled(Button tab, bool enabled)
         {
             if (tab == null) return;
-            tab.SetEnabled(enabled);
-            if (enabled)
-                tab.RemoveFromClassList("services-tab--disabled");
-            else
-                tab.AddToClassList("services-tab--disabled");
+            tab.style.display = enabled ? DisplayStyle.Flex : DisplayStyle.None;
         }
 
         private void InitializeControllers(int stationId)
