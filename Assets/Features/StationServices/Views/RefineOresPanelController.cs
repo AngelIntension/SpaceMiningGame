@@ -41,6 +41,7 @@ namespace VoidHarvest.Features.StationServices.Views
         private int _selectedCostPerUnit;
         private CancellationTokenSource _stateCts;
         private StationServicesState _lastServices;
+        private float _nextActiveJobsRefresh;
 
         // Callback for when a completed job is clicked (opens summary)
         public System.Action<RefiningJobState> OnCompletedJobClicked;
@@ -94,6 +95,42 @@ namespace VoidHarvest.Features.StationServices.Views
             _stateCts = null;
         }
 
+        private void Update()
+        {
+            if (_stateStore == null || _activeJobsList == null) return;
+            if (Time.time < _nextActiveJobsRefresh) return;
+            _nextActiveJobsRefresh = Time.time + 0.25f;
+
+            var services = _stateStore.Current.Loop.StationServices;
+            if (!services.RefiningJobs.TryGetValue(_dockedStationId, out var jobs)) return;
+
+            bool hasActive = false;
+            foreach (var job in jobs)
+            {
+                if (job.Status == RefiningJobStatus.Active) { hasActive = true; break; }
+            }
+            if (!hasActive) return;
+
+            RefreshActiveJobs(services);
+        }
+
+        private void RefreshActiveJobs(StationServicesState services)
+        {
+            _activeJobsList.Clear();
+            if (!services.RefiningJobs.TryGetValue(_dockedStationId, out var jobs)) return;
+
+            float currentTime = Time.time;
+            foreach (var job in jobs)
+            {
+                if (job.Status != RefiningJobStatus.Active) continue;
+                float progress = job.Progress(currentTime);
+                float remaining = job.RemainingTime(currentTime);
+                var label = new Label { text = $"{OreDefinitionRegistry.GetDisplayName(job.OreId)} x{job.InputQuantity} — {progress:P0} ({remaining:F0}s)" };
+                label.AddToClassList("item-row");
+                _activeJobsList.Add(label);
+            }
+        }
+
         private async UniTaskVoid ListenForStateChanges(CancellationToken ct)
         {
             await foreach (var evt in _eventBus.Subscribe<StateChangedEvent<GameState>>().WithCancellation(ct))
@@ -124,7 +161,10 @@ namespace VoidHarvest.Features.StationServices.Views
             if (services.StationStorages.TryGetValue(_dockedStationId, out var storage))
             {
                 foreach (var kvp in storage.Stacks)
-                    choices.Add(kvp.Key);
+                {
+                    if (OreDefinitionRegistry.Get(kvp.Key) != null)
+                        choices.Add(kvp.Key);
+                }
             }
             _oreDropdown.choices = choices;
             _oreDropdown.formatSelectedValueCallback = id => OreDefinitionRegistry.GetDisplayName(id);
