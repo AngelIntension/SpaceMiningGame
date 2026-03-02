@@ -109,7 +109,8 @@ namespace VoidHarvest.Core.State.Tests
                     FleetState.Empty,
                     BaseState.Empty,
                     MarketState.Empty,
-                    DockingState.Empty
+                    DockingState.Empty,
+                    TargetingState.Empty
                 ),
                 ActiveShipPhysics: ShipState.Default,
                 Camera: CameraState.Default,

@@ -55,7 +55,8 @@ namespace VoidHarvest.Features.StationServices.Tests
                     FleetState.Empty,
                     BaseState.Empty,
                     MarketState.Empty,
-                    DockingState.Empty
+                    DockingState.Empty,
+                    TargetingState.Empty
                 ),
                 ActiveShipPhysics: ShipState.Default with { HullIntegrity = 0.6f },
                 Camera: CameraState.Default,
@@ -89,7 +90,8 @@ namespace VoidHarvest.Features.StationServices.Tests
                     FleetState.Empty,
                     BaseState.Empty,
                     MarketState.Empty,
-                    DockingState.Empty
+                    DockingState.Empty,
+                    TargetingState.Empty
                 ),
                 ActiveShipPhysics: ShipState.Default with { HullIntegrity = 0.6f },
                 Camera: CameraState.Default,
@@ -124,7 +126,8 @@ namespace VoidHarvest.Features.StationServices.Tests
                     FleetState.Empty,
                     BaseState.Empty,
                     MarketState.Empty,
-                    DockingState.Empty
+                    DockingState.Empty,
+                    TargetingState.Empty
                 ),
                 ActiveShipPhysics: ShipState.Default, // HullIntegrity defaults to 1.0f
                 Camera: CameraState.Default,
