@@ -39,7 +39,8 @@ public sealed class RootLifetimeScope : LifetimeScope
         builder.Register<UniTaskEventBus>(Lifetime.Singleton).As<IEventBus>();
 
         // WorldDefinition — singleton, data-driven world config (Spec 009)
-        builder.RegisterInstance(worldDefinition);
+        if (worldDefinition != null)
+            builder.RegisterInstance(worldDefinition);
 
         // Build the composite reducer that delegates to real feature reducers
         var initialState = CreateDefaultGameState();
