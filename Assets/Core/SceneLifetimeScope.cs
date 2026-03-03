@@ -3,9 +3,12 @@ using VContainer;
 using VContainer.Unity;
 using VoidHarvest.Features.Mining.Data;
 using VoidHarvest.Features.Docking.Data;
+using VoidHarvest.Features.Docking.Systems;
 using VoidHarvest.Features.StationServices.Data;
 using VoidHarvest.Features.Targeting.Data;
+using VoidHarvest.Features.Camera.Data;
 using VoidHarvest.Features.Camera.Views;
+using VoidHarvest.Features.Input.Data;
 using VoidHarvest.Features.Input.Views;
 using VoidHarvest.Features.Targeting.Views;
 
@@ -34,8 +37,13 @@ public class SceneLifetimeScope : LifetimeScope
     [SerializeField] private DockingAudioConfig dockingAudioConfig;
 
     [Header("Station Services")]
-    [SerializeField] private StationServicesConfigMap stationServicesConfigMap;
     [SerializeField] private GameServicesConfig gameServicesConfig;
+
+    [Header("Camera")]
+    [SerializeField] private CameraConfig cameraConfig;
+
+    [Header("Input")]
+    [SerializeField] private InteractionConfig interactionConfig;
 
     [Header("Targeting")]
     [SerializeField] private TargetingConfig targetingConfig;
@@ -57,15 +65,20 @@ public class SceneLifetimeScope : LifetimeScope
         if (miningAudioConfig != null)
             builder.RegisterInstance(miningAudioConfig);
         if (dockingConfig != null)
+        {
             builder.RegisterInstance(dockingConfig);
+            DockingConfigBlobBakingSystem.SetDockingConfig(dockingConfig);
+        }
         if (dockingVFXConfig != null)
             builder.RegisterInstance(dockingVFXConfig);
         if (dockingAudioConfig != null)
             builder.RegisterInstance(dockingAudioConfig);
-        if (stationServicesConfigMap != null)
-            builder.RegisterInstance(stationServicesConfigMap);
         if (gameServicesConfig != null)
             builder.RegisterInstance(gameServicesConfig);
+        if (cameraConfig != null)
+            builder.RegisterInstance(cameraConfig);
+        if (interactionConfig != null)
+            builder.RegisterInstance(interactionConfig);
         if (targetingConfig != null)
             builder.RegisterInstance(targetingConfig);
         if (targetingAudioConfig != null)

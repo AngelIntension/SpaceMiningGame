@@ -7,6 +7,7 @@
         "VoidHarvest.Core.EventBus",
         "VoidHarvest.Features.Ship",
         "VoidHarvest.Features.Mining",
+        "VoidHarvest.Features.Station",
         "Unity.Entities",
         "Unity.Entities.Graphics",
         "Unity.Entities.Hybrid",

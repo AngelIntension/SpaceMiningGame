@@ -153,6 +153,8 @@ MonoBehaviour:
     TypeName: 
   autoRun: 1
   autoInjectGameObjects: []
+  worldDefinition: {fileID: 11400000, guid: b43a0ed8fe4220c4db6c530f461c9964, type: 2}
+  cameraConfig: {fileID: 11400000, guid: 145fcb0e49912404dbc366356faaf5eb, type: 2}
 --- !u!4 &206371343
 Transform:
   m_ObjectHideFlags: 0
@@ -198,8 +200,9 @@ MonoBehaviour:
   dockingConfig: {fileID: 11400000, guid: 828e08e033e3ec24497f57f82ece191c, type: 2}
   dockingVFXConfig: {fileID: 11400000, guid: 925ef3bdfb04a7a4b8bcf517e00706c9, type: 2}
   dockingAudioConfig: {fileID: 11400000, guid: 7fd96f0185cb7c74db4372eaec51fd77, type: 2}
-  stationServicesConfigMap: {fileID: 11400000, guid: 0f659ae2e54c2d94fb2c3017149071d4, type: 2}
   gameServicesConfig: {fileID: 11400000, guid: b84a89a6b27ab85439d5ec802106f7f1, type: 2}
+  cameraConfig: {fileID: 11400000, guid: 145fcb0e49912404dbc366356faaf5eb, type: 2}
+  interactionConfig: {fileID: 11400000, guid: bcd884da3eee89f4c8892182bfa407d0, type: 2}
   targetingConfig: {fileID: 11400000, guid: 565b8a5c94bf6d24a9bb9968504ee348, type: 2}
   targetingAudioConfig: {fileID: 11400000, guid: b3b099375363acf42a8574c86fae1921, type: 2}
   targetingVFXConfig: {fileID: 11400000, guid: a85c4ed4292b40c41a7d9e713914f582, type: 2}
@@ -1755,6 +1758,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: MediumRefineryHub
       objectReference: {fileID: 0}
+    - target: {fileID: 5471822129481801146, guid: 367ac946a7b4aaa4382ff7f2b4a8233f, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6697567079080125492, guid: 367ac946a7b4aaa4382ff7f2b4a8233f, type: 3}
       propertyPath: m_LocalPosition.x
       value: 500
@@ -1796,8 +1803,8 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8576151583295545428, guid: 367ac946a7b4aaa4382ff7f2b4a8233f, type: 3}
-      propertyPath: StationId
-      value: 2
+      propertyPath: PortPosition.z
+      value: 20
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1824,7 +1831,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac8229405a7f0ac4d98d2e3bb2919cdd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: VoidHarvest.Features.Targeting::VoidHarvest.Features.Targeting.Views.TargetableStation
-  stationId: 2
+  stationDefinition: {fileID: 11400000, guid: a8ef5f3314a187542a3c6eb577bd6fa6, type: 2}
 --- !u!1 &1351852029
 GameObject:
   m_ObjectHideFlags: 0
@@ -1882,8 +1889,12 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 2234927107811168735, guid: 1a617c619e08b4e48ba3f4959c9a632a, type: 3}
-      propertyPath: StationId
-      value: 1
+      propertyPath: PortPosition.z
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 5365648735771304351, guid: 1a617c619e08b4e48ba3f4959c9a632a, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8790162813769972537, guid: 1a617c619e08b4e48ba3f4959c9a632a, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1954,7 +1965,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac8229405a7f0ac4d98d2e3bb2919cdd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: VoidHarvest.Features.Targeting::VoidHarvest.Features.Targeting.Views.TargetableStation
-  stationId: 1
+  stationDefinition: {fileID: 11400000, guid: 75158963a34069448a5ec1092dba2ed4, type: 2}
 --- !u!1 &1537462336
 GameObject:
   m_ObjectHideFlags: 0

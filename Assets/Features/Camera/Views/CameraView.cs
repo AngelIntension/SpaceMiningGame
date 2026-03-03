@@ -2,6 +2,7 @@ using UnityEngine;
 using Unity.Cinemachine;
 using VContainer;
 using VoidHarvest.Core.State;
+using VoidHarvest.Features.Camera.Data;
 
 namespace VoidHarvest.Features.Camera.Views
 {
@@ -17,23 +18,28 @@ namespace VoidHarvest.Features.Camera.Views
         private CinemachineOrbitalFollow _orbitalFollow;
 
         private IStateStore _stateStore;
+        private CameraConfig _cameraConfig;
 
         private float _currentRadius;
         private float _radiusVelocity;
 
-        // Zoom cooldown: suppress SpeedZoomAction for 2s after manual ZoomAction
+        // Zoom cooldown: suppress SpeedZoomAction after manual ZoomAction
         private float _lastManualZoomTime = float.NegativeInfinity;
-        private const float ZoomCooldownDuration = 2.0f;
+        private float _zoomCooldownDuration = 2.0f;
 
         private int _lastStoreVersion = -1;
 
         /// <summary>
-        /// DI injection point for the state store. See MVP-02: Camera orbit and zoom.
+        /// DI injection point for the state store and camera config.
+        /// See MVP-02: Camera orbit and zoom, Spec 009 US3.
         /// </summary>
         [Inject]
-        public void Construct(IStateStore stateStore)
+        public void Construct(IStateStore stateStore, CameraConfig cameraConfig = null)
         {
             _stateStore = stateStore;
+            _cameraConfig = cameraConfig;
+            if (_cameraConfig != null)
+                _zoomCooldownDuration = _cameraConfig.ZoomCooldownDuration;
         }
 
         private void Awake()
@@ -80,7 +86,7 @@ namespace VoidHarvest.Features.Camera.Views
             }
 
             // Dispatch SpeedZoomAction (unless in manual zoom cooldown)
-            if (Time.time - _lastManualZoomTime >= ZoomCooldownDuration)
+            if (Time.time - _lastManualZoomTime >= _zoomCooldownDuration)
             {
                 float maxSpeed = shipState.MaxSpeed;
                 if (maxSpeed > 0.001f)

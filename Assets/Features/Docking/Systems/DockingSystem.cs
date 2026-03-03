@@ -25,6 +25,9 @@ namespace VoidHarvest.Features.Docking.Systems
             // Ensure the DockingEventFlags singleton exists
             var flagsEntity = state.EntityManager.CreateEntity();
             state.EntityManager.AddComponentData(flagsEntity, new DockingEventFlags());
+
+            // Require DockingConfigBlobComponent singleton before running
+            state.RequireForUpdate<DockingConfigBlobComponent>();
         }
 
         [BurstCompile]
@@ -32,14 +35,15 @@ namespace VoidHarvest.Features.Docking.Systems
         {
             float dt = SystemAPI.Time.DeltaTime;
 
-            // Read DockingConfig values via blob or hardcoded defaults for Burst compatibility
-            float snapDuration = 0.75f;
-            float undockClearanceDistance = 100f;
-            float snapRange = 5f;
-            float approachTimeout = 120f; // Safety timeout for approach phase (seconds)
-            float alignTimeout = 30f; // Safety timeout for alignment phase (seconds)
-            float alignDotThreshold = 0.999f; // ~2.5 degrees — alignment considered complete
-            float alignAngVelThreshold = 0.01f; // rad/s — angular velocity must settle
+            // Read all docking parameters from the baked DockingConfigBlob singleton
+            ref var cfg = ref SystemAPI.GetSingleton<DockingConfigBlobComponent>().Config.Value;
+            float snapDuration = cfg.SnapDuration;
+            float undockClearanceDistance = cfg.UndockClearanceDistance;
+            float snapRange = cfg.SnapRange;
+            float approachTimeout = cfg.ApproachTimeout;
+            float alignTimeout = cfg.AlignTimeout;
+            float alignDotThreshold = cfg.AlignDotThreshold;
+            float alignAngVelThreshold = cfg.AlignAngVelThreshold;
 
             foreach (var (docking, position, velocity, flightMode, command, config)
                 in SystemAPI.Query<

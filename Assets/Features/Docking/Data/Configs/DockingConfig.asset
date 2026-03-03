@@ -13,7 +13,11 @@ MonoBehaviour:
   m_Name: DockingConfig
   m_EditorClassIdentifier: 
   MaxDockingRange: 500
-  SnapRange: 30
+  SnapRange: 5
   SnapDuration: 1.5
-  UndockClearanceDistance: 100
+  UndockClearanceDistance: 50
   UndockDuration: 2
+  ApproachTimeout: 120
+  AlignTimeout: 30
+  AlignDotThreshold: 0.999
+  AlignAngVelThreshold: 0.01

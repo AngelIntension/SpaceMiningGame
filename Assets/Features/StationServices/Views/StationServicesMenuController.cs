@@ -10,8 +10,6 @@ using VoidHarvest.Core.State;
 using VoidHarvest.Core.EventBus.Events;
 using VoidHarvest.Features.Docking.Data;
 using VoidHarvest.Features.Input.Views;
-using VoidHarvest.Features.StationServices.Data;
-
 namespace VoidHarvest.Features.StationServices.Views
 {
     /// <summary>
@@ -25,7 +23,6 @@ namespace VoidHarvest.Features.StationServices.Views
 
         private IStateStore _stateStore;
         private IEventBus _eventBus;
-        private StationServicesConfigMap _configMap;
         private CancellationTokenSource _eventCts;
 
         private VisualElement _root;
@@ -64,12 +61,10 @@ namespace VoidHarvest.Features.StationServices.Views
         public void Construct(
             IStateStore stateStore,
             IEventBus eventBus,
-            StationServicesConfigMap configMap,
             InputBridge inputBridge)
         {
             _stateStore = stateStore;
             _eventBus = eventBus;
-            _configMap = configMap;
             _inputBridge = inputBridge;
         }
 

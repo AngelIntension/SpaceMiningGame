@@ -9,6 +9,8 @@ using VoidHarvest.Features.Mining.Systems;
 using VoidHarvest.Features.Docking.Data;
 using VoidHarvest.Features.StationServices.Data;
 using VoidHarvest.Features.StationServices.Systems;
+using VoidHarvest.Features.World.Data;
+using VoidHarvest.Features.Camera.Data;
 using VoidHarvest.Features.Targeting.Data;
 using VoidHarvest.Features.Targeting.Systems;
 using CameraReducerReal = VoidHarvest.Features.Camera.Systems.CameraReducer;
@@ -25,6 +27,9 @@ using StationServicesReducerReal = VoidHarvest.Features.StationServices.Systems.
 /// </summary>
 public sealed class RootLifetimeScope : LifetimeScope
 {
+    [SerializeField] private WorldDefinition worldDefinition;
+    [SerializeField] private CameraConfig cameraConfig;
+
     /// <summary>
     /// Register core singletons: EventBus, StateStore with composite reducer. See MVP-12: Immutable state.
     /// </summary>
@@ -32,6 +37,10 @@ public sealed class RootLifetimeScope : LifetimeScope
     {
         // EventBus — singleton, cross-system communication
         builder.Register<UniTaskEventBus>(Lifetime.Singleton).As<IEventBus>();
+
+        // WorldDefinition — singleton, data-driven world config (Spec 009)
+        if (worldDefinition != null)
+            builder.RegisterInstance(worldDefinition);
 
         // Build the composite reducer that delegates to real feature reducers
         var initialState = CreateDefaultGameState();
@@ -94,6 +103,10 @@ public sealed class RootLifetimeScope : LifetimeScope
     private static GameState HandleTransferToStation(GameState state, TransferToStationAction a)
     {
         if (a.Quantity <= 0) return state;
+
+        // Validate station storage exists before touching inventory
+        if (!state.Loop.StationServices.StationStorages.ContainsKey(a.StationId))
+            return state;
 
         var inventory = state.Loop.Inventory;
         if (!inventory.Stacks.TryGetValue(a.ResourceId, out var stack) || stack.Quantity < a.Quantity)
@@ -215,20 +228,59 @@ public sealed class RootLifetimeScope : LifetimeScope
         };
     }
 
-    private static GameState CreateDefaultGameState()
+    private GameState CreateDefaultGameState()
     {
+        // Build station storages from WorldDefinition (Spec 009)
+        var storagesBuilder = ImmutableDictionary<int, StationStorageState>.Empty;
+        if (worldDefinition != null && worldDefinition.Stations != null)
+        {
+            foreach (var station in worldDefinition.Stations)
+            {
+                if (station != null)
+                    storagesBuilder = storagesBuilder.Add(station.StationId, StationStorageState.Empty);
+            }
+        }
+
         var stationServices = StationServicesState.Empty with
         {
-            StationStorages = ImmutableDictionary<int, StationStorageState>.Empty
-                .Add(1, StationStorageState.Empty)
-                .Add(2, StationStorageState.Empty)
+            StationStorages = storagesBuilder
         };
+
+        // Build WorldState from WorldDefinition
+        var worldStations = worldDefinition != null
+            ? worldDefinition.BuildWorldStations()
+            : ImmutableArray<StationData>.Empty;
+
+        // Build CameraState from CameraConfig (Spec 009 US3)
+        var camera = cameraConfig != null
+            ? new CameraState(
+                cameraConfig.DefaultYaw,
+                cameraConfig.DefaultPitch,
+                cameraConfig.DefaultDistance,
+                false, 0f, 0f,
+                cameraConfig.MinPitch,
+                cameraConfig.MaxPitch,
+                cameraConfig.MinDistance,
+                cameraConfig.MaxDistance,
+                cameraConfig.MinZoomDistance,
+                cameraConfig.MaxZoomDistance)
+            : CameraState.Default;
+
+        // Build InventoryState from ship archetype (Spec 009 US4)
+        var archetype = worldDefinition != null ? worldDefinition.StartingShipArchetype : null;
+        var inventory = archetype != null
+            ? new InventoryState(
+                ImmutableDictionary<string, ResourceStack>.Empty,
+                archetype.CargoSlots,
+                archetype.CargoCapacity,
+                0f)
+            : InventoryState.Empty;
 
         return new GameState(
             Loop: new GameLoopState(
                 ExploreState.Empty,
                 MiningSessionState.Empty,
-                InventoryState.Empty,
+                inventory,
                 stationServices,
                 TechTreeState.Empty,
                 FleetState.Empty,
@@ -238,22 +290,8 @@ public sealed class RootLifetimeScope : LifetimeScope
                 TargetingState.Empty
             ),
             ActiveShipPhysics: ShipState.Default,
-            Camera: CameraState.Default,
-            World: new WorldState(
-                ImmutableArray.Create(
-                    new StationData(
-                        1,
-                        new Unity.Mathematics.float3(0f, 0f, 200f),
-                        "Small Mining Relay",
-                        ImmutableArray.Create("Refinery", "Cargo")),
-                    new StationData(
-                        2,
-                        new Unity.Mathematics.float3(500f, 0f, 0f),
-                        "Medium Refinery Hub",
-                        ImmutableArray.Create("Refinery", "Market", "Repair", "Cargo"))
-                ),
-                0f
-            )
+            Camera: camera,
+            World: new WorldState(worldStations, 0f)
         );
     }
 }

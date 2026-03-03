@@ -1,0 +1,24 @@
+{
+    "name": "VoidHarvest.Core.Editor.Tests",
+    "rootNamespace": "VoidHarvest.Core.Editor.Tests",
+    "references": [
+        "VoidHarvest.Core.Editor",
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -111,9 +111,7 @@ MonoBehaviour:
       y: 0
       z: 0
       w: 1
-  DockingRange: 500
-  SnapRange: 30
-  StationId: 0
+  stationDefinition: {fileID: 11400000, guid: a8ef5f3314a187542a3c6eb577bd6fa6, type: 2}
 --- !u!1001 &6086247909349180977
 PrefabInstance:
   m_ObjectHideFlags: 0

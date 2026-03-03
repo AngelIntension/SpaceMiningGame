@@ -20,6 +20,10 @@ namespace VoidHarvest.Features.Docking.Tests
             _config.SnapDuration = 1.5f;
             _config.UndockClearanceDistance = 100f;
             _config.UndockDuration = 2f;
+            _config.ApproachTimeout = 120f;
+            _config.AlignTimeout = 30f;
+            _config.AlignDotThreshold = 0.999f;
+            _config.AlignAngVelThreshold = 0.01f;
         }
 
         [TearDown]
@@ -81,6 +85,46 @@ namespace VoidHarvest.Features.Docking.Tests
         {
             _config.UndockDuration = 0f;
             LogAssert.Expect(LogType.Warning, new Regex("UndockDuration"));
+            CallOnValidate(_config);
+        }
+
+        [Test]
+        public void OnValidate_ApproachTimeoutZero_LogsWarning()
+        {
+            _config.ApproachTimeout = 0f;
+            LogAssert.Expect(LogType.Warning, new Regex("ApproachTimeout"));
+            CallOnValidate(_config);
+        }
+
+        [Test]
+        public void OnValidate_AlignTimeoutZero_LogsWarning()
+        {
+            _config.AlignTimeout = 0f;
+            LogAssert.Expect(LogType.Warning, new Regex("AlignTimeout"));
+            CallOnValidate(_config);
+        }
+
+        [Test]
+        public void OnValidate_AlignDotThresholdZero_LogsWarning()
+        {
+            _config.AlignDotThreshold = 0f;
+            LogAssert.Expect(LogType.Warning, new Regex("AlignDotThreshold"));
+            CallOnValidate(_config);
+        }
+
+        [Test]
+        public void OnValidate_AlignDotThresholdAboveOne_LogsWarning()
+        {
+            _config.AlignDotThreshold = 1.5f;
+            LogAssert.Expect(LogType.Warning, new Regex("AlignDotThreshold"));
+            CallOnValidate(_config);
+        }
+
+        [Test]
+        public void OnValidate_AlignAngVelThresholdZero_LogsWarning()
+        {
+            _config.AlignAngVelThreshold = 0f;
+            LogAssert.Expect(LogType.Warning, new Regex("AlignAngVelThreshold"));
             CallOnValidate(_config);
         }
 

@@ -1,7 +1,10 @@
 {
     "name": "VoidHarvest.Core.Editor",
     "rootNamespace": "VoidHarvest.Core.Editor",
-    "references": [],
+    "references": [
+        "VoidHarvest.Features.Station",
+        "VoidHarvest.Features.World"
+    ],
     "includePlatforms": [
         "Editor"
     ],
