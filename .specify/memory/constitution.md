@@ -1,47 +1,74 @@
 <!--
   ========== Sync Impact Report ==========
-  Version change: 1.2.0 → 1.3.0
-  Bump rationale: MINOR — new mandatory Player Documentation section
-    added under Development Workflow. Requires a HOWTOPLAY.md file at
-    the project root to be maintained as a living document, updated
-    whenever player-facing features are added or changed.
+  Version change: 1.3.0 → 1.4.0
+  Bump rationale: MINOR — new mandatory Developer & Designer
+    Documentation section added under Development Workflow.
+    Requires a `docs/` directory at the project root with
+    architecture docs, per-system docs with Mermaid diagrams,
+    designer guides, glossary, troubleshooting, and onboarding.
 
   Modified principles: None renamed or removed.
 
   Modified sections:
-    - Development Workflow: Added "Player Documentation" subsection
-      mandating HOWTOPLAY.md maintenance.
+    - Development Workflow: Added "Developer & Designer
+      Documentation" subsection mandating `docs/` directory
+      maintenance.
 
   Added sections:
-    - Player Documentation (new subsection under Development Workflow):
-        · HOWTOPLAY.md file requirement at project root
-        · Mandatory update gate for player-facing feature changes
-        · Required content structure (controls, mechanics, UI)
-        · Version-aligned with development roadmap phases
+    - Developer & Designer Documentation (new subsection under
+      Development Workflow):
+        · `docs/` directory requirement at project root
+        · Mandatory directory structure (architecture/, systems/,
+          designer-guide/, plus glossary, troubleshooting,
+          onboarding, assembly-map)
+        · Per-system documentation requirements (10 mandatory
+          sections per feature doc)
+        · Architecture documentation requirements (5 cross-cutting
+          docs with Mermaid diagrams)
+        · Designer guide requirements (non-programmer audience,
+          SO catalog, step-by-step extensibility guides, tuning
+          reference)
+        · Mermaid diagram mandate for all system and architecture
+          docs
+        · Maintenance rules: delivery gate on PRs, stale docs
+          treated as bugs
+        · Audience conventions: developer vs. designer targeting
 
   Removed sections: None
 
   Templates requiring updates:
     - .specify/templates/plan-template.md:         ✅ No update needed
-      (Constitution Check is dynamic; player docs gate applies at
+      (Constitution Check is dynamic; dev docs gate applies at
       implementation time, not plan time)
     - .specify/templates/spec-template.md:          ✅ No update needed
-      (specs define features; player docs are a delivery artifact)
+      (specs define features; dev docs are a delivery artifact)
     - .specify/templates/tasks-template.md:         ✅ No update needed
-      (task structure unchanged; player docs update is a
-      cross-cutting workflow concern, not a task type — the
-      existing "Documentation updates" sample task in the
-      Polish phase already covers this pattern)
+      (task structure unchanged; dev docs update is a
+      cross-cutting workflow concern — the existing
+      "Documentation updates" sample task in the Polish phase
+      already covers this pattern)
     - .specify/templates/checklist-template.md:     ✅ No update needed
     - .specify/templates/agent-file-template.md:    ✅ No update needed
     - .specify/templates/commands/:                 ✅ N/A (no files)
 
-  Carried-forward TODOs: None.
-
-  New TODOs (v1.3.0):
+  Carried-forward TODOs:
     - Create initial HOWTOPLAY.md at project root covering Phase 0
-      features (ship controls, mining, inventory, HUD, station
-      docking). This is a one-time bootstrap task.
+      features (from v1.3.0).
+
+  New TODOs (v1.4.0):
+    - Bootstrap `docs/` directory with all required files covering
+      existing Phase 0 features. This is a one-time bootstrap task
+      that MUST be completed before any new feature work begins.
+    - Populate architecture docs (overview, state-management,
+      event-system, dependency-injection, data-pipeline) with
+      Mermaid diagrams.
+    - Populate per-system docs for all 12 shipped features (Camera,
+      Input, Ship, Mining, Procedural, Resources, HUD, Docking,
+      StationServices, Targeting, Station, World).
+    - Populate designer-guide (scriptable-objects catalog,
+      adding-ores, adding-stations, tuning-reference).
+    - Create glossary.md, troubleshooting.md, onboarding.md, and
+      assembly-map.md.
   ========================================
 -->
 
@@ -486,6 +513,163 @@ ensures discoverability of features, reduces onboarding friction,
 and forces developers to articulate gameplay from the player's
 perspective — often surfacing UX issues in the process.
 
+### Developer & Designer Documentation
+
+A `docs/` directory MUST exist at the project root and serve as
+the authoritative developer and designer reference for all project
+systems, architecture, and configuration. This is a living
+documentation set that evolves alongside the codebase.
+
+**Documentation Structure**:
+
+The `docs/` directory MUST follow this structure:
+
+```text
+docs/
+├── architecture/               # Cross-cutting architectural docs
+│   ├── overview.md             # High-level architecture diagram
+│   ├── state-management.md     # Reducer tree, GameState shape
+│   ├── event-system.md         # EventBus events, pub/sub map
+│   ├── dependency-injection.md # VContainer scopes, registration
+│   └── data-pipeline.md        # SO → Baking → BlobAsset → ECS
+├── systems/                    # One doc per feature module
+│   ├── camera.md
+│   ├── input.md
+│   ├── ship.md
+│   ├── mining.md
+│   ├── procedural.md
+│   ├── resources.md
+│   ├── hud.md
+│   ├── docking.md
+│   ├── station-services.md
+│   ├── targeting.md
+│   ├── station.md
+│   ├── world.md
+│   └── ...                     # New features add docs here
+├── designer-guide/             # Non-programmer audience
+│   ├── scriptable-objects.md   # Full SO catalog
+│   ├── adding-ores.md          # Step-by-step: new ore, zero code
+│   ├── adding-stations.md      # Step-by-step: new station type
+│   └── tuning-reference.md     # All tunable parameters
+├── glossary.md                 # Standardized project terminology
+├── troubleshooting.md          # Common pitfalls and solutions
+├── onboarding.md               # New developer quickstart guide
+└── assembly-map.md             # Assembly dependency graph
+```
+
+**Per-System Documentation Requirements**:
+
+Each `docs/systems/<feature>.md` MUST contain:
+
+1. **Purpose** — 2-3 sentence description of the system's
+   responsibility and scope.
+2. **Architecture Diagram** — At least one Mermaid diagram showing
+   data flow (inputs, state, outputs, side effects).
+3. **State Shape** — The immutable records and readonly structs
+   this system owns or reads.
+4. **Actions** — All actions the system's reducer handles.
+5. **ScriptableObject Configs** — Table of SO types with fields,
+   defaults, and valid ranges.
+6. **ECS Components** — Any DOTS components, blob assets, and
+   singletons used by this system.
+7. **Events** — Published and subscribed events.
+8. **Assembly Dependencies** — Which assemblies this feature
+   references.
+9. **Key Types** — Table mapping type names to roles (reducer,
+   math helper, view, controller, etc.).
+10. **Designer Notes** — What designers can change without code
+    modifications (SO tweaks, asset creation workflows).
+
+**Architecture Documentation Requirements**:
+
+- **overview.md** MUST include a system-level Mermaid diagram
+  showing all features, their communication paths (EventBus, DI
+  wiring, ECS sync), and the hybrid DOTS/MonoBehaviour boundary.
+- **state-management.md** MUST include a GameState tree diagram,
+  reducer composition visualization, and action dispatch flow.
+- **event-system.md** MUST include a complete event catalog with
+  publisher/subscriber mapping.
+- **data-pipeline.md** MUST document the full lifecycle:
+  SO authoring → Baker → BlobAsset → ECS System → View.
+- **dependency-injection.md** MUST document VContainer scope
+  hierarchy, registration patterns, and the async subscription
+  convention.
+
+**Designer Guide Requirements**:
+
+- The `designer-guide/` section MUST be written for
+  non-programmers — no code samples, only asset paths, field
+  descriptions, and step-by-step workflows with screenshots or
+  diagrams where helpful.
+- **scriptable-objects.md** MUST catalog every ScriptableObject
+  type with: Create menu path, all serialized fields, valid
+  ranges and defaults, and which systems consume them.
+- Step-by-step guides (e.g., `adding-ores.md`,
+  `adding-stations.md`) MUST be added for each data-driven
+  extensibility point as it ships.
+- **tuning-reference.md** MUST provide a consolidated
+  quick-reference table of all designer-tunable parameters
+  across all ScriptableObjects.
+
+**Diagram Requirements**:
+
+- Mermaid syntax MUST be used for all diagrams (flowcharts, state
+  machines, sequence diagrams, class diagrams, ER diagrams as
+  appropriate).
+- Every system doc MUST include at least one Mermaid diagram.
+- Architecture docs MUST include at least one cross-system Mermaid
+  diagram each.
+
+**Supporting Documentation**:
+
+- **glossary.md** MUST define standardized project terminology
+  (Reducer, BlobAsset, Authoring, Baking, EventBus, etc.) for
+  onboarding and cross-team communication.
+- **onboarding.md** MUST provide a recommended reading order for
+  new developers joining the project.
+- **troubleshooting.md** MUST document known pitfalls, common
+  errors, and their solutions (especially DOTS/ECS gotchas
+  discovered during development).
+- **assembly-map.md** MUST include a Mermaid diagram of assembly
+  dependencies and module boundaries.
+
+**Maintenance Rules**:
+
+- `docs/` MUST be created and populated for all existing Phase 0
+  features as a bootstrap task before new feature work begins.
+- Any feature that adds, removes, or changes systems,
+  ScriptableObjects, state shapes, events, reducers, or assembly
+  dependencies MUST include a corresponding `docs/` update in the
+  same PR. This is a delivery gate — a feature is not complete
+  until developer documentation reflects it.
+- Stale or missing documentation for shipped systems is treated
+  as a bug and MUST be resolved with the same priority as
+  functional defects.
+- Documentation MUST be reviewed for accuracy during the PR
+  review gate.
+
+**Audience Conventions**:
+
+- **`systems/` and `architecture/`** target developers — type
+  names, namespace references, code patterns, and architectural
+  rationale are appropriate and expected.
+- **`designer-guide/`** targets non-programmer designers — plain
+  language, asset paths, Unity Editor workflows, and visual aids
+  only. No C# code, no namespace references, no architectural
+  jargon.
+
+**Rationale**: Developer documentation is as critical as test
+coverage for project sustainability. Without maintained
+architectural docs, onboarding new contributors requires expensive
+synchronous knowledge transfer, tribal knowledge accumulates as a
+single point of failure, and architectural drift goes undetected.
+Mermaid diagrams provide version-controlled, diff-friendly visual
+documentation that stays in sync with the codebase when maintained
+as a delivery gate. Designer-facing docs enable non-programmers to
+extend the game's content (ores, stations, fields) without
+developer intervention, multiplying the team's content creation
+velocity.
+
 ## Initial Scope Guardrails (MVP)
 
 The MVP (Phase 0) scope is strictly limited to validate the core
@@ -601,4 +785,4 @@ all other practices, conventions, or preferences.
   feature plan.
 - Per-milestone constitution review to incorporate lessons learned.
 
-**Version**: 1.3.0 | **Ratified**: 2026-02-26 | **Last Amended**: 2026-03-01
+**Version**: 1.4.0 | **Ratified**: 2026-02-26 | **Last Amended**: 2026-03-03
