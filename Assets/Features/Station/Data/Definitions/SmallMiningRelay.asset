@@ -20,8 +20,8 @@ MonoBehaviour:
   WorldRotation: {x: 0, y: 0, z: 0, w: 1}
   AvailableServices:
   - Cargo
-  - Sell
-  - Refine
+  - Market
+  - Refinery
   ServicesConfig: {fileID: 11400000, guid: e55fc74de3a410b4e9f805bcd53a28c9, type: 2}
   PresetConfig: {fileID: 11400000, guid: c3d4e5f6a7b80934c0d1e2f3a4b5c6d7, type: 2}
   DockingPortOffset: {x: 0, y: 0, z: 50}

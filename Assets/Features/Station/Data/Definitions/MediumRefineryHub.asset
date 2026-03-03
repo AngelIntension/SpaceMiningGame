@@ -20,8 +20,8 @@ MonoBehaviour:
   WorldRotation: {x: 0, y: 0, z: 0, w: 1}
   AvailableServices:
   - Cargo
-  - Sell
-  - Refine
+  - Market
+  - Refinery
   - Repair
   ServicesConfig: {fileID: 11400000, guid: 7ae7af4e78ee9d944ad8ff1f88b03339, type: 2}
   PresetConfig: {fileID: 11400000, guid: d4e5f6a7b8c90a44d1e2f3a4b5c6d7e8, type: 2}
