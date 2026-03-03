@@ -55,7 +55,7 @@ namespace VoidHarvest.Features.Targeting.Views
 
             _indicator.style.left = uiX;
             _indicator.style.top = uiY;
-            _indicator.style.rotate = new Rotate(Angle.Degrees(angle));
+            _indicator.style.rotate = new Rotate(Angle.Degrees(-angle + 180f));
         }
 
         public void Show()

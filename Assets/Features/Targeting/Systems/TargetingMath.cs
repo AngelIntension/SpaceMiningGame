@@ -40,11 +40,20 @@ namespace VoidHarvest.Features.Targeting.Systems
             Vector2 center = screenSize * 0.5f;
             Vector2 direction = screenPos - center;
 
-            Vector2 clamped = new Vector2(
-                Mathf.Clamp(screenPos.x, margin, screenSize.x - margin),
-                Mathf.Clamp(screenPos.y, margin, screenSize.y - margin));
-
             float angleDeg = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+
+            // Project from center along direction to the nearest margin edge
+            float halfW = center.x - margin;
+            float halfH = center.y - margin;
+
+            if (Mathf.Approximately(direction.x, 0f) && Mathf.Approximately(direction.y, 0f))
+                return (new Vector2(center.x, margin), -90f);
+
+            float scaleX = direction.x != 0f ? halfW / Mathf.Abs(direction.x) : float.MaxValue;
+            float scaleY = direction.y != 0f ? halfH / Mathf.Abs(direction.y) : float.MaxValue;
+            float scale = Mathf.Min(scaleX, scaleY);
+
+            Vector2 clamped = center + direction * scale;
 
             return (clamped, angleDeg);
         }
