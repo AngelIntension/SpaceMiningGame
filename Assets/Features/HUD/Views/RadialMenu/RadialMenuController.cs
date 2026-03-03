@@ -196,13 +196,19 @@ namespace VoidHarvest.Features.HUD.Views
             bool isDocked = _stateStore?.Current.Loop.Docking.IsDocked ?? false;
             if (isDocked) return;
 
-            // Position menu at mouse cursor
+            // Position menu at mouse cursor, clamped to screen bounds
             var mouse = Mouse.current;
             if (mouse == null) return;
             var mousePos = mouse.position.ReadValue();
             // Convert screen coords to UI Toolkit coords (Y is flipped)
             float uiX = mousePos.x - 150f; // Center the 300px menu
             float uiY = Screen.height - mousePos.y - 150f;
+
+            // Clamp so the 300×300 radial + 530px-wide distance submenu stay on screen
+            const float menuSize = 300f;
+            const float totalWidth = 530f; // radial (300) + submenu offset (310) + submenu width (220)
+            uiX = Mathf.Clamp(uiX, 0f, Mathf.Max(0f, Screen.width - totalWidth));
+            uiY = Mathf.Clamp(uiY, 0f, Mathf.Max(0f, Screen.height - menuSize));
 
             _root.style.left = uiX;
             _root.style.top = uiY;
