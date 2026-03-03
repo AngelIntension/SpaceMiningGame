@@ -19,6 +19,7 @@ MonoBehaviour:
   WorldPosition: {x: -800, y: 200, z: 600}
   WorldRotation: {x: 0, y: 0, z: 0, w: 1}
   AvailableServices:
+  - Cargo
   - Sell
   - Refine
   - Repair

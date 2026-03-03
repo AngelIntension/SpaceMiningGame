@@ -54,9 +54,7 @@ MonoBehaviour:
       y: 0
       z: 0
       w: 1
-  DockingRange: 500
-  SnapRange: 30
-  StationId: 0
+  stationDefinition: {fileID: 11400000, guid: 75158963a34069448a5ec1092dba2ed4, type: 2}
 --- !u!1 &9062628008030399983
 GameObject:
   m_ObjectHideFlags: 0

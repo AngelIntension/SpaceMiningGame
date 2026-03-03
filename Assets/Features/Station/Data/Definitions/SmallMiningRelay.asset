@@ -19,6 +19,7 @@ MonoBehaviour:
   WorldPosition: {x: 500, y: 0, z: 0}
   WorldRotation: {x: 0, y: 0, z: 0, w: 1}
   AvailableServices:
+  - Cargo
   - Sell
   - Refine
   ServicesConfig: {fileID: 11400000, guid: e55fc74de3a410b4e9f805bcd53a28c9, type: 2}

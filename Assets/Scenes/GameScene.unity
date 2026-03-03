@@ -1798,10 +1798,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 8576151583295545428, guid: 367ac946a7b4aaa4382ff7f2b4a8233f, type: 3}
-      propertyPath: StationId
-      value: 2
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1827,7 +1823,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac8229405a7f0ac4d98d2e3bb2919cdd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: VoidHarvest.Features.Targeting::VoidHarvest.Features.Targeting.Views.TargetableStation
-  stationDefinition: {fileID: 0}
+  stationDefinition: {fileID: 11400000, guid: a8ef5f3314a187542a3c6eb577bd6fa6, type: 2}
 --- !u!1 &1351852029
 GameObject:
   m_ObjectHideFlags: 0
@@ -1884,10 +1880,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 2234927107811168735, guid: 1a617c619e08b4e48ba3f4959c9a632a, type: 3}
-      propertyPath: StationId
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 8790162813769972537, guid: 1a617c619e08b4e48ba3f4959c9a632a, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -1957,7 +1949,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac8229405a7f0ac4d98d2e3bb2919cdd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: VoidHarvest.Features.Targeting::VoidHarvest.Features.Targeting.Views.TargetableStation
-  stationDefinition: {fileID: 0}
+  stationDefinition: {fileID: 11400000, guid: 75158963a34069448a5ec1092dba2ed4, type: 2}
 --- !u!1 &1537462336
 GameObject:
   m_ObjectHideFlags: 0

@@ -104,6 +104,10 @@ public sealed class RootLifetimeScope : LifetimeScope
     {
         if (a.Quantity <= 0) return state;
 
+        // Validate station storage exists before touching inventory
+        if (!state.Loop.StationServices.StationStorages.ContainsKey(a.StationId))
+            return state;
+
         var inventory = state.Loop.Inventory;
         if (!inventory.Stacks.TryGetValue(a.ResourceId, out var stack) || stack.Quantity < a.Quantity)
             return state;
