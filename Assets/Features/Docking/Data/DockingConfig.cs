@@ -5,7 +5,7 @@ namespace VoidHarvest.Features.Docking.Data
     /// <summary>
     /// Designer-tunable docking parameters. Single source of truth for ranges and timings.
     /// </summary>
-    [CreateAssetMenu(fileName = "DockingConfig", menuName = "VoidHarvest/Docking/DockingConfig")]
+    [CreateAssetMenu(fileName = "DockingConfig", menuName = "VoidHarvest/Docking/Docking Config")]
     public class DockingConfig : ScriptableObject
     {
         [Tooltip("Maximum range to initiate docking (meters).")]
@@ -22,5 +22,21 @@ namespace VoidHarvest.Features.Docking.Data
 
         [Tooltip("Duration of the undock clearance movement (seconds).")]
         public float UndockDuration = 2f;
+
+        private void OnValidate()
+        {
+            if (MaxDockingRange <= 0f)
+                Debug.LogWarning($"[{name}] MaxDockingRange must be > 0");
+            if (SnapRange <= 0f)
+                Debug.LogWarning($"[{name}] SnapRange must be > 0");
+            if (SnapRange >= MaxDockingRange)
+                Debug.LogWarning($"[{name}] SnapRange must be < MaxDockingRange");
+            if (SnapDuration <= 0f)
+                Debug.LogWarning($"[{name}] SnapDuration must be > 0");
+            if (UndockClearanceDistance <= 0f)
+                Debug.LogWarning($"[{name}] UndockClearanceDistance must be > 0");
+            if (UndockDuration <= 0f)
+                Debug.LogWarning($"[{name}] UndockDuration must be > 0");
+        }
     }
 }

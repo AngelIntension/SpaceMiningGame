@@ -163,7 +163,7 @@ namespace VoidHarvest.Features.Procedural.Tests
                 typeof(CreateAssetMenuAttribute), false);
             Assert.AreEqual(1, attrs.Length);
             var attr = (CreateAssetMenuAttribute)attrs[0];
-            Assert.AreEqual("VoidHarvest/Asteroid Field Definition", attr.menuName);
+            Assert.AreEqual("VoidHarvest/Procedural/Asteroid Field Definition", attr.menuName);
         }
 
         [Test]

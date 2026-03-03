@@ -37,7 +37,10 @@ namespace VoidHarvest.Features.Targeting.Views
                 _audioSource = gameObject.AddComponent<AudioSource>();
             _audioSource.playOnAwake = false;
             _audioSource.spatialBlend = 0f;
+        }
 
+        private void OnEnable()
+        {
             if (_eventBus != null && _config != null)
             {
                 _eventCts = new CancellationTokenSource();
@@ -48,10 +51,11 @@ namespace VoidHarvest.Features.Targeting.Views
             }
         }
 
-        private void OnDestroy()
+        private void OnDisable()
         {
             _eventCts?.Cancel();
             _eventCts?.Dispose();
+            _eventCts = null;
         }
 
         private void LateUpdate()

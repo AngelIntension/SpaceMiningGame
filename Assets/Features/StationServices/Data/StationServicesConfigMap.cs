@@ -8,7 +8,7 @@ namespace VoidHarvest.Features.StationServices.Data
     /// Avoids circular dependency between Base and StationServices assemblies.
     /// See Spec 006: Station Services.
     /// </summary>
-    [CreateAssetMenu(menuName = "VoidHarvest/Station Services Config Map")]
+    [CreateAssetMenu(menuName = "VoidHarvest/Station/Station Services Config Map")]
     public class StationServicesConfigMap : ScriptableObject
     {
         [System.Serializable]
@@ -34,6 +34,19 @@ namespace VoidHarvest.Features.StationServices.Data
                     return b.Config;
             }
             return null;
+        }
+
+        private void OnValidate()
+        {
+            if (Bindings == null) return;
+            var seen = new System.Collections.Generic.HashSet<int>();
+            for (int i = 0; i < Bindings.Length; i++)
+            {
+                if (!seen.Add(Bindings[i].StationId))
+                    Debug.LogWarning($"[{name}] Duplicate StationId {Bindings[i].StationId} at index {i}");
+                if (Bindings[i].Config == null)
+                    Debug.LogWarning($"[{name}] Bindings[{i}].Config must not be null");
+            }
         }
     }
 }

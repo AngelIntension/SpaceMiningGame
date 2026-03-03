@@ -145,7 +145,7 @@ namespace VoidHarvest.Features.Mining.Tests
             var attrs = typeof(OreDefinition).GetCustomAttributes(typeof(CreateAssetMenuAttribute), false);
             Assert.AreEqual(1, attrs.Length);
             var attr = (CreateAssetMenuAttribute)attrs[0];
-            Assert.AreEqual("VoidHarvest/Ore Definition", attr.menuName);
+            Assert.AreEqual("VoidHarvest/Mining/Ore Definition", attr.menuName);
         }
 
         [Test]

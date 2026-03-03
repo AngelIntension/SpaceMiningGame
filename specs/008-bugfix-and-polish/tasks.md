@@ -19,12 +19,12 @@
 
 **Purpose**: Verify baseline and establish shared infrastructure needed by multiple stories
 
-- [ ] T001 Run full test suite via Unity Test Runner to confirm all 465 tests pass as baseline before any changes
-- [ ] T002 Register `InputBridge` in `SceneLifetimeScope` via `RegisterComponentInHierarchy<InputBridge>()` in `Assets/Core/SceneLifetimeScope.cs` (blocks US3, US4)
-- [ ] T003 Register `CameraView` in `SceneLifetimeScope` via `RegisterComponentInHierarchy<CameraView>()` in `Assets/Core/SceneLifetimeScope.cs`
-- [ ] T004 Register `TargetingController` in `SceneLifetimeScope` via `RegisterComponentInHierarchy<TargetingController>()` in `Assets/Core/SceneLifetimeScope.cs`
-- [ ] T005 Register `TargetPreviewManager` in `SceneLifetimeScope` via `RegisterComponentInHierarchy<TargetPreviewManager>()` in `Assets/Core/SceneLifetimeScope.cs`
-- [ ] T006 Verify compilation clean after DI registrations — check Unity console for errors via MCP
+- [X] T001 Run full test suite via Unity Test Runner to confirm all 465 tests pass as baseline before any changes
+- [X] T002 Register `InputBridge` in `SceneLifetimeScope` via `RegisterComponentInHierarchy<InputBridge>()` in `Assets/Core/SceneLifetimeScope.cs` (blocks US3, US4)
+- [X] T003 Register `CameraView` in `SceneLifetimeScope` via `RegisterComponentInHierarchy<CameraView>()` in `Assets/Core/SceneLifetimeScope.cs`
+- [X] T004 Register `TargetingController` in `SceneLifetimeScope` via `RegisterComponentInHierarchy<TargetingController>()` in `Assets/Core/SceneLifetimeScope.cs`
+- [X] T005 Register `TargetPreviewManager` in `SceneLifetimeScope` via `RegisterComponentInHierarchy<TargetPreviewManager>()` in `Assets/Core/SceneLifetimeScope.cs`
+- [X] T006 Verify compilation clean after DI registrations — check Unity console for errors via MCP
 
 **Checkpoint**: DI infrastructure ready. All user stories can now proceed.
 
@@ -38,14 +38,14 @@
 
 ### Tests for US1
 
-- [ ] T007 [US1] Write all state-change detection tests in new file `Assets/Features/StationServices/Tests/PanelStateChangeDetectionTests.cs`: `RefineOresPanelRefreshesOnInventoryChange` (verifies refresh when only InventoryState changes), `SellResourcesPanelRefreshesOnInventoryChange` (same for sell panel), `CargoTransferPanelRefreshesOnSingleSliceChange` (verifies refresh when only StationServicesState changes — confirms existing logic correct), `BasicRepairPanelRefreshesOnSingleSliceChange` (verifies refresh when only ActiveShipPhysics changes), `PanelSkipsRefreshWhenNoSliceChanged` (verifies all panels skip refresh when no relevant slice changed)
+- [X] T007 [US1] Write all state-change detection tests in new file `Assets/Features/StationServices/Tests/PanelStateChangeDetectionTests.cs`: `RefineOresPanelRefreshesOnInventoryChange` (verifies refresh when only InventoryState changes), `SellResourcesPanelRefreshesOnInventoryChange` (same for sell panel), `CargoTransferPanelRefreshesOnSingleSliceChange` (verifies refresh when only StationServicesState changes — confirms existing logic correct), `BasicRepairPanelRefreshesOnSingleSliceChange` (verifies refresh when only ActiveShipPhysics changes), `PanelSkipsRefreshWhenNoSliceChanged` (verifies all panels skip refresh when no relevant slice changed)
 
 ### Implementation for US1
 
-- [ ] T012 [US1] Fix `RefineOresPanelController.ListenForStateChanges()` to track `_lastInventory` field and include `InventoryState` in state-change detection using AND-skip pattern in `Assets/Features/StationServices/Views/RefineOresPanelController.cs` (line ~124-134)
-- [ ] T013 [US1] Fix `SellResourcesPanelController.ListenForStateChanges()` to track `_lastInventory` field and include `InventoryState` in state-change detection using AND-skip pattern in `Assets/Features/StationServices/Views/SellResourcesPanelController.cs` (line ~80-90)
-- [ ] T014 [US1] Audit `CargoTransferPanelController.ListenForStateChanges()` and `BasicRepairPanelController.ListenForStateChanges()` — verify both use correct AND-skip logic (Inventory+Services and Services+Ship respectively). No code change expected; document findings in PR notes. Files: `Assets/Features/StationServices/Views/CargoTransferPanelController.cs`, `Assets/Features/StationServices/Views/BasicRepairPanelController.cs`
-- [ ] T016 [US1] Run US1 tests — confirm all pass after fixes. Run full test suite to verify no regressions
+- [X] T012 [US1] Fix `RefineOresPanelController.ListenForStateChanges()` to track `_lastInventory` field and include `InventoryState` in state-change detection using AND-skip pattern in `Assets/Features/StationServices/Views/RefineOresPanelController.cs` (line ~124-134)
+- [X] T013 [US1] Fix `SellResourcesPanelController.ListenForStateChanges()` to track `_lastInventory` field and include `InventoryState` in state-change detection using AND-skip pattern in `Assets/Features/StationServices/Views/SellResourcesPanelController.cs` (line ~80-90)
+- [X] T014 [US1] Audit `CargoTransferPanelController.ListenForStateChanges()` and `BasicRepairPanelController.ListenForStateChanges()` — verify both use correct AND-skip logic (Inventory+Services and Services+Ship respectively). No code change expected; document findings in PR notes. Files: `Assets/Features/StationServices/Views/CargoTransferPanelController.cs`, `Assets/Features/StationServices/Views/BasicRepairPanelController.cs`
+- [X] T016 [US1] Run US1 tests — confirm all pass after fixes. Run full test suite to verify no regressions
 
 **Checkpoint**: All station panels correctly detect single-slice state changes. US1 independently testable.
 
@@ -61,16 +61,16 @@
 
 ### Implementation for US2
 
-- [ ] T017 [US2] Move `RadialMenuController` async EventBus subscription from `Start()` to `OnEnable()` and cancellation from `OnDestroy()` to `OnDisable()` in `Assets/Features/HUD/Views/RadialMenu/RadialMenuController.cs`. Keep existing UIElements `RegisterCallback`/`UnregisterCallback` in `OnEnable()`/`OnDisable()` as-is.
-- [ ] T018 [US2] Move `TargetingAudioController` async EventBus subscriptions (4 listeners) from `Start()` to `OnEnable()` and cancellation from `OnDestroy()` to `OnDisable()` in `Assets/Features/Targeting/Views/TargetingAudioController.cs`
-- [ ] T019 [US2] Move `StationServicesMenuController` async EventBus subscriptions (2 listeners) from `Start()` to `OnEnable()` and cancellation from `OnDestroy()` to `OnDisable()` in `Assets/Features/StationServices/Views/StationServicesMenuController.cs`
-- [ ] T020 [P] [US2] Add `OnDestroy()` safety net to `CargoTransferPanelController` that calls `Cleanup()` if not already called in `Assets/Features/StationServices/Views/CargoTransferPanelController.cs`
-- [ ] T021 [P] [US2] Add `OnDestroy()` safety net to `RefineOresPanelController` that calls `Cleanup()` if not already called in `Assets/Features/StationServices/Views/RefineOresPanelController.cs`
-- [ ] T022 [P] [US2] Add `OnDestroy()` safety net to `SellResourcesPanelController` that calls `Cleanup()` if not already called in `Assets/Features/StationServices/Views/SellResourcesPanelController.cs`
-- [ ] T023 [P] [US2] Add `OnDestroy()` safety net to `BasicRepairPanelController` that calls `Cleanup()` if not already called in `Assets/Features/StationServices/Views/BasicRepairPanelController.cs`
-- [ ] T024 [P] [US2] Add `OnDestroy()` safety net to `CreditBalanceIndicator` that calls `Cleanup()` if not already called in `Assets/Features/StationServices/Views/CreditBalanceIndicator.cs`
-- [ ] T025 [US2] Verify compilation clean after all lifecycle changes — check Unity console via MCP
-- [ ] T026 [US2] Run full test suite to verify no regressions from subscription lifecycle changes
+- [X] T017 [US2] Move `RadialMenuController` async EventBus subscription from `Start()` to `OnEnable()` and cancellation from `OnDestroy()` to `OnDisable()` in `Assets/Features/HUD/Views/RadialMenu/RadialMenuController.cs`. Keep existing UIElements `RegisterCallback`/`UnregisterCallback` in `OnEnable()`/`OnDisable()` as-is.
+- [X] T018 [US2] Move `TargetingAudioController` async EventBus subscriptions (4 listeners) from `Start()` to `OnEnable()` and cancellation from `OnDestroy()` to `OnDisable()` in `Assets/Features/Targeting/Views/TargetingAudioController.cs`
+- [X] T019 [US2] Move `StationServicesMenuController` async EventBus subscriptions (2 listeners) from `Start()` to `OnEnable()` and cancellation from `OnDestroy()` to `OnDisable()` in `Assets/Features/StationServices/Views/StationServicesMenuController.cs`
+- [X] T020 [P] [US2] Add `OnDestroy()` safety net to `CargoTransferPanelController` that calls `Cleanup()` if not already called in `Assets/Features/StationServices/Views/CargoTransferPanelController.cs`
+- [X] T021 [P] [US2] Add `OnDestroy()` safety net to `RefineOresPanelController` that calls `Cleanup()` if not already called in `Assets/Features/StationServices/Views/RefineOresPanelController.cs`
+- [X] T022 [P] [US2] Add `OnDestroy()` safety net to `SellResourcesPanelController` that calls `Cleanup()` if not already called in `Assets/Features/StationServices/Views/SellResourcesPanelController.cs`
+- [X] T023 [P] [US2] Add `OnDestroy()` safety net to `BasicRepairPanelController` that calls `Cleanup()` if not already called in `Assets/Features/StationServices/Views/BasicRepairPanelController.cs`
+- [X] T024 [P] [US2] Add `OnDestroy()` safety net to `CreditBalanceIndicator` that calls `Cleanup()` if not already called in `Assets/Features/StationServices/Views/CreditBalanceIndicator.cs`
+- [X] T025 [US2] Verify compilation clean after all lifecycle changes — check Unity console via MCP
+- [X] T026 [US2] Run full test suite to verify no regressions from subscription lifecycle changes
 
 **Checkpoint**: All async subscriptions follow OnEnable/OnDisable convention. Safety nets prevent leaks. US2 independently testable.
 
@@ -84,13 +84,13 @@
 
 ### Implementation for US3
 
-- [ ] T027 [US3] Add defensive logging and `ClearSelectionAction` dispatch to `InputBridge.StartMining()` when `_selectedAsteroidEntity` doesn't exist — log `[InputBridge] StartMining: asteroid entity no longer exists, clearing selection` in `Assets/Features/Input/Views/InputBridge.cs` (line ~457)
-- [ ] T028 [US3] Add defensive logging to `InputBridge.InitiateDocking()` when `_ecsReady` is false (`[InputBridge] InitiateDocking: ECS not ready`) or docking port is null (`[InputBridge] InitiateDocking: no docking port found`) in `Assets/Features/Input/Views/InputBridge.cs` (line ~534)
-- [ ] T029 [US3] Add entity existence validation to `InputBridge.OnHotbar1()` — check `_entityManager.Exists(_selectedAsteroidEntity)` before dispatching mining actions, log warning and clear selection if entity gone in `Assets/Features/Input/Views/InputBridge.cs` (line ~443)
-- [ ] T030 [US3] Add throttled warning to `InputBridge.TryInitializeECS()` — add `_ecsInitFailCount` field, log `[InputBridge] ECS initialization failed after 60 frames` once when count reaches 60, then reset counter in `Assets/Features/Input/Views/InputBridge.cs` (line ~170)
-- [ ] T031 [US3] Subscribe `InputBridge` to `StateChangedEvent<GameState>` and call `SyncSelectionFromState()` when `Selection.TargetId` changes, keeping local selection fields in sync with state store. Add subscription to `OnEnable()`/cancel to `OnDisable()` per convention in `Assets/Features/Input/Views/InputBridge.cs`
-- [ ] T032 [US3] Add null guard for `_targetingController` in `RadialMenuController` that disables the "Lock Target" radial menu segment and logs `[RadialMenuController] TargetingController not found, Lock Target disabled`. Place guard in the segment-building logic (not in Start), so it survives the DI migration in T036. File: `Assets/Features/HUD/Views/RadialMenu/RadialMenuController.cs`
-- [ ] T033 [US3] Verify compilation clean and run full test suite after input feedback changes
+- [X] T027 [US3] Add defensive logging and `ClearSelectionAction` dispatch to `InputBridge.StartMining()` when `_selectedAsteroidEntity` doesn't exist — log `[InputBridge] StartMining: asteroid entity no longer exists, clearing selection` in `Assets/Features/Input/Views/InputBridge.cs` (line ~457)
+- [X] T028 [US3] Add defensive logging to `InputBridge.InitiateDocking()` when `_ecsReady` is false (`[InputBridge] InitiateDocking: ECS not ready`) or docking port is null (`[InputBridge] InitiateDocking: no docking port found`) in `Assets/Features/Input/Views/InputBridge.cs` (line ~534)
+- [X] T029 [US3] Add entity existence validation to `InputBridge.OnHotbar1()` — check `_entityManager.Exists(_selectedAsteroidEntity)` before dispatching mining actions, log warning and clear selection if entity gone in `Assets/Features/Input/Views/InputBridge.cs` (line ~443)
+- [X] T030 [US3] Add throttled warning to `InputBridge.TryInitializeECS()` — add `_ecsInitFailCount` field, log `[InputBridge] ECS initialization failed after 60 frames` once when count reaches 60, then reset counter in `Assets/Features/Input/Views/InputBridge.cs` (line ~170)
+- [X] T031 [US3] Subscribe `InputBridge` to `StateChangedEvent<GameState>` and call `SyncSelectionFromState()` when `Selection.TargetId` changes, keeping local selection fields in sync with state store. Add subscription to `OnEnable()`/cancel to `OnDisable()` per convention in `Assets/Features/Input/Views/InputBridge.cs`
+- [X] T032 [US3] Add null guard for `_targetingController` in `RadialMenuController` that disables the "Lock Target" radial menu segment and logs `[RadialMenuController] TargetingController not found, Lock Target disabled`. Place guard in the segment-building logic (not in Start), so it survives the DI migration in T036. File: `Assets/Features/HUD/Views/RadialMenu/RadialMenuController.cs`
+- [X] T033 [US3] Verify compilation clean and run full test suite after input feedback changes
 
 **Checkpoint**: All InputBridge failure paths produce logged warnings. US3 independently testable.
 
@@ -104,13 +104,13 @@
 
 ### Implementation for US4
 
-- [ ] T034 [US4] Replace `FindFirstObjectByType<CameraView>()` in `InputBridge.Start()` with `[Inject]` method injection. Add `Construct` method or extend existing `[Inject]` method to accept `CameraView` parameter in `Assets/Features/Input/Views/InputBridge.cs` (line ~143)
-- [ ] T035 [US4] Replace `FindObjectOfType<InputBridge>()` in `RadialMenuController.Start()` with `[Inject]` method injection. Remove the FindObjectOfType call and its associated null-check-with-warning — VContainer's `RegisterComponentInHierarchy` will throw a clear resolution error if InputBridge is missing from the scene. File: `Assets/Features/HUD/Views/RadialMenu/RadialMenuController.cs` (line ~83)
-- [ ] T036 [US4] Replace `FindObjectOfType<TargetingController>()` in `RadialMenuController.Start()` with `[Inject]` method injection. Retain the null guard + "Lock Target" disable logic added in T032 — it serves as a runtime safety net even with DI. File: `Assets/Features/HUD/Views/RadialMenu/RadialMenuController.cs` (line ~89)
-- [ ] T037 [US4] Replace `FindObjectOfType<InputBridge>()` in `StationServicesMenuController.Start()` with `[Inject]` method injection in `Assets/Features/StationServices/Views/StationServicesMenuController.cs` (line ~128)
-- [ ] T038 [US4] Replace `FindObjectOfType<TargetPreviewManager>()` in `TargetingController.Start()` with `[Inject]` method injection in `Assets/Features/Targeting/Views/TargetingController.cs` (line ~68)
-- [ ] T039 [US4] Add `Debug.LogWarning` for `FindObjectOfType<CinemachineCamera>()` null result in `TargetingController.Start()` — log `[TargetingController] CinemachineCamera not found, ship tracking unavailable` in `Assets/Features/Targeting/Views/TargetingController.cs` (line ~71)
-- [ ] T040 [US4] Verify compilation clean and run full test suite after DI migration
+- [X] T034 [US4] Replace `FindFirstObjectByType<CameraView>()` in `InputBridge.Start()` with `[Inject]` method injection. Add `Construct` method or extend existing `[Inject]` method to accept `CameraView` parameter in `Assets/Features/Input/Views/InputBridge.cs` (line ~143)
+- [X] T035 [US4] Replace `FindObjectOfType<InputBridge>()` in `RadialMenuController.Start()` with `[Inject]` method injection. Remove the FindObjectOfType call and its associated null-check-with-warning — VContainer's `RegisterComponentInHierarchy` will throw a clear resolution error if InputBridge is missing from the scene. File: `Assets/Features/HUD/Views/RadialMenu/RadialMenuController.cs` (line ~83)
+- [X] T036 [US4] Replace `FindObjectOfType<TargetingController>()` in `RadialMenuController.Start()` with `[Inject]` method injection. Retain the null guard + "Lock Target" disable logic added in T032 — it serves as a runtime safety net even with DI. File: `Assets/Features/HUD/Views/RadialMenu/RadialMenuController.cs` (line ~89)
+- [X] T037 [US4] Replace `FindObjectOfType<InputBridge>()` in `StationServicesMenuController.Start()` with `[Inject]` method injection in `Assets/Features/StationServices/Views/StationServicesMenuController.cs` (line ~128)
+- [X] T038 [US4] Replace `FindObjectOfType<TargetPreviewManager>()` in `TargetingController.Start()` with `[Inject]` method injection in `Assets/Features/Targeting/Views/TargetingController.cs` (line ~68)
+- [X] T039 [US4] Add `Debug.LogWarning` for `FindObjectOfType<CinemachineCamera>()` null result in `TargetingController.Start()` — log `[TargetingController] CinemachineCamera not found, ship tracking unavailable` in `Assets/Features/Targeting/Views/TargetingController.cs` (line ~71)
+- [X] T040 [US4] Verify compilation clean and run full test suite after DI migration
 
 **Checkpoint**: 5 FindObjectOfType calls replaced with DI. Remaining calls have null warnings. US4 independently testable.
 
@@ -124,10 +124,10 @@
 
 ### Implementation for US5
 
-- [ ] T041 [US5] Change `Time.time` to `Time.realtimeSinceStartup` in `RefiningJobTicker.Update()` at line 32 in `Assets/Features/StationServices/Views/RefiningJobTicker.cs`
-- [ ] T042 [US5] Change `Time.time` to `Time.realtimeSinceStartup` in `RefineOresPanelController` `StartRefiningJobAction` dispatch at line 254 in `Assets/Features/StationServices/Views/RefineOresPanelController.cs`
-- [ ] T043 [US5] Change `Time.time` to `Time.realtimeSinceStartup` in `RefineOresPanelController.Update()` progress bar calculation (line ~88-105) — this method uses `Time.time` to compute elapsed/remaining for active job display. Must use same time source as ticker and dispatch. File: `Assets/Features/StationServices/Views/RefineOresPanelController.cs`
-- [ ] T044 [US5] Verify existing `RefiningJobLifecycleTests` still pass (they use `0f` start time, should be agnostic). Run full test suite.
+- [X] T041 [US5] Change `Time.time` to `Time.realtimeSinceStartup` in `RefiningJobTicker.Update()` at line 32 in `Assets/Features/StationServices/Views/RefiningJobTicker.cs`
+- [X] T042 [US5] Change `Time.time` to `Time.realtimeSinceStartup` in `RefineOresPanelController` `StartRefiningJobAction` dispatch at line 254 in `Assets/Features/StationServices/Views/RefineOresPanelController.cs`
+- [X] T043 [US5] Change `Time.time` to `Time.realtimeSinceStartup` in `RefineOresPanelController.Update()` progress bar calculation (line ~88-105) — this method uses `Time.time` to compute elapsed/remaining for active job display. Must use same time source as ticker and dispatch. File: `Assets/Features/StationServices/Views/RefineOresPanelController.cs`
+- [X] T044 [US5] Verify existing `RefiningJobLifecycleTests` still pass (they use `0f` start time, should be agnostic). Run full test suite.
 
 **Checkpoint**: Refining uses real-time. US5 independently testable.
 
@@ -141,26 +141,26 @@
 
 ### Tests for US6
 
-- [ ] T045 [P] [US6] Write `OreDefinitionValidationTests` — test valid config produces no warnings; test each invalid field (BaseYieldPerSecond=0, Hardness=0, VolumePerUnit=0, BaseValue=-1, RarityWeight=2, empty OreId, empty DisplayName, null RefiningOutput Material, BaseYieldPerUnit=0, VarianceMin>VarianceMax) produces appropriate warning. Include at least one assertion verifying FR-027 format: warning string starts with `[{assetName}]` prefix. New file `Assets/Features/Mining/Tests/OreDefinitionValidationTests.cs`
-- [ ] T046 [P] [US6] Write `ShipArchetypeConfigValidationTests` — test valid config produces no warnings; test each invalid field (Mass=0, MaxThrust=0, CargoCapacity=0, BaseLockTime=0, MaxTargetLocks=0, empty ArchetypeId, empty DisplayName, negative damping) produces warning. New file `Assets/Features/Ship/Tests/ShipArchetypeConfigValidationTests.cs`
-- [ ] T047 [P] [US6] Write `AsteroidFieldDefinitionValidationTests` — test valid config produces no warnings; test AsteroidCount=0, FieldRadius=0, SizeMax<SizeMin, RotationMax<RotationMin, MinScaleFraction outside [0.1,0.5], empty OreEntries, null OreDefinition in entry, zero Weight. New file `Assets/Features/Procedural/Tests/AsteroidFieldValidationTests.cs`
-- [ ] T048 [P] [US6] Write `StationServicesConfigValidationTests` — test valid config produces no warnings; test MaxConcurrentRefiningSlots=0, RefiningSpeedMultiplier=0, RepairCostPerHP=-1. New file `Assets/Features/StationServices/Tests/StationServicesConfigValidationTests.cs`
-- [ ] T049 [P] [US6] Write `DockingConfigValidationTests` — test valid config produces no warnings; test MaxDockingRange=0, SnapRange=0, SnapRange>=MaxDockingRange, SnapDuration=0, UndockClearanceDistance=0, UndockDuration=0. New file `Assets/Features/Docking/Tests/DockingConfigValidationTests.cs`
-- [ ] T050 [P] [US6] Write `RawMaterialDefinitionValidationTests` — test valid config produces no warnings; test empty MaterialId, empty DisplayName. New file `Assets/Features/Resources/Tests/RawMaterialValidationTests.cs`
-- [ ] T051 [P] [US6] Write `StationServicesConfigMapValidationTests` — test valid config produces no warnings; test duplicate StationIds, null Config reference. New file `Assets/Features/StationServices/Tests/StationServicesConfigMapValidationTests.cs`
-- [ ] T052 [P] [US6] Write `GameServicesConfigValidationTests` — test valid config produces no warnings; test StartingCredits=-1. New file `Assets/Features/StationServices/Tests/GameServicesConfigValidationTests.cs`
+- [X] T045 [P] [US6] Write `OreDefinitionValidationTests` — test valid config produces no warnings; test each invalid field (BaseYieldPerSecond=0, Hardness=0, VolumePerUnit=0, BaseValue=-1, RarityWeight=2, empty OreId, empty DisplayName, null RefiningOutput Material, BaseYieldPerUnit=0, VarianceMin>VarianceMax) produces appropriate warning. Include at least one assertion verifying FR-027 format: warning string starts with `[{assetName}]` prefix. New file `Assets/Features/Mining/Tests/OreDefinitionValidationTests.cs`
+- [X] T046 [P] [US6] Write `ShipArchetypeConfigValidationTests` — test valid config produces no warnings; test each invalid field (Mass=0, MaxThrust=0, CargoCapacity=0, BaseLockTime=0, MaxTargetLocks=0, empty ArchetypeId, empty DisplayName, negative damping) produces warning. New file `Assets/Features/Ship/Tests/ShipArchetypeConfigValidationTests.cs`
+- [X] T047 [P] [US6] Write `AsteroidFieldDefinitionValidationTests` — test valid config produces no warnings; test AsteroidCount=0, FieldRadius=0, SizeMax<SizeMin, RotationMax<RotationMin, MinScaleFraction outside [0.1,0.5], empty OreEntries, null OreDefinition in entry, zero Weight. New file `Assets/Features/Procedural/Tests/AsteroidFieldValidationTests.cs`
+- [X] T048 [P] [US6] Write `StationServicesConfigValidationTests` — test valid config produces no warnings; test MaxConcurrentRefiningSlots=0, RefiningSpeedMultiplier=0, RepairCostPerHP=-1. New file `Assets/Features/StationServices/Tests/StationServicesConfigValidationTests.cs`
+- [X] T049 [P] [US6] Write `DockingConfigValidationTests` — test valid config produces no warnings; test MaxDockingRange=0, SnapRange=0, SnapRange>=MaxDockingRange, SnapDuration=0, UndockClearanceDistance=0, UndockDuration=0. New file `Assets/Features/Docking/Tests/DockingConfigValidationTests.cs`
+- [X] T050 [P] [US6] Write `RawMaterialDefinitionValidationTests` — test valid config produces no warnings; test empty MaterialId, empty DisplayName. New file `Assets/Features/Resources/Tests/RawMaterialValidationTests.cs`
+- [X] T051 [P] [US6] Write `StationServicesConfigMapValidationTests` — test valid config produces no warnings; test duplicate StationIds, null Config reference. New file `Assets/Features/StationServices/Tests/StationServicesConfigMapValidationTests.cs`
+- [X] T052 [P] [US6] Write `GameServicesConfigValidationTests` — test valid config produces no warnings; test StartingCredits=-1. New file `Assets/Features/StationServices/Tests/GameServicesConfigValidationTests.cs`
 
 ### Implementation for US6
 
-- [ ] T053 [P] [US6] Add `OnValidate()` to `OreDefinition` with checks per FR-019: BaseYieldPerSecond>0, Hardness>0, VolumePerUnit>0, BaseValue>=0, RarityWeight in [0,1], BaseProcessingTimePerUnit>0, RefiningCreditCostPerUnit>=0, OreId not empty, DisplayName not empty, each RefiningOutputEntry non-null Material + BaseYieldPerUnit>0 + VarianceMin<=VarianceMax in `Assets/Features/Mining/Data/OreDefinition.cs`
-- [ ] T054 [P] [US6] Add `OnValidate()` to `ShipArchetypeConfig` with checks per FR-020: Mass>0, MaxThrust>0, MaxSpeed>0, RotationTorque>0, LinearDamping>=0, AngularDamping>=0, MiningPower>=0, ModuleSlots>=0, CargoCapacity>0, BaseLockTime>0, MaxTargetLocks>=1, MaxLockRange>0, ArchetypeId not empty, DisplayName not empty in `Assets/Features/Ship/Data/ShipArchetypeConfig.cs`
-- [ ] T055 [P] [US6] Add `OnValidate()` to `AsteroidFieldDefinition` with checks per FR-021: AsteroidCount>0, FieldRadius>0, AsteroidSizeMin>0, AsteroidSizeMax>=AsteroidSizeMin, RotationSpeedMax>=RotationSpeedMin, MinScaleFraction in [0.1,0.5], at least one OreEntry with non-null OreDefinition and Weight>0 in `Assets/Features/Procedural/Data/AsteroidFieldDefinition.cs`
-- [ ] T056 [P] [US6] Add `OnValidate()` to `StationServicesConfig` with checks per FR-022: MaxConcurrentRefiningSlots>=1, RefiningSpeedMultiplier>0, RepairCostPerHP>=0 in `Assets/Features/StationServices/Data/StationServicesConfig.cs`
-- [ ] T057 [P] [US6] Add `OnValidate()` to `DockingConfig` with checks per FR-023: MaxDockingRange>0, SnapRange>0, SnapRange<MaxDockingRange, SnapDuration>0, UndockClearanceDistance>0, UndockDuration>0 in `Assets/Features/Docking/Data/DockingConfig.cs`
-- [ ] T058 [P] [US6] Add `OnValidate()` to `RawMaterialDefinition` with checks per FR-024: MaterialId not empty, DisplayName not empty in `Assets/Features/Resources/Data/RawMaterialDefinition.cs`
-- [ ] T059 [P] [US6] Add `OnValidate()` to `StationServicesConfigMap` with checks per FR-025: no duplicate StationIds, all StationServicesConfig references non-null in `Assets/Features/StationServices/Data/StationServicesConfigMap.cs`
-- [ ] T060 [P] [US6] Add `OnValidate()` to `GameServicesConfig` with checks per FR-026: StartingCredits>=0 in `Assets/Features/StationServices/Data/GameServicesConfig.cs`
-- [ ] T061 [US6] Run all US6 validation tests — confirm tests pass (Green). Run full test suite to verify no regressions.
+- [X] T053 [P] [US6] Add `OnValidate()` to `OreDefinition` with checks per FR-019: BaseYieldPerSecond>0, Hardness>0, VolumePerUnit>0, BaseValue>=0, RarityWeight in [0,1], BaseProcessingTimePerUnit>0, RefiningCreditCostPerUnit>=0, OreId not empty, DisplayName not empty, each RefiningOutputEntry non-null Material + BaseYieldPerUnit>0 + VarianceMin<=VarianceMax in `Assets/Features/Mining/Data/OreDefinition.cs`
+- [X] T054 [P] [US6] Add `OnValidate()` to `ShipArchetypeConfig` with checks per FR-020: Mass>0, MaxThrust>0, MaxSpeed>0, RotationTorque>0, LinearDamping>=0, AngularDamping>=0, MiningPower>=0, ModuleSlots>=0, CargoCapacity>0, BaseLockTime>0, MaxTargetLocks>=1, MaxLockRange>0, ArchetypeId not empty, DisplayName not empty in `Assets/Features/Ship/Data/ShipArchetypeConfig.cs`
+- [X] T055 [P] [US6] Add `OnValidate()` to `AsteroidFieldDefinition` with checks per FR-021: AsteroidCount>0, FieldRadius>0, AsteroidSizeMin>0, AsteroidSizeMax>=AsteroidSizeMin, RotationSpeedMax>=RotationSpeedMin, MinScaleFraction in [0.1,0.5], at least one OreEntry with non-null OreDefinition and Weight>0 in `Assets/Features/Procedural/Data/AsteroidFieldDefinition.cs`
+- [X] T056 [P] [US6] Add `OnValidate()` to `StationServicesConfig` with checks per FR-022: MaxConcurrentRefiningSlots>=1, RefiningSpeedMultiplier>0, RepairCostPerHP>=0 in `Assets/Features/StationServices/Data/StationServicesConfig.cs`
+- [X] T057 [P] [US6] Add `OnValidate()` to `DockingConfig` with checks per FR-023: MaxDockingRange>0, SnapRange>0, SnapRange<MaxDockingRange, SnapDuration>0, UndockClearanceDistance>0, UndockDuration>0 in `Assets/Features/Docking/Data/DockingConfig.cs`
+- [X] T058 [P] [US6] Add `OnValidate()` to `RawMaterialDefinition` with checks per FR-024: MaterialId not empty, DisplayName not empty in `Assets/Features/Resources/Data/RawMaterialDefinition.cs`
+- [X] T059 [P] [US6] Add `OnValidate()` to `StationServicesConfigMap` with checks per FR-025: no duplicate StationIds, all StationServicesConfig references non-null in `Assets/Features/StationServices/Data/StationServicesConfigMap.cs`
+- [X] T060 [P] [US6] Add `OnValidate()` to `GameServicesConfig` with checks per FR-026: StartingCredits>=0 in `Assets/Features/StationServices/Data/GameServicesConfig.cs`
+- [X] T061 [US6] Run all US6 validation tests — confirm tests pass (Green). Run full test suite to verify no regressions.
 
 **Checkpoint**: All 8 SOs have edit-time validation. 8 new test files. US6 independently testable.
 
@@ -174,26 +174,26 @@
 
 ### Implementation for US7
 
-- [ ] T062 [P] [US7] Update `CreateAssetMenu` on `OreDefinition` from `VoidHarvest/Ore Definition` to `VoidHarvest/Mining/Ore Definition` in `Assets/Features/Mining/Data/OreDefinition.cs`
-- [ ] T063 [P] [US7] Update `CreateAssetMenu` on `ShipArchetypeConfig` from `VoidHarvest/ShipArchetypeConfig` to `VoidHarvest/Ship/Ship Archetype Config` in `Assets/Features/Ship/Data/ShipArchetypeConfig.cs`
-- [ ] T064 [P] [US7] Update `CreateAssetMenu` on `AsteroidFieldDefinition` from `VoidHarvest/Asteroid Field Definition` to `VoidHarvest/Procedural/Asteroid Field Definition` in `Assets/Features/Procedural/Data/AsteroidFieldDefinition.cs`
-- [ ] T065 [P] [US7] Update `CreateAssetMenu` on `StationServicesConfig` from `VoidHarvest/Station Services Config` to `VoidHarvest/Station/Station Services Config` in `Assets/Features/StationServices/Data/StationServicesConfig.cs`
-- [ ] T066 [P] [US7] Update `CreateAssetMenu` on `RawMaterialDefinition` from `VoidHarvest/Raw Material Definition` to `VoidHarvest/Station/Raw Material Definition` in `Assets/Features/Resources/Data/RawMaterialDefinition.cs`
-- [ ] T067 [P] [US7] Update `CreateAssetMenu` on `GameServicesConfig` from `VoidHarvest/Game Services Config` to `VoidHarvest/Station/Game Services Config` in `Assets/Features/StationServices/Data/GameServicesConfig.cs`
-- [ ] T068 [P] [US7] Update `CreateAssetMenu` on `StationServicesConfigMap` from `VoidHarvest/Station Services Config Map` to `VoidHarvest/Station/Station Services Config Map` in `Assets/Features/StationServices/Data/StationServicesConfigMap.cs`
-- [ ] T069 [P] [US7] Update `CreateAssetMenu` on `DockingConfig` from `VoidHarvest/Docking/DockingConfig` to `VoidHarvest/Docking/Docking Config` in `Assets/Features/Docking/Data/DockingConfig.cs`
-- [ ] T070 [P] [US7] Update `CreateAssetMenu` on `DockingVFXConfig` from `VoidHarvest/DockingVFXConfig` to `VoidHarvest/Docking/Docking VFX Config` in `Assets/Features/Docking/Data/DockingVFXConfig.cs`
-- [ ] T071 [P] [US7] Update `CreateAssetMenu` on `DockingAudioConfig` from `VoidHarvest/DockingAudioConfig` to `VoidHarvest/Docking/Docking Audio Config` in `Assets/Features/Docking/Data/DockingAudioConfig.cs`
-- [ ] T072 [P] [US7] Update `CreateAssetMenu` on `MiningVFXConfig` from `VoidHarvest/Mining/MiningVFXConfig` to `VoidHarvest/Mining/Mining VFX Config` in `Assets/Features/Mining/Data/MiningVFXConfig.cs`
-- [ ] T073 [P] [US7] Update `CreateAssetMenu` on `MiningAudioConfig` from `VoidHarvest/Mining/MiningAudioConfig` to `VoidHarvest/Mining/Mining Audio Config` in `Assets/Features/Mining/Data/MiningAudioConfig.cs`
-- [ ] T074 [P] [US7] Update `CreateAssetMenu` on `OreChunkConfig` from `VoidHarvest/Mining/OreChunkConfig` to `VoidHarvest/Mining/Ore Chunk Config` in `Assets/Features/Mining/Data/OreChunkConfig.cs`
-- [ ] T075 [P] [US7] Update `CreateAssetMenu` on `DepletionVFXConfig` from `VoidHarvest/Mining/DepletionVFXConfig` to `VoidHarvest/Mining/Depletion VFX Config` in `Assets/Features/Mining/Data/DepletionVFXConfig.cs`
-- [ ] T076 [P] [US7] Update `CreateAssetMenu` on `TargetingConfig` from `VoidHarvest/Targeting Config` to `VoidHarvest/Targeting/Targeting Config` in `Assets/Features/Targeting/Data/TargetingConfig.cs`
-- [ ] T077 [P] [US7] Update `CreateAssetMenu` on `TargetingVFXConfig` from `VoidHarvest/Targeting VFX Config` to `VoidHarvest/Targeting/Targeting VFX Config` in `Assets/Features/Targeting/Data/TargetingVFXConfig.cs`
-- [ ] T078 [P] [US7] Update `CreateAssetMenu` on `TargetingAudioConfig` from `VoidHarvest/Targeting Audio Config` to `VoidHarvest/Targeting/Targeting Audio Config` in `Assets/Features/Targeting/Data/TargetingAudioConfig.cs`
-- [ ] T079 [P] [US7] Update `CreateAssetMenu` on `StationPresetConfig` from `VoidHarvest/StationPresetConfig` to `VoidHarvest/Station/Station Preset Config` in `Assets/Features/Base/Data/StationPresetConfig.cs`
-- [ ] T080 [P] [US7] Update `CreateAssetMenu` on `SkyboxConfig` from `VoidHarvest/SkyboxConfig` to `VoidHarvest/Camera/Skybox Config` in `Assets/Features/Camera/Data/SkyboxConfig.cs`
-- [ ] T081 [US7] Verify compilation clean after all CreateAssetMenu changes
+- [X] T062 [P] [US7] Update `CreateAssetMenu` on `OreDefinition` from `VoidHarvest/Ore Definition` to `VoidHarvest/Mining/Ore Definition` in `Assets/Features/Mining/Data/OreDefinition.cs`
+- [X] T063 [P] [US7] Update `CreateAssetMenu` on `ShipArchetypeConfig` from `VoidHarvest/ShipArchetypeConfig` to `VoidHarvest/Ship/Ship Archetype Config` in `Assets/Features/Ship/Data/ShipArchetypeConfig.cs`
+- [X] T064 [P] [US7] Update `CreateAssetMenu` on `AsteroidFieldDefinition` from `VoidHarvest/Asteroid Field Definition` to `VoidHarvest/Procedural/Asteroid Field Definition` in `Assets/Features/Procedural/Data/AsteroidFieldDefinition.cs`
+- [X] T065 [P] [US7] Update `CreateAssetMenu` on `StationServicesConfig` from `VoidHarvest/Station Services Config` to `VoidHarvest/Station/Station Services Config` in `Assets/Features/StationServices/Data/StationServicesConfig.cs`
+- [X] T066 [P] [US7] Update `CreateAssetMenu` on `RawMaterialDefinition` from `VoidHarvest/Raw Material Definition` to `VoidHarvest/Station/Raw Material Definition` in `Assets/Features/Resources/Data/RawMaterialDefinition.cs`
+- [X] T067 [P] [US7] Update `CreateAssetMenu` on `GameServicesConfig` from `VoidHarvest/Game Services Config` to `VoidHarvest/Station/Game Services Config` in `Assets/Features/StationServices/Data/GameServicesConfig.cs`
+- [X] T068 [P] [US7] Update `CreateAssetMenu` on `StationServicesConfigMap` from `VoidHarvest/Station Services Config Map` to `VoidHarvest/Station/Station Services Config Map` in `Assets/Features/StationServices/Data/StationServicesConfigMap.cs`
+- [X] T069 [P] [US7] Update `CreateAssetMenu` on `DockingConfig` from `VoidHarvest/Docking/DockingConfig` to `VoidHarvest/Docking/Docking Config` in `Assets/Features/Docking/Data/DockingConfig.cs`
+- [X] T070 [P] [US7] Update `CreateAssetMenu` on `DockingVFXConfig` from `VoidHarvest/DockingVFXConfig` to `VoidHarvest/Docking/Docking VFX Config` in `Assets/Features/Docking/Data/DockingVFXConfig.cs`
+- [X] T071 [P] [US7] Update `CreateAssetMenu` on `DockingAudioConfig` from `VoidHarvest/DockingAudioConfig` to `VoidHarvest/Docking/Docking Audio Config` in `Assets/Features/Docking/Data/DockingAudioConfig.cs`
+- [X] T072 [P] [US7] Update `CreateAssetMenu` on `MiningVFXConfig` from `VoidHarvest/Mining/MiningVFXConfig` to `VoidHarvest/Mining/Mining VFX Config` in `Assets/Features/Mining/Data/MiningVFXConfig.cs`
+- [X] T073 [P] [US7] Update `CreateAssetMenu` on `MiningAudioConfig` from `VoidHarvest/Mining/MiningAudioConfig` to `VoidHarvest/Mining/Mining Audio Config` in `Assets/Features/Mining/Data/MiningAudioConfig.cs`
+- [X] T074 [P] [US7] Update `CreateAssetMenu` on `OreChunkConfig` from `VoidHarvest/Mining/OreChunkConfig` to `VoidHarvest/Mining/Ore Chunk Config` in `Assets/Features/Mining/Data/OreChunkConfig.cs`
+- [X] T075 [P] [US7] Update `CreateAssetMenu` on `DepletionVFXConfig` from `VoidHarvest/Mining/DepletionVFXConfig` to `VoidHarvest/Mining/Depletion VFX Config` in `Assets/Features/Mining/Data/DepletionVFXConfig.cs`
+- [X] T076 [P] [US7] Update `CreateAssetMenu` on `TargetingConfig` from `VoidHarvest/Targeting Config` to `VoidHarvest/Targeting/Targeting Config` in `Assets/Features/Targeting/Data/TargetingConfig.cs`
+- [X] T077 [P] [US7] Update `CreateAssetMenu` on `TargetingVFXConfig` from `VoidHarvest/Targeting VFX Config` to `VoidHarvest/Targeting/Targeting VFX Config` in `Assets/Features/Targeting/Data/TargetingVFXConfig.cs`
+- [X] T078 [P] [US7] Update `CreateAssetMenu` on `TargetingAudioConfig` from `VoidHarvest/Targeting Audio Config` to `VoidHarvest/Targeting/Targeting Audio Config` in `Assets/Features/Targeting/Data/TargetingAudioConfig.cs`
+- [X] T079 [P] [US7] Update `CreateAssetMenu` on `StationPresetConfig` from `VoidHarvest/StationPresetConfig` to `VoidHarvest/Station/Station Preset Config` in `Assets/Features/Base/Data/StationPresetConfig.cs`
+- [X] T080 [P] [US7] Update `CreateAssetMenu` on `SkyboxConfig` from `VoidHarvest/SkyboxConfig` to `VoidHarvest/Camera/Skybox Config` in `Assets/Features/Camera/Data/SkyboxConfig.cs`
+- [X] T081 [US7] Verify compilation clean after all CreateAssetMenu changes
 
 **Checkpoint**: All 19 Create menu paths standardized. US7 independently testable.
 
@@ -203,12 +203,12 @@
 
 **Purpose**: Final validation, documentation, and regression testing
 
-- [ ] T082 Run full test suite — all 465 original + new tests must pass. Target total: 495+
-- [ ] T083 Check Unity console via MCP — zero errors, zero project warnings
-- [ ] T084 Verify all existing ScriptableObject assets in project produce no OnValidate warnings (assets have valid data)
-- [ ] T085 Document async subscription lifecycle convention as a code comment block in `Assets/Core/SceneLifetimeScope.cs` per FR-032 — standard pattern: OnEnable subscribe / OnDisable cancel-dispose / OnDestroy safety net
-- [ ] T086 Manual verification: SC-002 — dock/undock/redock cycle 3+ times, verify zero duplicate event handlers and zero console errors (requires PlayMode; no automated test — PlayMode tests out of scope)
-- [ ] T087 Manual verification: SC-005 — start refining job, set `Time.timeScale = 0` in editor, wait real-time duration, verify job completes on schedule (requires PlayMode; no automated test)
+- [X] T082 Run full test suite — all 465 original + new tests must pass. Target total: 495+
+- [X] T083 Check Unity console via MCP — zero errors, zero project warnings
+- [X] T084 Verify all existing ScriptableObject assets in project produce no OnValidate warnings (assets have valid data)
+- [X] T085 Document async subscription lifecycle convention as a code comment block in `Assets/Core/SceneLifetimeScope.cs` per FR-032 — standard pattern: OnEnable subscribe / OnDisable cancel-dispose / OnDestroy safety net
+- [X] T086 Manual verification: SC-002 — dock/undock/redock cycle 3+ times, verify zero duplicate event handlers and zero console errors (requires PlayMode; no automated test — PlayMode tests out of scope)
+- [X] T087 Manual verification: SC-005 — start refining job, set `Time.timeScale = 0` in editor, wait real-time duration, verify job completes on schedule (requires PlayMode; no automated test)
 
 ---
 

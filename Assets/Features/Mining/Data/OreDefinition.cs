@@ -7,7 +7,7 @@ namespace VoidHarvest.Features.Mining.Data
     /// Contains all static data for spawning, mining, display, and future economy integration.
     /// See Spec 005: Data-Driven Ore System.
     /// </summary>
-    [CreateAssetMenu(menuName = "VoidHarvest/Ore Definition")]
+    [CreateAssetMenu(menuName = "VoidHarvest/Mining/Ore Definition")]
     public class OreDefinition : ScriptableObject
     {
         /// <summary>Unique string identifier for this ore type (e.g., "luminite").</summary>
@@ -55,5 +55,40 @@ namespace VoidHarvest.Features.Mining.Data
         /// <summary>Credit cost per unit of ore refined (integer).</summary>
         [SerializeField]
         public int RefiningCreditCostPerUnit;
+
+        private void OnValidate()
+        {
+            if (string.IsNullOrEmpty(OreId))
+                Debug.LogWarning($"[{name}] OreId must not be empty");
+            if (string.IsNullOrEmpty(DisplayName))
+                Debug.LogWarning($"[{name}] DisplayName must not be empty");
+            if (BaseYieldPerSecond <= 0f)
+                Debug.LogWarning($"[{name}] BaseYieldPerSecond must be > 0");
+            if (Hardness <= 0f)
+                Debug.LogWarning($"[{name}] Hardness must be > 0");
+            if (VolumePerUnit <= 0f)
+                Debug.LogWarning($"[{name}] VolumePerUnit must be > 0");
+            if (BaseValue < 0)
+                Debug.LogWarning($"[{name}] BaseValue must be >= 0");
+            if (RarityWeight < 0f || RarityWeight > 1f)
+                Debug.LogWarning($"[{name}] RarityWeight must be in [0, 1]");
+            if (BaseProcessingTimePerUnit <= 0f)
+                Debug.LogWarning($"[{name}] BaseProcessingTimePerUnit must be > 0");
+            if (RefiningCreditCostPerUnit < 0)
+                Debug.LogWarning($"[{name}] RefiningCreditCostPerUnit must be >= 0");
+            if (RefiningOutputs != null)
+            {
+                for (int i = 0; i < RefiningOutputs.Length; i++)
+                {
+                    var entry = RefiningOutputs[i];
+                    if (entry.Material == null)
+                        Debug.LogWarning($"[{name}] RefiningOutputs[{i}].Material must not be null");
+                    if (entry.BaseYieldPerUnit <= 0)
+                        Debug.LogWarning($"[{name}] RefiningOutputs[{i}].BaseYieldPerUnit must be > 0");
+                    if (entry.VarianceMin > entry.VarianceMax)
+                        Debug.LogWarning($"[{name}] RefiningOutputs[{i}].VarianceMin must be <= VarianceMax");
+                }
+            }
+        }
     }
 }

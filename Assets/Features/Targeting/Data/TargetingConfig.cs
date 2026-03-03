@@ -6,7 +6,7 @@ namespace VoidHarvest.Features.Targeting.Data
     /// Global targeting visual configuration. Not per-ship.
     /// See Spec 007: In-Flight Targeting.
     /// </summary>
-    [CreateAssetMenu(menuName = "VoidHarvest/Targeting Config")]
+    [CreateAssetMenu(menuName = "VoidHarvest/Targeting/Targeting Config")]
     public class TargetingConfig : ScriptableObject
     {
         /// <summary>Screen-space padding around target in pixels.</summary>

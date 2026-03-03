@@ -3,6 +3,7 @@
     "rootNamespace": "VoidHarvest.Features.Mining.Tests",
     "references": [
         "VoidHarvest.Features.Mining",
+        "VoidHarvest.Features.Resources",
         "VoidHarvest.Core.Extensions",
         "VoidHarvest.Core.State",
         "UnityEngine.TestRunner",

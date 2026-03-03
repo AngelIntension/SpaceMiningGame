@@ -13,6 +13,7 @@ using VoidHarvest.Features.Ship.Data;
 using VoidHarvest.Features.Mining.Data;
 using VoidHarvest.Features.Mining.Systems;
 using VoidHarvest.Features.Docking.Data;
+using System.Threading;
 using VoidHarvest.Features.Targeting.Data;
 using VoidHarvest.Features.Targeting.Views;
 
@@ -61,6 +62,9 @@ namespace VoidHarvest.Features.Input.Views
         private int _uiScrollBlockCount;
         private TargetType _selectedTargetType = TargetType.None;
         private DockingPortComponent _selectedDockingPort;
+        private int _ecsInitFailCount;
+        private CancellationTokenSource _stateCts;
+        private int _lastSyncedTargetId = -1;
 
         /// <summary>Type of the currently selected target (Asteroid, Station, None).</summary>
         public TargetType SelectedTargetType => _selectedTargetType;
@@ -69,10 +73,12 @@ namespace VoidHarvest.Features.Input.Views
         /// DI injection point for state store and event bus. See MVP-01: 6DOF Newtonian flight.
         /// </summary>
         [Inject]
-        public void Construct(IStateStore stateStore, IEventBus eventBus)
+        public void Construct(IStateStore stateStore, IEventBus eventBus,
+                              Features.Camera.Views.CameraView cameraView)
         {
             _stateStore = stateStore;
             _eventBus = eventBus;
+            _cameraView = cameraView;
         }
 
         private void Awake()
@@ -118,6 +124,13 @@ namespace VoidHarvest.Features.Input.Views
             // Hotbar 1 = mining laser toggle (MVP)
             if (_hotbarActions[0] != null)
                 _hotbarActions[0].performed += OnHotbar1;
+
+            // Subscribe to state changes to keep local selection in sync
+            if (_eventBus != null)
+            {
+                _stateCts = new CancellationTokenSource();
+                ListenForStateSelectionChanges(_stateCts.Token).Forget();
+            }
         }
 
         private void OnDisable()
@@ -135,12 +148,15 @@ namespace VoidHarvest.Features.Input.Views
 
             if (_hotbarActions[0] != null)
                 _hotbarActions[0].performed -= OnHotbar1;
+
+            _stateCts?.Cancel();
+            _stateCts?.Dispose();
+            _stateCts = null;
         }
 
         private void Start()
         {
             TryInitializeECS();
-            _cameraView = FindFirstObjectByType<Features.Camera.Views.CameraView>();
 
             if (_eventBus != null)
                 ListenForUndockingStarted().Forget();
@@ -170,7 +186,13 @@ namespace VoidHarvest.Features.Input.Views
         private void TryInitializeECS()
         {
             var world = World.DefaultGameObjectInjectionWorld;
-            if (world == null || !world.IsCreated) return;
+            if (world == null || !world.IsCreated)
+            {
+                _ecsInitFailCount++;
+                if (_ecsInitFailCount == 60)
+                    Debug.LogWarning("[InputBridge] ECS initialization failed after 60 frames");
+                return;
+            }
 
             _entityManager = world.EntityManager;
 
@@ -182,6 +204,13 @@ namespace VoidHarvest.Features.Input.Views
                 _shipEntity = entities[0];
                 entities.Dispose();
                 _ecsReady = true;
+                _ecsInitFailCount = 0;
+            }
+            else
+            {
+                _ecsInitFailCount++;
+                if (_ecsInitFailCount == 60)
+                    Debug.LogWarning("[InputBridge] ECS initialization failed after 60 frames");
             }
         }
 
@@ -425,6 +454,19 @@ namespace VoidHarvest.Features.Input.Views
             }
         }
 
+        private async UniTaskVoid ListenForStateSelectionChanges(CancellationToken ct)
+        {
+            await foreach (var evt in _eventBus.Subscribe<StateChangedEvent<GameState>>().WithCancellation(ct))
+            {
+                var targetId = evt.CurrentState.Loop.Targeting.Selection.TargetId;
+                if (targetId != _lastSyncedTargetId)
+                {
+                    _lastSyncedTargetId = targetId;
+                    SyncSelectionFromState();
+                }
+            }
+        }
+
         /// <summary>
         /// Called by RadialMenuController to set the chosen radial action and distance.
         /// These are one-shot values: consumed in the next UpdatePilotCommand then reset.
@@ -450,6 +492,15 @@ namespace VoidHarvest.Features.Input.Views
             }
             else if (_selectedTargetId >= 0)
             {
+                if (_selectedAsteroidEntity != Entity.Null && !_entityManager.Exists(_selectedAsteroidEntity))
+                {
+                    Debug.LogWarning("[InputBridge] OnHotbar1: selected asteroid entity no longer exists, clearing selection");
+                    _selectedTargetId = -1;
+                    _selectedAsteroidEntity = Entity.Null;
+                    _selectedTargetType = TargetType.None;
+                    _stateStore.Dispatch(new ClearSelectionAction());
+                    return;
+                }
                 StartMining();
             }
         }
@@ -457,7 +508,15 @@ namespace VoidHarvest.Features.Input.Views
         private void StartMining()
         {
             if (!_entityManager.Exists(_shipEntity)) return;
-            if (_selectedAsteroidEntity == Entity.Null || !_entityManager.Exists(_selectedAsteroidEntity)) return;
+            if (_selectedAsteroidEntity == Entity.Null || !_entityManager.Exists(_selectedAsteroidEntity))
+            {
+                Debug.LogWarning("[InputBridge] StartMining: asteroid entity no longer exists, clearing selection");
+                _selectedTargetId = -1;
+                _selectedAsteroidEntity = Entity.Null;
+                _selectedTargetType = TargetType.None;
+                _stateStore?.Dispatch(new ClearSelectionAction());
+                return;
+            }
 
             // Resolve ore ID from the selected asteroid entity
             string oreId = "unknown";
@@ -533,7 +592,17 @@ namespace VoidHarvest.Features.Input.Views
         /// </summary>
         public void InitiateDocking(DockingPortComponent port)
         {
-            if (!_ecsReady || !_entityManager.Exists(_shipEntity) || port == null) return;
+            if (!_ecsReady)
+            {
+                Debug.LogWarning("[InputBridge] InitiateDocking: ECS not ready");
+                return;
+            }
+            if (!_entityManager.Exists(_shipEntity)) return;
+            if (port == null)
+            {
+                Debug.LogWarning("[InputBridge] InitiateDocking: no docking port found");
+                return;
+            }
 
             var dockingState = new DockingStateComponent
             {

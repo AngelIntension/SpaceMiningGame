@@ -7,7 +7,7 @@ namespace VoidHarvest.Features.Procedural.Data
     /// spatial parameters, and visual mapping.
     /// See Spec 005: Data-Driven Ore System.
     /// </summary>
-    [CreateAssetMenu(menuName = "VoidHarvest/Asteroid Field Definition")]
+    [CreateAssetMenu(menuName = "VoidHarvest/Procedural/Asteroid Field Definition")]
     public class AsteroidFieldDefinition : ScriptableObject
     {
         /// <summary>Human-readable field name.</summary>
@@ -71,6 +71,36 @@ namespace VoidHarvest.Features.Procedural.Data
             }
 
             return result;
+        }
+
+        private void OnValidate()
+        {
+            if (AsteroidCount <= 0)
+                Debug.LogWarning($"[{name}] AsteroidCount must be > 0");
+            if (FieldRadius <= 0f)
+                Debug.LogWarning($"[{name}] FieldRadius must be > 0");
+            if (AsteroidSizeMin <= 0f)
+                Debug.LogWarning($"[{name}] AsteroidSizeMin must be > 0");
+            if (AsteroidSizeMax < AsteroidSizeMin)
+                Debug.LogWarning($"[{name}] AsteroidSizeMax must be >= AsteroidSizeMin");
+            if (RotationSpeedMax < RotationSpeedMin)
+                Debug.LogWarning($"[{name}] RotationSpeedMax must be >= RotationSpeedMin");
+            if (MinScaleFraction < 0.1f || MinScaleFraction > 0.5f)
+                Debug.LogWarning($"[{name}] MinScaleFraction must be in [0.1, 0.5]");
+            if (OreEntries == null || OreEntries.Length == 0)
+            {
+                Debug.LogWarning($"[{name}] OreEntries must have at least one entry");
+            }
+            else
+            {
+                for (int i = 0; i < OreEntries.Length; i++)
+                {
+                    if (OreEntries[i].OreDefinition == null)
+                        Debug.LogWarning($"[{name}] OreEntries[{i}].OreDefinition must not be null");
+                    if (OreEntries[i].Weight <= 0f)
+                        Debug.LogWarning($"[{name}] OreEntries[{i}].Weight must be > 0");
+                }
+            }
         }
     }
 }

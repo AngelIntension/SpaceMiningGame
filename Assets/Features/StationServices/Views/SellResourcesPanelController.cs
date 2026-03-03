@@ -35,6 +35,7 @@ namespace VoidHarvest.Features.StationServices.Views
         private int _selectedBaseValue;
         private CancellationTokenSource _stateCts;
         private StationServicesState _lastServices;
+        private InventoryState _lastInventory;
 
         [Inject]
         public void Construct(IStateStore stateStore, IEventBus eventBus)
@@ -77,14 +78,21 @@ namespace VoidHarvest.Features.StationServices.Views
             _stateCts = null;
         }
 
+        private void OnDestroy()
+        {
+            Cleanup();
+        }
+
         private async UniTaskVoid ListenForStateChanges(CancellationToken ct)
         {
             await foreach (var evt in _eventBus.Subscribe<StateChangedEvent<GameState>>().WithCancellation(ct))
             {
                 var svc = evt.CurrentState.Loop.StationServices;
-                if (ReferenceEquals(svc, _lastServices))
+                var inv = evt.CurrentState.Loop.Inventory;
+                if (ReferenceEquals(svc, _lastServices) && ReferenceEquals(inv, _lastInventory))
                     continue;
                 _lastServices = svc;
+                _lastInventory = inv;
                 RefreshUI();
             }
         }

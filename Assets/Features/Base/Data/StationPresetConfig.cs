@@ -8,7 +8,7 @@ namespace VoidHarvest.Features.Base.Data
     /// generation in Phase 2+.
     /// See FR-013: Small Mining Relay, FR-014: Medium Refinery Hub.
     /// </summary>
-    [CreateAssetMenu(menuName = "VoidHarvest/StationPresetConfig")]
+    [CreateAssetMenu(menuName = "VoidHarvest/Station/Station Preset Config")]
     public class StationPresetConfig : ScriptableObject
     {
         /// <summary>Display name (e.g., "Small Mining Relay"). See FR-013, FR-014.</summary>

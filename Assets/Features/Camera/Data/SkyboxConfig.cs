@@ -7,7 +7,7 @@ namespace VoidHarvest.Features.Camera.Data
     /// and controls rotation speed and exposure. Read-only at runtime.
     /// See FR-002: Nebula skybox, FR-003: Skybox rotation, FR-004: Ambient lighting.
     /// </summary>
-    [CreateAssetMenu(menuName = "VoidHarvest/SkyboxConfig")]
+    [CreateAssetMenu(menuName = "VoidHarvest/Camera/Skybox Config")]
     public class SkyboxConfig : ScriptableObject
     {
         /// <summary>Primary skybox material (Skybox/Panoramic shader with HDRI). See FR-002.</summary>

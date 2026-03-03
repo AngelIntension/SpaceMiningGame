@@ -6,7 +6,7 @@ namespace VoidHarvest.Features.Docking.Data
     /// Designer-tunable VFX configuration for docking sequences.
     /// See Spec 004 US5: Docking Audio & Visual Feedback.
     /// </summary>
-    [CreateAssetMenu(menuName = "VoidHarvest/DockingVFXConfig")]
+    [CreateAssetMenu(menuName = "VoidHarvest/Docking/Docking VFX Config")]
     public class DockingVFXConfig : ScriptableObject
     {
         [Header("Approach")]

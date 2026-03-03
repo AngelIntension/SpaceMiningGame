@@ -71,29 +71,13 @@ namespace VoidHarvest.Features.HUD.Views
         /// DI injection point for the state store. See MVP-04: Right-click radial menu.
         /// </summary>
         [Inject]
-        public void Construct(IStateStore stateStore, IEventBus eventBus)
+        public void Construct(IStateStore stateStore, IEventBus eventBus,
+                              InputBridge inputBridge, TargetingController targetingController)
         {
             _stateStore = stateStore;
             _eventBus = eventBus;
-        }
-
-        private void Start()
-        {
-            // Pragmatic MVP lookup — will be replaced with DI in later phases
-            _inputBridge = FindObjectOfType<InputBridge>();
-            if (_inputBridge == null)
-            {
-                Debug.LogWarning("[RadialMenuController] InputBridge not found in scene. " +
-                                 "Radial menu commands will not reach the ship.");
-            }
-            _targetingController = FindObjectOfType<TargetingController>();
-
-            // Subscribe to radial menu events from InputBridge
-            if (_eventBus != null)
-            {
-                _eventCts = new CancellationTokenSource();
-                ListenForRadialMenuEvents(_eventCts.Token).Forget();
-            }
+            _inputBridge = inputBridge;
+            _targetingController = targetingController;
         }
 
         private async UniTaskVoid ListenForRadialMenuEvents(CancellationToken ct)
@@ -105,14 +89,15 @@ namespace VoidHarvest.Features.HUD.Views
             }
         }
 
-        private void OnDestroy()
-        {
-            _eventCts?.Cancel();
-            _eventCts?.Dispose();
-        }
-
         private void OnEnable()
         {
+            // Start async EventBus subscription each time we're enabled
+            if (_eventBus != null)
+            {
+                _eventCts = new CancellationTokenSource();
+                ListenForRadialMenuEvents(_eventCts.Token).Forget();
+            }
+
             if (uiDocument == null) return;
 
             var rootVisual = uiDocument.rootVisualElement;
@@ -168,6 +153,11 @@ namespace VoidHarvest.Features.HUD.Views
 
         private void OnDisable()
         {
+            // Cancel async EventBus subscriptions
+            _eventCts?.Cancel();
+            _eventCts?.Dispose();
+            _eventCts = null;
+
             // Unregister callbacks to avoid leaks
             _segmentApproach?.UnregisterCallback<ClickEvent>(_ => OnSegmentClicked(ActionApproach));
             _segmentOrbit?.UnregisterCallback<ClickEvent>(_ => OnSegmentClicked(ActionOrbit));
@@ -397,7 +387,12 @@ namespace VoidHarvest.Features.HUD.Views
 
         private void OnLockTargetClicked()
         {
-            _targetingController?.AttemptLockOnSelected();
+            if (_targetingController == null)
+            {
+                Debug.LogWarning("[RadialMenuController] TargetingController not found, Lock Target disabled");
+                return;
+            }
+            _targetingController.AttemptLockOnSelected();
             Close();
         }
 
