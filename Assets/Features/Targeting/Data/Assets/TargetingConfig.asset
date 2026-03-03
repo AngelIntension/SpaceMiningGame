@@ -17,6 +17,7 @@ MonoBehaviour:
   ReticleMaxSize: 300
   LockProgressArcWidth: 3
   OffScreenIndicatorMargin: 30
-  ViewportRenderSize: 128
+  ViewportRenderWidth: 140
+  ViewportRenderHeight: 100
   ViewportFOV: 30
   PreviewStageOffset: {x: 0, y: -1000, z: 0}

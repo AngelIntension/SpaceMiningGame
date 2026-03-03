@@ -19,8 +19,10 @@ namespace VoidHarvest.Features.Targeting.Data
         public float LockProgressArcWidth = 3f;
         /// <summary>Margin from screen edge for off-screen indicator in pixels.</summary>
         public float OffScreenIndicatorMargin = 30f;
-        /// <summary>RenderTexture resolution for target card viewports.</summary>
-        public int ViewportRenderSize = 128;
+        /// <summary>RenderTexture width for target card viewports.</summary>
+        public int ViewportRenderWidth = 140;
+        /// <summary>RenderTexture height for target card viewports.</summary>
+        public int ViewportRenderHeight = 100;
         /// <summary>Viewport camera field of view.</summary>
         public float ViewportFOV = 30f;
         /// <summary>World-space offset for preview staging area.</summary>

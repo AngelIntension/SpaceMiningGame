@@ -121,7 +121,8 @@ namespace VoidHarvest.Features.Targeting.Views
 
         private void CreateSlot(ref PreviewSlot slot, int index, int targetId, TargetType targetType)
         {
-            int rtSize = _config != null ? _config.ViewportRenderSize : 128;
+            int rtWidth = _config != null ? _config.ViewportRenderWidth : 140;
+            int rtHeight = _config != null ? _config.ViewportRenderHeight : 100;
             float fov = _config != null ? _config.ViewportFOV : 30f;
             Vector3 stageOffset = _config != null ? _config.PreviewStageOffset : new Vector3(0f, -1000f, 0f);
 
@@ -134,7 +135,7 @@ namespace VoidHarvest.Features.Targeting.Views
             SetLayerRecursive(clone, _previewLayer);
 
             // Create RenderTexture
-            var rt = new RenderTexture(rtSize, rtSize, 16);
+            var rt = new RenderTexture(rtWidth, rtHeight, 16);
             rt.name = $"TargetPreview_{targetId}";
 
             // Create preview camera
