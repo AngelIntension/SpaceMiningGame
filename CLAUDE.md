@@ -106,7 +106,7 @@ Each feature folder uses the `Data/`, `Systems/`, `Views/`, `Tests/` sub-structu
 - **Records / Data:** Suffix `Data` or `State` (e.g., `AsteroidData`, `InventoryState`)
 - **Reducers:** Suffix `Reducer` (e.g., `InventoryReducer`, `ShipStateReducer`)
 - **ECS Systems:** Suffix `System` (e.g., `MiningBeamSystem`)
-- **ScriptableObjects:** Suffix `Config` or `Definition` (e.g., `OreTypeDefinition`, `ShipConfig`)
+- **ScriptableObjects:** Suffix `Config` or `Definition` (e.g., `OreDefinition`, `ShipArchetypeConfig`)
 - **Commands / Actions:** Suffix `Command` or `Action` (e.g., `PilotCommand`, `SwapShipAction`)
 
 ## Testing

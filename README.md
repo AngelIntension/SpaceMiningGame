@@ -97,7 +97,8 @@ Each feature folder uses `Data/`, `Systems/`, `Views/`, `Tests/` sub-folders.
 - **Station docking** — approach, magnetic snap, station services menu, undock sequence; 2 station presets (Small Mining Relay, Medium Refinery Hub)
 - **Station services** — ore refining with deterministic yield, resource selling with credits, cargo transfer between ship and station, basic hull repair; configurable per-station via ScriptableObjects
 - **In-flight targeting** — multi-target lock system with configurable lock time and max locks; screen-space reticle with corner brackets, off-screen directional indicator, lock acquisition progress ring; target card panel with live RenderTexture viewports from ship perspective, dismiss/re-select; radial menu integration for lock actions
-- **Core infrastructure** — EventBus (UniTask), State Store, VContainer DI; 150+ C# files, 465+ tests, 29 assembly definitions
+- **ScriptableObject validation** — all config assets have OnValidate() guards with 50+ dedicated validation tests
+- **Core infrastructure** — EventBus (UniTask), State Store, VContainer DI throughout (no FindObjectOfType); 225+ C# files, 520+ tests, 33 assembly definitions
 
 ## Architecture Principles
 
