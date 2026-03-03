@@ -665,15 +665,52 @@ namespace VoidHarvest.Features.Input.Views
         }
 
         /// <summary>
+        /// Resolves the world position of the currently selected target regardless of type.
+        /// Centralizes type-specific lookups so callers don't need per-type branches.
+        /// </summary>
+        private bool TryGetSelectedTargetPosition(out float3 position)
+        {
+            position = float3.zero;
+            if (_selectedTargetId < 0) return false;
+
+            switch (_selectedTargetType)
+            {
+                case TargetType.Asteroid:
+                    if (!_ecsReady) return false;
+                    if (_selectedAsteroidEntity != Entity.Null
+                        && _entityManager.Exists(_selectedAsteroidEntity)
+                        && _entityManager.HasComponent<LocalTransform>(_selectedAsteroidEntity))
+                    {
+                        position = _entityManager.GetComponentData<LocalTransform>(_selectedAsteroidEntity).Position;
+                        return true;
+                    }
+                    return false;
+
+                case TargetType.Station:
+                    var stations = FindObjectsByType<TargetableStation>(FindObjectsSortMode.None);
+                    foreach (var station in stations)
+                    {
+                        if (station.TargetId == _selectedTargetId)
+                        {
+                            position = (float3)station.transform.position;
+                            return true;
+                        }
+                    }
+                    return false;
+
+                default:
+                    return false;
+            }
+        }
+
+        /// <summary>
         /// Called by RadialMenuController to auto-fly toward the selected target.
         /// Sets align point + radial action so the ECS autopilot handles thrust and rotation.
         /// </summary>
         public void ApproachSelectedTarget(float stopDistance = 50f)
         {
-            if (!_ecsReady) return;
-            if (_selectedAsteroidEntity == Entity.Null || !_entityManager.Exists(_selectedAsteroidEntity)) return;
-            var transform = _entityManager.GetComponentData<LocalTransform>(_selectedAsteroidEntity);
-            _alignPoint = transform.Position;
+            if (!TryGetSelectedTargetPosition(out var pos)) return;
+            _alignPoint = pos;
             _hasAlignPoint = true;
         }
 
