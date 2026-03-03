@@ -452,6 +452,23 @@ namespace VoidHarvest.Features.Input.Views
                     }
                 }
             }
+            else if (selection.TargetType == TargetType.Asteroid && _ecsReady)
+            {
+                // Resolve the ECS entity for the selected asteroid so mining can work
+                var query = _entityManager.CreateEntityQuery(
+                    typeof(AsteroidComponent), typeof(LocalTransform));
+                var entities = query.ToEntityArray(Unity.Collections.Allocator.Temp);
+                for (int i = 0; i < entities.Length; i++)
+                {
+                    if (entities[i].Index == selection.TargetId)
+                    {
+                        _selectedAsteroidEntity = entities[i];
+                        entities.Dispose();
+                        return;
+                    }
+                }
+                entities.Dispose();
+            }
         }
 
         private async UniTaskVoid ListenForStateSelectionChanges(CancellationToken ct)
