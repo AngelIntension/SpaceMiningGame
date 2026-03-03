@@ -36,7 +36,7 @@ A designer wants to tune docking behavior (snap duration, approach timeout, undo
 
 1. **Given** a DockingConfig SO with SnapDuration set to 1.5s (instead of the hard-coded 0.75s), **When** the player docks, **Then** the snap animation takes approximately 1.5 seconds.
 2. **Given** a DockingConfig SO with ApproachTimeout set to 60s, **When** the player initiates docking but remains outside snap range, **Then** docking is cancelled after 60 seconds (not the hard-coded 120s).
-3. **Given** the DockingConfigBlob is baked from the SO during SubScene processing, **When** the game runs, **Then** the DockingSystem reads all parameters from the blob singleton component with zero managed object access.
+3. **Given** the DockingConfigBlob is baked from the SO during initialization (managed SystemBase pattern), **When** the game runs, **Then** the DockingSystem reads all parameters from the blob singleton component with zero managed object access.
 
 ---
 
@@ -137,7 +137,7 @@ After migration, all station-related assets live under a consistent folder hiera
 - **FR-004**: Station services resolution MUST use StationDefinition.ServicesConfig instead of the StationServicesConfigMap lookup.
 - **FR-005**: System MUST provide a DockingConfigBlob blob asset that carries all docking parameters into the Burst-compiled DockingSystem, replacing hard-coded local constants.
 - **FR-006**: The DockingConfig ScriptableObject MUST include all parameters currently hard-coded in DockingSystem (ApproachTimeout, AlignTimeout, AlignDotThreshold, AlignAngVelThreshold, SnapRange).
-- **FR-007**: A DockingConfigAuthoring component and DockingConfigBaker MUST bake the DockingConfig SO into a DockingConfigBlobComponent singleton entity.
+- **FR-007**: A DockingConfigBlobBakingSystem (managed SystemBase in InitializationSystemGroup, following the established OreTypeBlobBakingSystem pattern) MUST bake the DockingConfig SO into a DockingConfigBlobComponent singleton entity.
 - **FR-008**: System MUST provide a CameraConfig ScriptableObject with pitch limits, distance limits, zoom distance limits, zoom cooldown, default orientation, and orbit sensitivity.
 - **FR-009**: CameraReducer MUST read camera limits from state (initialized from CameraConfig SO) instead of compile-time constants.
 - **FR-010**: CameraView MUST read zoom cooldown from CameraConfig instead of a compile-time constant.
@@ -155,12 +155,15 @@ After migration, all station-related assets live under a consistent folder hiera
 - **FR-022**: All existing tests MUST continue to pass after migration.
 - **FR-023**: Station-related assets MUST be reorganized into a consistent folder hierarchy under Assets/Features/Station/Data/ and Assets/Features/World/Data/.
 - **FR-024**: TargetableStation MonoBehaviour MUST derive its TargetId from the associated StationDefinition.StationId field.
+- **FR-025**: DockingPortComponent MonoBehaviour MUST derive its StationId from an associated StationDefinition ScriptableObject reference, replacing the manually-assigned integer field.
+- **FR-026**: DockingPortComponent's DockingRange and SnapRange fields MUST be removed — the DockingSystem reads these values from the DockingConfigBlob singleton, making per-component fields redundant.
+- **FR-027**: StationServicesConfig ScriptableObject MUST be moved from the StationServices assembly to the Station assembly to break the circular dependency between StationDefinition and StationServices consumers.
 
 ### Key Entities
 
 - **StationDefinition**: A ScriptableObject that is the single source of truth for all configuration of one station — identity, world placement, services, docking port, and visuals. Referenced by WorldDefinition and used at initialization and runtime.
 - **WorldDefinition**: A ScriptableObject that defines the complete station roster for a game world, plus player starting conditions. Used by game initialization to build the immutable WorldState.
-- **DockingConfigBlob**: A blob asset that carries docking tuning parameters into Burst-compiled ECS systems. Baked from the existing DockingConfig SO via an authoring/baker pipeline.
+- **DockingConfigBlob**: A blob asset that carries docking tuning parameters into Burst-compiled ECS systems. Baked from the existing DockingConfig SO via a managed SystemBase baking system (following the OreTypeBlobBakingSystem pattern).
 - **CameraConfig**: A ScriptableObject holding all camera orbit and zoom limits. Injected into the camera system at initialization to replace compile-time constants.
 - **InteractionConfig**: A ScriptableObject holding input timing and default interaction distances. Injected into InputBridge and RadialMenuController.
 
