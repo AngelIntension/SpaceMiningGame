@@ -164,7 +164,7 @@ namespace VoidHarvest.Features.Targeting.Views
             float fov = _config != null ? _config.ViewportFOV : 30f;
             Vector3 stageOffset = _config != null ? _config.PreviewStageOffset : new Vector3(0f, -1000f, 0f);
 
-            Vector3 slotPos = stageOffset + new Vector3(index * 50f, 0f, 0f);
+            Vector3 slotPos = stageOffset + new Vector3(index * 500f, 0f, 0f);
 
             // Create clone
             var clone = CreateClone(targetId, targetType, slotPos);
@@ -188,7 +188,7 @@ namespace VoidHarvest.Features.Targeting.Views
             cam.clearFlags = CameraClearFlags.SolidColor;
             cam.backgroundColor = new Color(0.03f, 0.05f, 0.09f, 1f);
             cam.nearClipPlane = 0.1f;
-            cam.farClipPlane = 200f;
+            cam.farClipPlane = Mathf.Max(viewDistance * 2.5f, 10f);
 
             // Initial camera position (will be updated per-frame)
             cam.transform.position = slotPos + new Vector3(0f, viewDistance * 0.3f, -viewDistance);
