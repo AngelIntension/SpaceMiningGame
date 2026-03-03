@@ -5,7 +5,7 @@
 
 ## Summary
 
-Bootstrap the `docs/` directory with 25 markdown files covering architecture (5), per-system references (12), designer guides (4), and supporting docs (4) — as mandated by Constitution v1.4.0. This is a documentation-only deliverable requiring no code changes. All content is derived from the existing codebase (241 C# files, 29 assemblies, 25 event types, 24 ScriptableObject types, 12 shipped features).
+Bootstrap the `docs/` directory with 25 markdown files covering architecture (5), per-system references (12), designer guides (4), and supporting docs (4) — as mandated by Constitution v1.4.0. This is a documentation-only deliverable requiring no code changes. All content is derived from the existing codebase (241 C# files, 38 assemblies, 25 event types, 24 ScriptableObject types, 12 shipped features).
 
 ## Technical Context
 
@@ -17,7 +17,7 @@ Bootstrap the `docs/` directory with 25 markdown files covering architecture (5)
 **Project Type**: Documentation artifact for Unity 6 game project (VoidHarvest)
 **Performance Goals**: N/A
 **Constraints**: All diagrams MUST use Mermaid syntax; designer guide MUST contain zero C# code or namespace references; all content MUST accurately reflect the current codebase state
-**Scale/Scope**: 25 markdown files, ~12 Mermaid diagrams minimum (1 per system doc + architecture docs)
+**Scale/Scope**: 25 markdown files, 18+ Mermaid diagrams minimum (5 architecture + 12 system + 1 assembly-map)
 
 ## Constitution Check
 

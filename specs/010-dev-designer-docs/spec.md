@@ -83,6 +83,7 @@ A new team member (developer or designer) needs quick access to standardized ter
 ### Edge Cases
 
 - What happens when a feature is skeleton-only (Fleet, TechTree, Economy)? System docs for skeleton features are not created. Their existence is noted in `overview.md` as future phases.
+- What happens when a feature has minimal scope (e.g., Base with only StationPresetConfig)? Its single type is documented within the most closely related system doc (station.md) rather than warranting a standalone doc. This is noted explicitly in station.md's Designer Notes.
 - What happens when a system has no ECS components (e.g., Resources, HUD)? The ECS Components section states "None — this system operates entirely in the managed/MonoBehaviour layer" rather than being omitted.
 - What happens when a system has no events? The Events section states "None — this system does not publish or subscribe to events" rather than being omitted.
 - How are cross-cutting concerns documented (e.g., CompositeReducer actions that span multiple state slices)? Cross-cutting reducers are documented in `state-management.md` and referenced from the relevant system docs.
@@ -112,7 +113,7 @@ A new team member (developer or designer) needs quick access to standardized ter
 - **FR-019**: `docs/glossary.md` MUST define all project-specific terminology including but not limited to: Reducer, BlobAsset, Authoring, Baking, EventBus, ScriptableObject, ImmutableArray, PilotCommand, ECS, DOTS, Burst, MonoBehaviour, Assembly Definition.
 - **FR-020**: `docs/troubleshooting.md` MUST document all known pitfalls from development, including per-instance material property overrides, FBX mesh scale, stale ECS ship position, and ECS entity-gone race conditions.
 - **FR-021**: `docs/onboarding.md` MUST provide a recommended reading order through the documentation set for new developers.
-- **FR-022**: `docs/assembly-map.md` MUST include a Mermaid diagram showing all assembly definitions and their dependency relationships.
+- **FR-022**: `docs/assembly-map.md` MUST include a Mermaid diagram showing all 38 assembly definitions (9 Core + 29 Features) and their dependency relationships.
 - **FR-023**: All Mermaid diagrams MUST use valid Mermaid syntax (flowcharts, state diagrams, sequence diagrams, class diagrams, or ER diagrams as appropriate).
 - **FR-024**: Systems and architecture docs MUST target developers — type names, namespace references, code patterns, and architectural rationale are expected.
 - **FR-025**: Designer guide docs MUST target non-programmers — plain language, asset paths, Unity Editor workflows, and visual aids only.
@@ -135,7 +136,7 @@ A new team member (developer or designer) needs quick access to standardized ter
 - **SC-005**: A new developer can determine the recommended reading order within 1 minute by opening `onboarding.md`.
 - **SC-006**: A designer can find the Create menu path and field documentation for any ScriptableObject within 2 minutes using the designer guide.
 - **SC-007**: All 25 event types are documented in the event catalog with publisher and subscriber information.
-- **SC-008**: All 29 assembly definitions are represented in the assembly dependency map.
+- **SC-008**: All 38 assembly definitions (9 Core + 29 Features) are represented in the assembly dependency map.
 - **SC-009**: All known development pitfalls (at least 4 documented in project memory) appear in `troubleshooting.md`.
 - **SC-010**: The documentation set is self-consistent — no broken cross-references, no contradictions between system docs and architecture docs.
 

@@ -57,11 +57,11 @@ This is a documentation-only feature. No technology choices or external integrat
 
 ## Codebase Artifact Catalog
 
-### Assemblies (29 total)
+### Assemblies (38 total: 9 Core + 29 Features)
 
 **Core (9)**: Extensions, Extensions.Tests, EventBus, EventBus.Tests, Pools, State, State.Tests, Editor, Editor.Tests
 
-**Features (29 total including tests)**: Base, Camera (+Tests), Docking (+Tests), Economy, Fleet, HUD (+Tests), Input (+Tests), Mining (+Tests), Procedural (+Tests), Resources (+Tests), Ship (+Tests), Station (+Tests), StationServices (+Tests), Targeting (+Tests), TechTree, Tests (cross-feature), World (+Tests)
+**Features (29)**: Base, Camera (+Tests), Docking (+Tests), Economy, Fleet, HUD (+Tests), Input (+Tests), Mining (+Tests), Procedural (+Tests), Resources (+Tests), Ship (+Tests), Station (+Tests), StationServices (+Tests), Targeting (+Tests), TechTree, Tests (cross-feature), World (+Tests)
 
 ### Event Types (25 total)
 
