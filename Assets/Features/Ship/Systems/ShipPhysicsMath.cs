@@ -27,9 +27,23 @@ namespace VoidHarvest.Features.Ship.Systems
             if (current == ShipFlightMode.Docked)
                 return ShipFlightMode.Docked;
 
-            // Docking mode: manual input cancels docking, no manual input stays
+            // Docking mode: manual input or radial action cancels docking
             if (current == ShipFlightMode.Docking)
-                return hasManualInput ? ShipFlightMode.ManualThrust : ShipFlightMode.Docking;
+            {
+                if (hasManualInput)
+                    return ShipFlightMode.ManualThrust;
+                if (radialAction >= 0)
+                {
+                    return radialAction switch
+                    {
+                        0 => ShipFlightMode.Approach,
+                        1 => ShipFlightMode.Orbit,
+                        3 => ShipFlightMode.KeepAtRange,
+                        _ => ShipFlightMode.Docking
+                    };
+                }
+                return ShipFlightMode.Docking;
+            }
 
             if (hasManualInput)
                 return ShipFlightMode.ManualThrust;

@@ -238,15 +238,18 @@ namespace VoidHarvest.Features.Input.Views
                 _hasAlignPoint = false;
                 _radialAction = -1;
                 _radialDistance = 0f;
+            }
 
-                // Cancel docking if manual thrust during Docking flight mode
-                if (_ecsReady && _entityManager.Exists(_shipEntity)
-                    && _entityManager.HasComponent<DockingStateComponent>(_shipEntity))
-                {
-                    _entityManager.RemoveComponent<DockingStateComponent>(_shipEntity);
-                    _stateStore?.Dispatch(new CancelDockingAction());
-                    _eventBus?.Publish(new DockingCancelledEvent());
-                }
+            // Cancel docking sequence if manual thrust or autopilot radial action overrides it
+            // Dock action (4) must not cancel its own docking sequence
+            bool hasAutopilotRadial = _radialAction >= 0 && _radialAction != 4; // 4 = Dock
+            if ((hasManualInput || hasAutopilotRadial)
+                && _ecsReady && _entityManager.Exists(_shipEntity)
+                && _entityManager.HasComponent<DockingStateComponent>(_shipEntity))
+            {
+                _entityManager.RemoveComponent<DockingStateComponent>(_shipEntity);
+                _stateStore?.Dispatch(new CancelDockingAction());
+                _eventBus?.Publish(new DockingCancelledEvent());
             }
 
             if (!_entityManager.Exists(_shipEntity)) return;
