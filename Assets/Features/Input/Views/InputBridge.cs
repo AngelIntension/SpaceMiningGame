@@ -14,6 +14,7 @@ using VoidHarvest.Features.Mining.Data;
 using VoidHarvest.Features.Mining.Systems;
 using VoidHarvest.Features.Docking.Data;
 using System.Threading;
+using VoidHarvest.Features.Input.Data;
 using VoidHarvest.Features.Targeting.Data;
 using VoidHarvest.Features.Targeting.Views;
 
@@ -44,11 +45,12 @@ namespace VoidHarvest.Features.Input.Views
         private float3 _alignPoint;
         private bool _hasAlignPoint;
         private float _lastClickTime;
-        private const float DoubleClickWindow = 0.3f;
+        private float _doubleClickWindow = 0.3f;
         private int _radialAction = -1;
         private float _radialDistance;
         private Vector2 _radialMenuStartPos;
-        private const float RadialMenuDragThreshold = 5f;
+        private float _radialMenuDragThreshold = 5f;
+        private float _miningBeamMaxRange = 50f;
 
         private IStateStore _stateStore;
         private IEventBus _eventBus;
@@ -74,11 +76,18 @@ namespace VoidHarvest.Features.Input.Views
         /// </summary>
         [Inject]
         public void Construct(IStateStore stateStore, IEventBus eventBus,
-                              Features.Camera.Views.CameraView cameraView)
+                              Features.Camera.Views.CameraView cameraView,
+                              InteractionConfig interactionConfig = null)
         {
             _stateStore = stateStore;
             _eventBus = eventBus;
             _cameraView = cameraView;
+            if (interactionConfig != null)
+            {
+                _doubleClickWindow = interactionConfig.DoubleClickWindow;
+                _radialMenuDragThreshold = interactionConfig.RadialMenuDragThreshold;
+                _miningBeamMaxRange = interactionConfig.MiningBeamMaxRange;
+            }
         }
 
         private void Awake()
@@ -326,7 +335,7 @@ namespace VoidHarvest.Features.Input.Views
             if (_radialMenuOpen) return;
 
             float now = Time.unscaledTime;
-            bool isDoubleClick = (now - _lastClickTime) < DoubleClickWindow;
+            bool isDoubleClick = (now - _lastClickTime) < _doubleClickWindow;
             _lastClickTime = now;
 
             // Suppress selection while docked
@@ -433,7 +442,7 @@ namespace VoidHarvest.Features.Input.Views
             var mouse = Mouse.current;
             if (mouse == null) return;
             Vector2 endPos = mouse.position.ReadValue();
-            if (Vector2.Distance(_radialMenuStartPos, endPos) > RadialMenuDragThreshold) return;
+            if (Vector2.Distance(_radialMenuStartPos, endPos) > _radialMenuDragThreshold) return;
 
             _eventBus?.Publish(new RadialMenuRequestedEvent(_selectedTargetId, _selectedTargetType));
         }
@@ -569,7 +578,7 @@ namespace VoidHarvest.Features.Input.Views
                 TargetAsteroid = _selectedAsteroidEntity,
                 BeamEnergy = 1f,
                 MiningPower = config.MiningPower,
-                MaxRange = 50f,
+                MaxRange = _miningBeamMaxRange,
                 Active = true
             };
             if (_entityManager.HasComponent<MiningBeamComponent>(_shipEntity))

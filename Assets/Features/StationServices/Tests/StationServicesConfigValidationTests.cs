@@ -2,6 +2,7 @@ using System.Text.RegularExpressions;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
+using VoidHarvest.Features.Station.Data;
 using VoidHarvest.Features.StationServices.Data;
 
 namespace VoidHarvest.Features.StationServices.Tests

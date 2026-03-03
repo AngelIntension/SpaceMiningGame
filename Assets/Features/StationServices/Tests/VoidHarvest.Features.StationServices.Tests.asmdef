@@ -8,6 +8,7 @@
         "VoidHarvest.Core.EventBus",
         "UniTask",
         "VoidHarvest.Features.Mining",
+        "VoidHarvest.Features.Station",
         "VoidHarvest.Features.Resources",
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",

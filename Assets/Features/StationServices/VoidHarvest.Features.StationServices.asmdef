@@ -10,6 +10,8 @@
         "VoidHarvest.Features.Docking",
         "VoidHarvest.Features.Input",
         "VoidHarvest.Features.Ship",
+        "VoidHarvest.Features.Station",
+        "VoidHarvest.Features.World",
         "VContainer",
         "UniTask",
         "Unity.Mathematics"

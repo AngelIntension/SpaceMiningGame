@@ -8,6 +8,8 @@
         "VoidHarvest.Core.Extensions",
         "VoidHarvest.Features.Ship",
         "Unity.Mathematics",
+        "Unity.Entities",
+        "Unity.Collections",
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner"
     ],

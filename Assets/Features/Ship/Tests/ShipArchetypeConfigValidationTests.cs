@@ -26,6 +26,7 @@ namespace VoidHarvest.Features.Ship.Tests
             _config.MiningPower = 10f;
             _config.ModuleSlots = 3;
             _config.CargoCapacity = 100f;
+            _config.CargoSlots = 20;
             _config.BaseLockTime = 1.5f;
             _config.MaxTargetLocks = 3;
             _config.MaxLockRange = 5000f;
@@ -105,6 +106,22 @@ namespace VoidHarvest.Features.Ship.Tests
         {
             _config.LinearDamping = -1f;
             LogAssert.Expect(LogType.Warning, new Regex("LinearDamping"));
+            CallOnValidate(_config);
+        }
+
+        [Test]
+        public void OnValidate_CargoSlotsZero_LogsWarning()
+        {
+            _config.CargoSlots = 0;
+            LogAssert.Expect(LogType.Warning, new Regex("CargoSlots"));
+            CallOnValidate(_config);
+        }
+
+        [Test]
+        public void OnValidate_CargoSlotsAboveSoftThreshold_LogsInfo()
+        {
+            _config.CargoSlots = 101;
+            LogAssert.Expect(LogType.Log, new Regex("CargoSlots"));
             CallOnValidate(_config);
         }
 

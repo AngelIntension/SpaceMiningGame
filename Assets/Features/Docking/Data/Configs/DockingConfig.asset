@@ -17,3 +17,7 @@ MonoBehaviour:
   SnapDuration: 1.5
   UndockClearanceDistance: 100
   UndockDuration: 2
+  ApproachTimeout: 120
+  AlignTimeout: 30
+  AlignDotThreshold: 0.999
+  AlignAngVelThreshold: 0.01

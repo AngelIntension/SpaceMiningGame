@@ -6,6 +6,7 @@
         "VoidHarvest.Core.Extensions",
         "VoidHarvest.Core.State",
         "VoidHarvest.Core.EventBus",
+        "VoidHarvest.Features.Station",
         "Unity.Mathematics",
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner"

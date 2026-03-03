@@ -8,8 +8,10 @@ using VoidHarvest.Core.EventBus;
 using VoidHarvest.Core.EventBus.Events;
 using VoidHarvest.Core.State;
 using VoidHarvest.Features.Mining.Data;
+using VoidHarvest.Features.Station.Data;
 using VoidHarvest.Features.StationServices.Data;
 using VoidHarvest.Features.StationServices.Systems;
+using VoidHarvest.Features.World.Data;
 
 namespace VoidHarvest.Features.StationServices.Views
 {
@@ -21,7 +23,7 @@ namespace VoidHarvest.Features.StationServices.Views
     {
         private IStateStore _stateStore;
         private IEventBus _eventBus;
-        private StationServicesConfigMap _configMap;
+        private WorldDefinition _worldDefinition;
         private int _dockedStationId;
 
         private VisualElement _root;
@@ -46,11 +48,11 @@ namespace VoidHarvest.Features.StationServices.Views
         public System.Action<RefiningJobState> OnCompletedJobClicked;
 
         [Inject]
-        public void Construct(IStateStore stateStore, IEventBus eventBus, StationServicesConfigMap configMap)
+        public void Construct(IStateStore stateStore, IEventBus eventBus, WorldDefinition worldDefinition)
         {
             _stateStore = stateStore;
             _eventBus = eventBus;
-            _configMap = configMap;
+            _worldDefinition = worldDefinition;
         }
 
         public void Initialize(VisualElement root, int stationId)
@@ -247,7 +249,8 @@ namespace VoidHarvest.Features.StationServices.Views
             int qty = _quantitySlider?.value ?? 1;
             int cost = RefiningMath.CalculateJobCost(qty, _selectedCostPerUnit);
 
-            var config = _configMap?.GetConfig(_dockedStationId);
+            var stationDef = _worldDefinition?.GetStationById(_dockedStationId);
+            var config = stationDef != null ? stationDef.ServicesConfig : null;
             int maxSlots = config != null ? config.MaxConcurrentRefiningSlots : 3;
             float speedMult = config != null ? config.RefiningSpeedMultiplier : 1f;
 

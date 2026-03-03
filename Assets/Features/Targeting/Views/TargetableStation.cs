@@ -2,21 +2,24 @@ using UnityEngine;
 using VContainer;
 using VoidHarvest.Core.Extensions;
 using VoidHarvest.Core.State;
+using VoidHarvest.Features.Station.Data;
 
 namespace VoidHarvest.Features.Targeting.Views
 {
     /// <summary>
     /// MonoBehaviour implementing ITargetable for station GameObjects.
     /// Placed alongside DockingPortComponent on station prefabs.
-    /// See Spec 007: In-Flight Targeting.
+    /// See Spec 007: In-Flight Targeting, Spec 009: Data-Driven World Config (FR-024).
     /// </summary>
     public sealed class TargetableStation : MonoBehaviour, ITargetable
     {
-        [SerializeField] private int stationId;
+        [SerializeField] private StationDefinition stationDefinition;
 
+        private int _stationId;
         private string _displayName = "Unknown Station";
         private IStateStore _stateStore;
 
+        public int StationId => _stationId;
         public int TargetId => gameObject.GetInstanceID();
         public string DisplayName => _displayName;
         public string TypeLabel => "Station";
@@ -28,18 +31,12 @@ namespace VoidHarvest.Features.Targeting.Views
             _stateStore = stateStore;
         }
 
-        private void Start()
+        private void Awake()
         {
-            if (_stateStore == null) return;
-
-            var stations = _stateStore.Current.World.Stations;
-            for (int i = 0; i < stations.Length; i++)
+            if (stationDefinition != null)
             {
-                if (stations[i].Id == stationId)
-                {
-                    _displayName = stations[i].Name;
-                    return;
-                }
+                _stationId = stationDefinition.StationId;
+                _displayName = stationDefinition.DisplayName ?? "Unknown Station";
             }
         }
     }

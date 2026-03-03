@@ -9,6 +9,7 @@ using VoidHarvest.Core.EventBus.Events;
 using VoidHarvest.Core.State;
 using VoidHarvest.Core.Extensions;
 using VoidHarvest.Features.Docking.Data;
+using VoidHarvest.Features.Input.Data;
 using VoidHarvest.Features.Input.Views;
 using VoidHarvest.Features.Targeting.Views;
 
@@ -27,9 +28,9 @@ namespace VoidHarvest.Features.HUD.Views
         private const int ActionDock = 4;
         private const int ActionLockTarget = 5;
 
-        private const float DefaultApproachDistance = 50f;
-        private const float DefaultOrbitDistance = 100f;
-        private const float DefaultKeepAtRangeDistance = 50f;
+        private float _defaultApproachDistance = 50f;
+        private float _defaultOrbitDistance = 100f;
+        private float _defaultKeepAtRangeDistance = 50f;
 
         [SerializeField] private UIDocument uiDocument;
 
@@ -59,9 +60,9 @@ namespace VoidHarvest.Features.HUD.Views
         private bool _isOpen;
 
         // Persisted distance defaults per action (updated when user confirms)
-        private float _approachDistance = DefaultApproachDistance;
-        private float _orbitDistance = DefaultOrbitDistance;
-        private float _keepAtRangeDistance = DefaultKeepAtRangeDistance;
+        private float _approachDistance = 50f;
+        private float _orbitDistance = 100f;
+        private float _keepAtRangeDistance = 50f;
 
         // Reference to InputBridge for SetRadialChoice callback
         private InputBridge _inputBridge;
@@ -72,12 +73,22 @@ namespace VoidHarvest.Features.HUD.Views
         /// </summary>
         [Inject]
         public void Construct(IStateStore stateStore, IEventBus eventBus,
-                              InputBridge inputBridge, TargetingController targetingController)
+                              InputBridge inputBridge, TargetingController targetingController,
+                              InteractionConfig interactionConfig = null)
         {
             _stateStore = stateStore;
             _eventBus = eventBus;
             _inputBridge = inputBridge;
             _targetingController = targetingController;
+            if (interactionConfig != null)
+            {
+                _defaultApproachDistance = interactionConfig.DefaultApproachDistance;
+                _defaultOrbitDistance = interactionConfig.DefaultOrbitDistance;
+                _defaultKeepAtRangeDistance = interactionConfig.DefaultKeepAtRangeDistance;
+                _approachDistance = _defaultApproachDistance;
+                _orbitDistance = _defaultOrbitDistance;
+                _keepAtRangeDistance = _defaultKeepAtRangeDistance;
+            }
         }
 
         private async UniTaskVoid ListenForRadialMenuEvents(CancellationToken ct)

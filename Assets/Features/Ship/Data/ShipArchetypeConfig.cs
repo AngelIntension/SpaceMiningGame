@@ -33,6 +33,8 @@ namespace VoidHarvest.Features.Ship.Data
         public int ModuleSlots;
         /// <summary>Maximum cargo volume in cubic meters. See MVP-06.</summary>
         public float CargoCapacity;
+        /// <summary>Number of cargo inventory slots. See Spec 009 US4.</summary>
+        public int CargoSlots = 20;
         /// <summary>Visual hull mesh reference. See MVP-01.</summary>
         public Mesh HullMesh;
         /// <summary>Visual hull material reference. See MVP-01.</summary>
@@ -65,6 +67,10 @@ namespace VoidHarvest.Features.Ship.Data
                 Debug.LogWarning($"[{name}] AngularDamping must be >= 0");
             if (CargoCapacity <= 0f)
                 Debug.LogWarning($"[{name}] CargoCapacity must be > 0");
+            if (CargoSlots < 1)
+                Debug.LogWarning($"[{name}] CargoSlots must be >= 1");
+            else if (CargoSlots > 100)
+                Debug.Log($"[{name}] CargoSlots is {CargoSlots} — above soft threshold of 100");
             if (BaseLockTime <= 0f)
                 Debug.LogWarning($"[{name}] BaseLockTime must be > 0");
             if (MaxTargetLocks < 1)

@@ -1,0 +1,30 @@
+{
+    "name": "VoidHarvest.Features.World.Tests",
+    "rootNamespace": "VoidHarvest.Features.World.Tests",
+    "references": [
+        "VoidHarvest.Features.World",
+        "VoidHarvest.Features.Station",
+        "VoidHarvest.Features.Ship",
+        "VoidHarvest.Core.State",
+        "VoidHarvest.Core.Extensions",
+        "Unity.Mathematics",
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll",
+        "System.Collections.Immutable.dll"
+    ],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

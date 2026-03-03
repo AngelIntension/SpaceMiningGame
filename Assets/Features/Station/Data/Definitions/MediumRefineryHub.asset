@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0dd51e475d71d64dba84b56dcf28947, type: 3}
+  m_Name: MediumRefineryHub
+  m_EditorClassIdentifier:
+  StationId: 2
+  DisplayName: Medium Refinery Hub
+  Description: A larger station with refining, market, repair, and cargo services.
+  StationType: 1
+  WorldPosition: {x: -800, y: 200, z: 600}
+  WorldRotation: {x: 0, y: 0, z: 0, w: 1}
+  AvailableServices:
+  - Sell
+  - Refine
+  - Repair
+  ServicesConfig: {fileID: 11400000, guid: 7ae7af4e78ee9d944ad8ff1f88b03339, type: 2}
+  PresetConfig: {fileID: 11400000, guid: d4e5f6a7b8c90a44d1e2f3a4b5c6d7e8, type: 2}
+  DockingPortOffset: {x: 0, y: 0, z: 50}
+  DockingPortRotation: {x: 0, y: 0, z: 0, w: 1}
+  SafeUndockDirection: {x: 0, y: 0, z: 1}
+  Prefab: {fileID: 0}
+  Icon: {fileID: 0}

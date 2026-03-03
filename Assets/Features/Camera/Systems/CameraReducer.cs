@@ -11,15 +11,10 @@ namespace VoidHarvest.Features.Camera.Systems
     /// </summary>
     public static class CameraReducer
     {
-        private const float MinPitch = -80f;
-        private const float MaxPitch = 80f;
-        private const float MinDistance = 5f;
-        private const float MaxDistance = 50f;
-        private const float MinZoomDistance = 10f;
-        private const float MaxZoomDistance = 40f;
-
         /// <summary>
         /// Reduce camera state by applying a camera action. See MVP-02: Camera orbit and zoom.
+        /// Limits are read from CameraState fields (initialized from CameraConfig SO).
+        /// See Spec 009: Data-Driven World Config (US3).
         /// </summary>
         public static CameraState Reduce(CameraState state, ICameraAction action)
             => action switch
@@ -35,13 +30,13 @@ namespace VoidHarvest.Features.Camera.Systems
         private static CameraState ApplyOrbit(CameraState state, OrbitAction action)
         {
             var newYaw = state.OrbitYaw + action.DeltaYaw;
-            var newPitch = Mathf.Clamp(state.OrbitPitch + action.DeltaPitch, MinPitch, MaxPitch);
+            var newPitch = Mathf.Clamp(state.OrbitPitch + action.DeltaPitch, state.MinPitch, state.MaxPitch);
             return state with { OrbitYaw = newYaw, OrbitPitch = newPitch };
         }
 
         private static CameraState ApplyZoom(CameraState state, ZoomAction action)
         {
-            var newDistance = Mathf.Clamp(state.TargetDistance + action.Delta, MinDistance, MaxDistance);
+            var newDistance = Mathf.Clamp(state.TargetDistance + action.Delta, state.MinDistance, state.MaxDistance);
             return state with { TargetDistance = newDistance };
         }
 
@@ -50,8 +45,8 @@ namespace VoidHarvest.Features.Camera.Systems
             // Lerp between MinZoomDistance (fast) and MaxZoomDistance (slow)
             // NormalizedSpeed 0 -> MaxZoomDistance, NormalizedSpeed 1 -> MinZoomDistance
             var speed = Mathf.Clamp01(action.NormalizedSpeed);
-            var targetDist = Mathf.Lerp(MaxZoomDistance, MinZoomDistance, speed);
-            var newDistance = Mathf.Clamp(targetDist, MinDistance, MaxDistance);
+            var targetDist = Mathf.Lerp(state.MaxZoomDistance, state.MinZoomDistance, speed);
+            var newDistance = Mathf.Clamp(targetDist, state.MinDistance, state.MaxDistance);
             return state with { TargetDistance = newDistance };
         }
 
@@ -73,7 +68,7 @@ namespace VoidHarvest.Features.Camera.Systems
                 return state;
 
             var newYaw = state.FreeLookYaw + action.DeltaYaw;
-            var newPitch = Mathf.Clamp(state.FreeLookPitch + action.DeltaPitch, MinPitch, MaxPitch);
+            var newPitch = Mathf.Clamp(state.FreeLookPitch + action.DeltaPitch, state.MinPitch, state.MaxPitch);
             return state with { FreeLookYaw = newYaw, FreeLookPitch = newPitch };
         }
     }

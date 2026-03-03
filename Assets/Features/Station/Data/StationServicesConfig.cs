@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace VoidHarvest.Features.StationServices.Data
+namespace VoidHarvest.Features.Station.Data
 {
     /// <summary>
     /// Per-station service capabilities. Referenced from StationPresetConfig.
