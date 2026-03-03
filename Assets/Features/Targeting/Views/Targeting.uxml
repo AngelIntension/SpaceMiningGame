@@ -10,12 +10,16 @@
             <ui:VisualElement name="reticle-corner-br" class="reticle-corner reticle-corner-br" />
 
             <!-- Labels above reticle -->
-            <ui:Label name="target-name-label" class="reticle-label reticle-label-above" />
-            <ui:Label name="target-type-label" class="reticle-label reticle-label-above reticle-label-type" />
+            <ui:VisualElement name="reticle-labels-above" class="reticle-labels-group reticle-labels-above">
+                <ui:Label name="target-name-label" class="reticle-label" />
+                <ui:Label name="target-type-label" class="reticle-label reticle-label-type" />
+            </ui:VisualElement>
 
             <!-- Labels below reticle -->
-            <ui:Label name="target-range-label" class="reticle-label reticle-label-below" />
-            <ui:Label name="target-mass-label" class="reticle-label reticle-label-below reticle-label-mass" />
+            <ui:VisualElement name="reticle-labels-below" class="reticle-labels-group reticle-labels-below">
+                <ui:Label name="target-range-label" class="reticle-label" />
+                <ui:Label name="target-mass-label" class="reticle-label reticle-label-mass" />
+            </ui:VisualElement>
         </ui:VisualElement>
 
         <!-- Off-screen tracking indicator -->
