@@ -356,24 +356,25 @@ namespace VoidHarvest.Features.Targeting.Views
                 _lockProgressView.Update(acq, reticleLeft, reticleTop, reticleSize, _cornerOpacities);
             }
 
-            // Target card panel
+            // Target card panel + preview cameras
             _cardPanelView?.Update(targeting.LockedTargets, this, shipPos);
 
-            // Update preview cameras to mirror ship-to-target perspective
-            if (_previewManager != null && _shipTransform != null)
+            if (_previewManager != null)
             {
-                Vector3 shipVisualPos = _shipTransform.position;
                 var locked = targeting.LockedTargets;
                 for (int i = 0; i < locked.Length; i++)
                 {
                     if (GetTargetWorldPosition(locked[i].TargetId, out var targetPos, out _))
-                        _previewManager.UpdatePreviewCamera(locked[i].TargetId, shipVisualPos, targetPos);
+                        _previewManager.UpdatePreviewCamera(locked[i].TargetId, shipPos, targetPos);
                 }
             }
         }
 
         private Vector3 GetShipPosition()
         {
+            if (_shipTransform != null)
+                return _shipTransform.position;
+
             if (_ecsReady && _entityManager.Exists(_shipEntity)
                 && _entityManager.HasComponent<LocalTransform>(_shipEntity))
             {
