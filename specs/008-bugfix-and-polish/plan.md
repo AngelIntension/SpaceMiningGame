@@ -41,7 +41,7 @@ Systematic bugfix and hardening pass across all Phase 0 systems. Fixes 7 confirm
 ### Documentation (this feature)
 
 ```text
-specs/feature/008-bugfix-and-polish/
+specs/008-bugfix-and-polish/
 ├── plan.md              # This file
 ├── spec.md              # Feature specification
 ├── research.md          # Phase 0 research findings
