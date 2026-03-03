@@ -447,7 +447,7 @@ namespace VoidHarvest.Features.Input.Views
                 {
                     if (station.TargetId == selection.TargetId)
                     {
-                        _selectedDockingPort = station.GetComponent<DockingPortComponent>();
+                        _selectedDockingPort = station.GetComponentInChildren<DockingPortComponent>();
                         return;
                     }
                 }
