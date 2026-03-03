@@ -85,7 +85,13 @@ namespace VoidHarvest.Features.Targeting.Views
             SetPosition(_cornerBR, size - CornerSize, size - CornerSize);
 
             if (_nameLabel != null) _nameLabel.text = selection.DisplayName;
-            if (_typeLabel != null) _typeLabel.text = selection.TypeLabel;
+            // Hide type label when redundant (e.g. "Ferrox" under "Ferrox Asteroid")
+            if (_typeLabel != null)
+            {
+                bool redundant = !string.IsNullOrEmpty(selection.TypeLabel)
+                    && selection.DisplayName.Contains(selection.TypeLabel);
+                _typeLabel.text = redundant ? "" : selection.TypeLabel;
+            }
 
             float range = Vector3.Distance(shipWorldPos, targetWorldPos);
             if (_rangeLabel != null) _rangeLabel.text = TargetingMath.FormatRange(range);

@@ -382,6 +382,9 @@ namespace VoidHarvest.Features.Input.Views
 
         private void OnRadialMenuRelease(InputAction.CallbackContext ctx)
         {
+            // Sync from state store so card-click selections also enable radial menu
+            SyncSelectionFromState();
+
             if (_selectedTargetType == TargetType.None) return;
 
             // Only open radial menu if right-click was a tap (not a drag for orbit)
@@ -391,6 +394,21 @@ namespace VoidHarvest.Features.Input.Views
             if (Vector2.Distance(_radialMenuStartPos, endPos) > RadialMenuDragThreshold) return;
 
             _eventBus?.Publish(new RadialMenuRequestedEvent(_selectedTargetId, _selectedTargetType));
+        }
+
+        /// <summary>
+        /// Syncs local selection fields from the state store's targeting state.
+        /// Ensures selections made via UI (e.g. target card clicks) are reflected here.
+        /// </summary>
+        private void SyncSelectionFromState()
+        {
+            if (_stateStore == null) return;
+            var selection = _stateStore.Current.Loop.Targeting.Selection;
+            if (selection.HasSelection)
+            {
+                _selectedTargetId = selection.TargetId;
+                _selectedTargetType = selection.TargetType;
+            }
         }
 
         /// <summary>
