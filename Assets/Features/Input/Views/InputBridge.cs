@@ -14,6 +14,7 @@ using VoidHarvest.Features.Mining.Data;
 using VoidHarvest.Features.Mining.Systems;
 using VoidHarvest.Features.Docking.Data;
 using VoidHarvest.Features.Targeting.Data;
+using VoidHarvest.Features.Targeting.Views;
 
 namespace VoidHarvest.Features.Input.Views
 {
@@ -399,15 +400,28 @@ namespace VoidHarvest.Features.Input.Views
         /// <summary>
         /// Syncs local selection fields from the state store's targeting state.
         /// Ensures selections made via UI (e.g. target card clicks) are reflected here.
+        /// Also resolves DockingPortComponent for station targets so Dock action works.
         /// </summary>
         private void SyncSelectionFromState()
         {
             if (_stateStore == null) return;
             var selection = _stateStore.Current.Loop.Targeting.Selection;
-            if (selection.HasSelection)
+            if (!selection.HasSelection) return;
+
+            _selectedTargetId = selection.TargetId;
+            _selectedTargetType = selection.TargetType;
+
+            if (selection.TargetType == TargetType.Station)
             {
-                _selectedTargetId = selection.TargetId;
-                _selectedTargetType = selection.TargetType;
+                var stations = FindObjectsByType<TargetableStation>(FindObjectsSortMode.None);
+                foreach (var station in stations)
+                {
+                    if (station.TargetId == selection.TargetId)
+                    {
+                        _selectedDockingPort = station.GetComponent<DockingPortComponent>();
+                        return;
+                    }
+                }
             }
         }
 

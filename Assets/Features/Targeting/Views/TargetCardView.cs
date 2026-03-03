@@ -76,6 +76,8 @@ namespace VoidHarvest.Features.Targeting.Views
 
             // Card body click → select this locked target (FR-023a)
             _root.RegisterCallback<ClickEvent>(OnCardClicked);
+            // Right-click → select and request radial menu
+            _root.RegisterCallback<PointerDownEvent>(OnCardRightClicked);
         }
 
         public void UpdateRange(Vector3 targetPos, Vector3 shipPos)
@@ -109,9 +111,21 @@ namespace VoidHarvest.Features.Targeting.Views
                 _lockData.DisplayName, _lockData.TypeLabel));
         }
 
+        private void OnCardRightClicked(PointerDownEvent evt)
+        {
+            if (evt.button != 1) return; // right-click only
+            if (evt.target is Button) return;
+
+            // Select this target so InputBridge.SyncSelectionFromState picks it up
+            _stateStore?.Dispatch(new SelectTargetAction(
+                _lockData.TargetId, _lockData.TargetType,
+                _lockData.DisplayName, _lockData.TypeLabel));
+        }
+
         public void Dispose()
         {
             _root.UnregisterCallback<ClickEvent>(OnCardClicked);
+            _root.UnregisterCallback<PointerDownEvent>(OnCardRightClicked);
             _previewManager?.ReleasePreview(_targetId);
         }
     }
