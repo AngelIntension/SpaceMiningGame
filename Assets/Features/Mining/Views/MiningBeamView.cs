@@ -38,6 +38,11 @@ namespace VoidHarvest.Features.Mining.Views
         // Mining arm origin transform (child of ship)
         private Transform _miningArmOrigin;
 
+        // MeshCollider proxy for exact beam-to-mesh surface raycasting
+        private GameObject _meshColliderProxy;
+        private MeshCollider _proxyCollider;
+        private Entity _currentProxyTarget;
+
         private EntityManager _entityManager;
         private Entity _shipEntity;
         private bool _ecsReady;
@@ -59,6 +64,7 @@ namespace VoidHarvest.Features.Mining.Views
 
             CreateSparkSystem();
             CreateShimmerSystem();
+            CreateMeshColliderProxy();
         }
 
         private void Start()
@@ -85,13 +91,16 @@ namespace VoidHarvest.Features.Mining.Views
             }
 
             // Get target position from ECS
-            if (!_ecsReady || !TryGetTargetPosition(out var asteroidCenter, out var asteroidRadius))
+            if (!_ecsReady || !TryGetTargetPosition(out var asteroidCenter, out var asteroidRadius,
+                    out var targetEntity))
             {
                 if (_effectsActive)
                     StopAllEffects();
                 _lineRenderer.enabled = false;
                 return;
             }
+
+            UpdateProxyForTarget(targetEntity);
 
             _lineRenderer.enabled = true;
             _effectsActive = true;
@@ -113,12 +122,8 @@ namespace VoidHarvest.Features.Mining.Views
 
             Vector3 beamOrigin = _miningArmOrigin != null ? _miningArmOrigin.position : transform.position;
 
-            // Compute surface impact point (beam hits asteroid surface, not center)
-            Vector3 toShip = beamOrigin - asteroidCenter;
-            float dist = toShip.magnitude;
-            Vector3 impactPoint = dist > 0.001f
-                ? asteroidCenter + (toShip / dist) * asteroidRadius
-                : asteroidCenter;
+            // Compute surface impact point via mesh raycast for exact hit on irregular geometry
+            Vector3 impactPoint = CalculateImpactPoint(beamOrigin, asteroidCenter, asteroidRadius);
 
             _lineRenderer.SetPosition(0, beamOrigin);
             _lineRenderer.SetPosition(1, impactPoint);
@@ -239,6 +244,70 @@ namespace VoidHarvest.Features.Mining.Views
                 _shimmerSystem.Stop(true, ParticleSystemStopBehavior.StopEmitting);
         }
 
+        // Small overshoot into the mesh to guarantee visual beam contact
+        private const float ImpactOvershoot = 0.05f;
+
+        private void CreateMeshColliderProxy()
+        {
+            _meshColliderProxy = new GameObject("MiningBeamImpactProxy");
+            _meshColliderProxy.layer = LayerMask.NameToLayer("Ignore Raycast");
+            _proxyCollider = _meshColliderProxy.AddComponent<MeshCollider>();
+        }
+
+        private void UpdateProxyForTarget(Entity targetEntity)
+        {
+            // Update mesh only when target changes (mesh lookup + collider bake is expensive)
+            if (targetEntity != _currentProxyTarget || _proxyCollider.sharedMesh == null)
+            {
+                _currentProxyTarget = targetEntity;
+
+                if (!_entityManager.HasComponent<AsteroidComponent>(targetEntity))
+                    return;
+
+                var asteroid = _entityManager.GetComponentData<AsteroidComponent>(targetEntity);
+                var mesh = AsteroidMeshRegistry.GetMesh(asteroid.MeshIndex);
+                if (mesh == null)
+                    return;
+
+                _proxyCollider.sharedMesh = mesh;
+            }
+
+            // Always sync transform — scale changes continuously during depletion
+            var lt = _entityManager.GetComponentData<LocalTransform>(targetEntity);
+            _meshColliderProxy.transform.SetPositionAndRotation(
+                new Vector3(lt.Position.x, lt.Position.y, lt.Position.z),
+                lt.Rotation);
+            _meshColliderProxy.transform.localScale = Vector3.one * lt.Scale;
+        }
+
+        private Vector3 CalculateImpactPoint(Vector3 beamOrigin, Vector3 asteroidCenter, float asteroidRadius)
+        {
+            Vector3 toCenter = asteroidCenter - beamOrigin;
+            float distance = toCenter.magnitude;
+
+            if (distance < 0.001f)
+                return asteroidCenter;
+
+            Vector3 direction = toCenter / distance;
+
+            // Raycast against the actual mesh geometry for exact surface hit
+            if (_proxyCollider != null && _proxyCollider.sharedMesh != null)
+            {
+                var ray = new Ray(beamOrigin, direction);
+                if (_proxyCollider.Raycast(ray, out var hit, distance + asteroidRadius))
+                    return hit.point + direction * ImpactOvershoot;
+            }
+
+            // Fallback: sphere projection
+            return asteroidCenter - direction * asteroidRadius;
+        }
+
+        private void OnDestroy()
+        {
+            if (_meshColliderProxy != null)
+                Destroy(_meshColliderProxy);
+        }
+
         private void TryInitializeECS()
         {
             var world = World.DefaultGameObjectInjectionWorld;
@@ -256,10 +325,11 @@ namespace VoidHarvest.Features.Mining.Views
             }
         }
 
-        private bool TryGetTargetPosition(out Vector3 center, out float radius)
+        private bool TryGetTargetPosition(out Vector3 center, out float radius, out Entity targetEntity)
         {
             center = Vector3.zero;
             radius = 1f;
+            targetEntity = Entity.Null;
 
             if (!_entityManager.HasComponent<MiningBeamComponent>(_shipEntity))
                 return false;
@@ -271,6 +341,8 @@ namespace VoidHarvest.Features.Mining.Views
             if (!_entityManager.Exists(beam.TargetAsteroid) ||
                 !_entityManager.HasComponent<LocalTransform>(beam.TargetAsteroid))
                 return false;
+
+            targetEntity = beam.TargetAsteroid;
 
             var targetTransform = _entityManager.GetComponentData<LocalTransform>(beam.TargetAsteroid);
             center = targetTransform.Position;
