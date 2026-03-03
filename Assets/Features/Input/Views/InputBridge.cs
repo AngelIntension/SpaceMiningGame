@@ -130,6 +130,7 @@ namespace VoidHarvest.Features.Input.Views
             {
                 _stateCts = new CancellationTokenSource();
                 ListenForStateSelectionChanges(_stateCts.Token).Forget();
+                ListenForMiningStopped(_stateCts.Token).Forget();
             }
         }
 
@@ -168,6 +169,14 @@ namespace VoidHarvest.Features.Input.Views
             await foreach (var _ in _eventBus.Subscribe<UndockingStartedEvent>().WithCancellation(ct))
             {
                 InitiateUndocking();
+            }
+        }
+
+        private async UniTaskVoid ListenForMiningStopped(CancellationToken ct)
+        {
+            await foreach (var _ in _eventBus.Subscribe<MiningStoppedEvent>().WithCancellation(ct))
+            {
+                _isMining = false;
             }
         }
 
