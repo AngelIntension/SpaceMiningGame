@@ -45,6 +45,11 @@ namespace VoidHarvest.Features.StationServices.Views
             _stateCts = null;
         }
 
+        private void OnDestroy()
+        {
+            Cleanup();
+        }
+
         private async UniTaskVoid ListenForStateChanges(CancellationToken ct)
         {
             await foreach (var _ in _eventBus.Subscribe<StateChangedEvent<GameState>>().WithCancellation(ct))

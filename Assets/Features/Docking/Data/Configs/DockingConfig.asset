@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc229d15faff7294ebff1dac86cd060d, type: 3}
   m_Name: DockingConfig
   m_EditorClassIdentifier: 
-  MaxDockingRange: 10
+  MaxDockingRange: 500
   SnapRange: 30
   SnapDuration: 1.5
   UndockClearanceDistance: 100

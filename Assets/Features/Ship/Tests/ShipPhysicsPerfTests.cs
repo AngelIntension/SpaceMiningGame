@@ -162,7 +162,7 @@ namespace VoidHarvest.Features.Ship.Tests
                     ShipFlightMode.Approach => ShipPhysicsMath.ComputeApproachThrust(
                         fwd, toTarget, distance, 50f, MaxThrust),
                     ShipFlightMode.Orbit => ShipPhysicsMath.ComputeOrbitThrust(
-                        fwd, toTarget, distance, 100f, MaxThrust),
+                        pos, targetPos, vel, distance, 100f, MaxThrust, Mass, LinearDamping, MaxSpeed),
                     ShipFlightMode.KeepAtRange => ShipPhysicsMath.ComputeKeepAtRangeThrust(
                         toTarget, distance, 50f, MaxThrust),
                     _ => float3.zero

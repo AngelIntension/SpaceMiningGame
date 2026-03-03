@@ -6,7 +6,7 @@ namespace VoidHarvest.Features.Ship.Data
     /// Static data definition for a ship archetype. Authored in Unity Editor.
     /// See MVP-01: 6DOF Newtonian flight.
     /// </summary>
-    [CreateAssetMenu(menuName = "VoidHarvest/ShipArchetypeConfig")]
+    [CreateAssetMenu(menuName = "VoidHarvest/Ship/Ship Archetype Config")]
     public class ShipArchetypeConfig : ScriptableObject
     {
         /// <summary>Unique identifier for this ship archetype. See MVP-01.</summary>
@@ -44,6 +44,34 @@ namespace VoidHarvest.Features.Ship.Data
         public int MaxTargetLocks = 3;
         /// <summary>Maximum range in meters for lock acquisition. See Spec 007.</summary>
         public float MaxLockRange = 5000f;
+
+        private void OnValidate()
+        {
+            if (string.IsNullOrEmpty(ArchetypeId))
+                Debug.LogWarning($"[{name}] ArchetypeId must not be empty");
+            if (string.IsNullOrEmpty(DisplayName))
+                Debug.LogWarning($"[{name}] DisplayName must not be empty");
+            if (Mass <= 0f)
+                Debug.LogWarning($"[{name}] Mass must be > 0");
+            if (MaxThrust <= 0f)
+                Debug.LogWarning($"[{name}] MaxThrust must be > 0");
+            if (MaxSpeed <= 0f)
+                Debug.LogWarning($"[{name}] MaxSpeed must be > 0");
+            if (RotationTorque <= 0f)
+                Debug.LogWarning($"[{name}] RotationTorque must be > 0");
+            if (LinearDamping < 0f)
+                Debug.LogWarning($"[{name}] LinearDamping must be >= 0");
+            if (AngularDamping < 0f)
+                Debug.LogWarning($"[{name}] AngularDamping must be >= 0");
+            if (CargoCapacity <= 0f)
+                Debug.LogWarning($"[{name}] CargoCapacity must be > 0");
+            if (BaseLockTime <= 0f)
+                Debug.LogWarning($"[{name}] BaseLockTime must be > 0");
+            if (MaxTargetLocks < 1)
+                Debug.LogWarning($"[{name}] MaxTargetLocks must be >= 1");
+            if (MaxLockRange <= 0f)
+                Debug.LogWarning($"[{name}] MaxLockRange must be > 0");
+        }
     }
 
     /// <summary>

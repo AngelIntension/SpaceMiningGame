@@ -6,7 +6,7 @@ namespace VoidHarvest.Features.Targeting.Views
     /// Audio clip references for targeting feedback.
     /// See Spec 007: In-Flight Targeting.
     /// </summary>
-    [CreateAssetMenu(menuName = "VoidHarvest/Targeting Audio Config")]
+    [CreateAssetMenu(menuName = "VoidHarvest/Targeting/Targeting Audio Config")]
     public class TargetingAudioConfig : ScriptableObject
     {
         /// <summary>Rising tone played during lock acquisition.</summary>

@@ -73,6 +73,13 @@ namespace VoidHarvest.Features.Mining.Data
         /// Set at spawn time from mesh bounds. Default 1.0 for unit-sized meshes.
         /// </summary>
         public float MeshNormFactor;
+
+        /// <summary>
+        /// Index into AsteroidMeshRegistry for this asteroid's mesh variant.
+        /// Used by MiningBeamView to set up a MeshCollider proxy for exact
+        /// beam-to-mesh surface raycasting. Set at spawn time.
+        /// </summary>
+        public int MeshIndex;
     }
 
     /// <summary>

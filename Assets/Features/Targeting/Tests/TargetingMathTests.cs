@@ -63,9 +63,16 @@ namespace VoidHarvest.Features.Targeting.Tests
 
             var (position, angle) = TargetingMath.ClampToScreenEdge(screenPos, screenSize, margin);
 
-            // Should be clamped to screen edges minus margin
-            Assert.AreEqual(1920f - margin, position.x, 0.01f);
+            // Algorithm projects from center along direction to nearest margin edge.
+            // Direction is (1040, 660); Y edge is hit first (scaleY < scaleX), so
+            // clamped.y = 1080-30 = 1050, clamped.x = 960 + 1040*(510/660) ≈ 1763.64
+            Assert.AreEqual(960f + 1040f * (510f / 660f), position.x, 0.01f);
             Assert.AreEqual(1080f - margin, position.y, 0.01f);
+            // Position must lie within the margin box
+            Assert.LessOrEqual(position.x, 1920f - margin);
+            Assert.LessOrEqual(position.y, 1080f - margin);
+            Assert.GreaterOrEqual(position.x, margin);
+            Assert.GreaterOrEqual(position.y, margin);
             // Angle should point toward the original off-screen position (upper-right)
             Assert.Greater(angle, 0f);
         }

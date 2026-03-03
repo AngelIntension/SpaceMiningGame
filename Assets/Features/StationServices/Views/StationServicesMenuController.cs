@@ -64,11 +64,13 @@ namespace VoidHarvest.Features.StationServices.Views
         public void Construct(
             IStateStore stateStore,
             IEventBus eventBus,
-            StationServicesConfigMap configMap)
+            StationServicesConfigMap configMap,
+            InputBridge inputBridge)
         {
             _stateStore = stateStore;
             _eventBus = eventBus;
             _configMap = configMap;
+            _inputBridge = inputBridge;
         }
 
         private void OnEnable()
@@ -120,13 +122,26 @@ namespace VoidHarvest.Features.StationServices.Views
             _root.RegisterCallback<PointerEnterEvent>(_ => _inputBridge?.SetPointerOverScrollUI(true));
             _root.RegisterCallback<PointerLeaveEvent>(_ => _inputBridge?.SetPointerOverScrollUI(false));
 
+            // Start async EventBus subscriptions
+            if (_eventBus != null)
+            {
+                _eventCts = new CancellationTokenSource();
+                ListenForDockingCompleted(_eventCts.Token).Forget();
+                ListenForUndockingStarted(_eventCts.Token).Forget();
+            }
+
             _root.style.display = DisplayStyle.None;
+        }
+
+        private void OnDisable()
+        {
+            _eventCts?.Cancel();
+            _eventCts?.Dispose();
+            _eventCts = null;
         }
 
         private void Start()
         {
-            _inputBridge = FindObjectOfType<InputBridge>();
-
             // Get sub-controllers from sibling components
             _cargoController = GetComponent<CargoTransferPanelController>();
             _sellController = GetComponent<SellResourcesPanelController>();
@@ -134,19 +149,13 @@ namespace VoidHarvest.Features.StationServices.Views
             _repairController = GetComponent<BasicRepairPanelController>();
             _summaryController = GetComponent<RefiningJobSummaryController>();
             _creditIndicator = GetComponent<CreditBalanceIndicator>();
-
-            if (_eventBus != null)
-            {
-                _eventCts = new CancellationTokenSource();
-                ListenForDockingCompleted(_eventCts.Token).Forget();
-                ListenForUndockingStarted(_eventCts.Token).Forget();
-            }
         }
 
         private void OnDestroy()
         {
             _eventCts?.Cancel();
             _eventCts?.Dispose();
+            _eventCts = null;
             CleanupControllers();
         }
 

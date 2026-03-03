@@ -209,8 +209,29 @@ namespace VoidHarvest.Features.Procedural.Systems
 
             var rmaCache = new System.Collections.Generic.Dictionary<(Mesh, Material), RenderMeshArray>();
 
+            // Build unique mesh list and register for MeshCollider-based beam impact raycasting
+            var uniqueMeshes = new System.Collections.Generic.List<Mesh>();
+            var meshToIndex = new System.Collections.Generic.Dictionary<Mesh, int>();
+            if (defaultMesh != null && !meshToIndex.ContainsKey(defaultMesh))
+            {
+                meshToIndex[defaultMesh] = uniqueMeshes.Count;
+                uniqueMeshes.Add(defaultMesh);
+            }
+            if (variantMeshes != null)
+            {
+                foreach (var vm in variantMeshes)
+                {
+                    if (vm != null && !meshToIndex.ContainsKey(vm))
+                    {
+                        meshToIndex[vm] = uniqueMeshes.Count;
+                        uniqueMeshes.Add(vm);
+                    }
+                }
+            }
+            AsteroidMeshRegistry.Register(uniqueMeshes.ToArray());
+
             Debug.Log($"[VoidHarvest] AsteroidFieldSystem: meshNormFactor={meshNormFactor:F4}, " +
-                $"useVisualMapping={useVisualMapping}, count={count}");
+                $"useVisualMapping={useVisualMapping}, count={count}, uniqueMeshes={uniqueMeshes.Count}");
 
             var rng = new Unity.Mathematics.Random(config.Seed);
 
@@ -290,7 +311,8 @@ namespace VoidHarvest.Features.Procedural.Systems
                     CrumbleThresholdsPassed = 0,
                     CrumblePauseTimer = 0f,
                     FadeOutTimer = 0f,
-                    MeshNormFactor = meshNormFactor
+                    MeshNormFactor = meshNormFactor,
+                    MeshIndex = meshToIndex.TryGetValue(mesh, out var mi) ? mi : 0
                 });
 
                 em.AddComponentData(entity, new AsteroidOreComponent

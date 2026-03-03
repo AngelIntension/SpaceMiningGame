@@ -84,9 +84,30 @@ namespace VoidHarvest.Features.Ship.Systems
                         cmd.Forward, cmd.Strafe, cmd.Roll,
                         cfg.RotationTorque, newMode);
                 }
+                else if (newMode == ShipFlightMode.Orbit && cmd.HasAlignPoint)
+                {
+                    // Orbit: dedicated two-phase thrust + orbital attitude
+                    float distance = math.length(cmd.AlignPoint - pos.Position);
+
+                    thrust = ShipPhysicsMath.ComputeOrbitThrust(
+                        pos.Position, cmd.AlignPoint, vel.Velocity, distance,
+                        cmd.RadialDistance, cfg.MaxThrust, cfg.Mass,
+                        cfg.LinearDamping, cfg.MaxSpeed);
+
+                    float circleThreshold = math.max(5f, cmd.RadialDistance * 0.1f);
+                    float radiusError = math.abs(distance - cmd.RadialDistance);
+                    float orbitBlend = math.saturate(1f - radiusError / circleThreshold);
+
+                    var tangentPt = ShipPhysicsMath.ComputeOrbitTangentPoint(
+                        pos.Position, cmd.AlignPoint, cmd.RadialDistance);
+
+                    torque = ShipPhysicsMath.ComputeOrbitAlignTorque(
+                        pos.Rotation, pos.Position, cmd.AlignPoint,
+                        tangentPt, orbitBlend, cfg.RotationTorque);
+                }
                 else
                 {
-                    // Auto-pilot: compute based on flight mode and target
+                    // Non-orbit auto-pilot: align, approach, keep-at-range
                     var toTarget = cmd.HasAlignPoint
                         ? math.normalizesafe(cmd.AlignPoint - pos.Position)
                         : forward;
@@ -95,15 +116,12 @@ namespace VoidHarvest.Features.Ship.Systems
                         ? math.length(cmd.AlignPoint - pos.Position)
                         : 0f;
 
-                    // All auto-pilot modes use align torque toward target
                     torque = ShipPhysicsMath.ComputeAlignTorque(forward, toTarget, cfg.RotationTorque);
 
                     thrust = newMode switch
                     {
-                        ShipFlightMode.AlignToPoint => float3.zero, // Align only, no thrust
+                        ShipFlightMode.AlignToPoint => float3.zero,
                         ShipFlightMode.Approach => ShipPhysicsMath.ComputeApproachThrust(
-                            forward, toTarget, distance, cmd.RadialDistance, cfg.MaxThrust),
-                        ShipFlightMode.Orbit => ShipPhysicsMath.ComputeOrbitThrust(
                             forward, toTarget, distance, cmd.RadialDistance, cfg.MaxThrust),
                         ShipFlightMode.KeepAtRange => ShipPhysicsMath.ComputeKeepAtRangeThrust(
                             toTarget, distance, cmd.RadialDistance, cfg.MaxThrust),

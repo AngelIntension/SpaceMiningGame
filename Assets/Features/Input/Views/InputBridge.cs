@@ -13,6 +13,7 @@ using VoidHarvest.Features.Ship.Data;
 using VoidHarvest.Features.Mining.Data;
 using VoidHarvest.Features.Mining.Systems;
 using VoidHarvest.Features.Docking.Data;
+using System.Threading;
 using VoidHarvest.Features.Targeting.Data;
 using VoidHarvest.Features.Targeting.Views;
 
@@ -61,6 +62,9 @@ namespace VoidHarvest.Features.Input.Views
         private int _uiScrollBlockCount;
         private TargetType _selectedTargetType = TargetType.None;
         private DockingPortComponent _selectedDockingPort;
+        private int _ecsInitFailCount;
+        private CancellationTokenSource _stateCts;
+        private int _lastSyncedTargetId = -1;
 
         /// <summary>Type of the currently selected target (Asteroid, Station, None).</summary>
         public TargetType SelectedTargetType => _selectedTargetType;
@@ -69,10 +73,12 @@ namespace VoidHarvest.Features.Input.Views
         /// DI injection point for state store and event bus. See MVP-01: 6DOF Newtonian flight.
         /// </summary>
         [Inject]
-        public void Construct(IStateStore stateStore, IEventBus eventBus)
+        public void Construct(IStateStore stateStore, IEventBus eventBus,
+                              Features.Camera.Views.CameraView cameraView)
         {
             _stateStore = stateStore;
             _eventBus = eventBus;
+            _cameraView = cameraView;
         }
 
         private void Awake()
@@ -118,6 +124,14 @@ namespace VoidHarvest.Features.Input.Views
             // Hotbar 1 = mining laser toggle (MVP)
             if (_hotbarActions[0] != null)
                 _hotbarActions[0].performed += OnHotbar1;
+
+            // Subscribe to state changes to keep local selection in sync
+            if (_eventBus != null)
+            {
+                _stateCts = new CancellationTokenSource();
+                ListenForStateSelectionChanges(_stateCts.Token).Forget();
+                ListenForMiningStopped(_stateCts.Token).Forget();
+            }
         }
 
         private void OnDisable()
@@ -135,12 +149,15 @@ namespace VoidHarvest.Features.Input.Views
 
             if (_hotbarActions[0] != null)
                 _hotbarActions[0].performed -= OnHotbar1;
+
+            _stateCts?.Cancel();
+            _stateCts?.Dispose();
+            _stateCts = null;
         }
 
         private void Start()
         {
             TryInitializeECS();
-            _cameraView = FindFirstObjectByType<Features.Camera.Views.CameraView>();
 
             if (_eventBus != null)
                 ListenForUndockingStarted().Forget();
@@ -152,6 +169,14 @@ namespace VoidHarvest.Features.Input.Views
             await foreach (var _ in _eventBus.Subscribe<UndockingStartedEvent>().WithCancellation(ct))
             {
                 InitiateUndocking();
+            }
+        }
+
+        private async UniTaskVoid ListenForMiningStopped(CancellationToken ct)
+        {
+            await foreach (var _ in _eventBus.Subscribe<MiningStoppedEvent>().WithCancellation(ct))
+            {
+                _isMining = false;
             }
         }
 
@@ -170,7 +195,13 @@ namespace VoidHarvest.Features.Input.Views
         private void TryInitializeECS()
         {
             var world = World.DefaultGameObjectInjectionWorld;
-            if (world == null || !world.IsCreated) return;
+            if (world == null || !world.IsCreated)
+            {
+                _ecsInitFailCount++;
+                if (_ecsInitFailCount == 60)
+                    Debug.LogWarning("[InputBridge] ECS initialization failed after 60 frames");
+                return;
+            }
 
             _entityManager = world.EntityManager;
 
@@ -182,6 +213,13 @@ namespace VoidHarvest.Features.Input.Views
                 _shipEntity = entities[0];
                 entities.Dispose();
                 _ecsReady = true;
+                _ecsInitFailCount = 0;
+            }
+            else
+            {
+                _ecsInitFailCount++;
+                if (_ecsInitFailCount == 60)
+                    Debug.LogWarning("[InputBridge] ECS initialization failed after 60 frames");
             }
         }
 
@@ -200,15 +238,18 @@ namespace VoidHarvest.Features.Input.Views
                 _hasAlignPoint = false;
                 _radialAction = -1;
                 _radialDistance = 0f;
+            }
 
-                // Cancel docking if manual thrust during Docking flight mode
-                if (_ecsReady && _entityManager.Exists(_shipEntity)
-                    && _entityManager.HasComponent<DockingStateComponent>(_shipEntity))
-                {
-                    _entityManager.RemoveComponent<DockingStateComponent>(_shipEntity);
-                    _stateStore?.Dispatch(new CancelDockingAction());
-                    _eventBus?.Publish(new DockingCancelledEvent());
-                }
+            // Cancel docking sequence if manual thrust or autopilot radial action overrides it
+            // Dock action (4) must not cancel its own docking sequence
+            bool hasAutopilotRadial = _radialAction >= 0 && _radialAction != 4; // 4 = Dock
+            if ((hasManualInput || hasAutopilotRadial)
+                && _ecsReady && _entityManager.Exists(_shipEntity)
+                && _entityManager.HasComponent<DockingStateComponent>(_shipEntity))
+            {
+                _entityManager.RemoveComponent<DockingStateComponent>(_shipEntity);
+                _stateStore?.Dispatch(new CancelDockingAction());
+                _eventBus?.Publish(new DockingCancelledEvent());
             }
 
             if (!_entityManager.Exists(_shipEntity)) return;
@@ -418,9 +459,39 @@ namespace VoidHarvest.Features.Input.Views
                 {
                     if (station.TargetId == selection.TargetId)
                     {
-                        _selectedDockingPort = station.GetComponent<DockingPortComponent>();
+                        _selectedDockingPort = station.GetComponentInChildren<DockingPortComponent>();
                         return;
                     }
+                }
+            }
+            else if (selection.TargetType == TargetType.Asteroid && _ecsReady)
+            {
+                // Resolve the ECS entity for the selected asteroid so mining can work
+                var query = _entityManager.CreateEntityQuery(
+                    typeof(AsteroidComponent), typeof(LocalTransform));
+                var entities = query.ToEntityArray(Unity.Collections.Allocator.Temp);
+                for (int i = 0; i < entities.Length; i++)
+                {
+                    if (entities[i].Index == selection.TargetId)
+                    {
+                        _selectedAsteroidEntity = entities[i];
+                        entities.Dispose();
+                        return;
+                    }
+                }
+                entities.Dispose();
+            }
+        }
+
+        private async UniTaskVoid ListenForStateSelectionChanges(CancellationToken ct)
+        {
+            await foreach (var evt in _eventBus.Subscribe<StateChangedEvent<GameState>>().WithCancellation(ct))
+            {
+                var targetId = evt.CurrentState.Loop.Targeting.Selection.TargetId;
+                if (targetId != _lastSyncedTargetId)
+                {
+                    _lastSyncedTargetId = targetId;
+                    SyncSelectionFromState();
                 }
             }
         }
@@ -450,6 +521,15 @@ namespace VoidHarvest.Features.Input.Views
             }
             else if (_selectedTargetId >= 0)
             {
+                if (_selectedAsteroidEntity != Entity.Null && !_entityManager.Exists(_selectedAsteroidEntity))
+                {
+                    Debug.LogWarning("[InputBridge] OnHotbar1: selected asteroid entity no longer exists, clearing selection");
+                    _selectedTargetId = -1;
+                    _selectedAsteroidEntity = Entity.Null;
+                    _selectedTargetType = TargetType.None;
+                    _stateStore.Dispatch(new ClearSelectionAction());
+                    return;
+                }
                 StartMining();
             }
         }
@@ -457,7 +537,15 @@ namespace VoidHarvest.Features.Input.Views
         private void StartMining()
         {
             if (!_entityManager.Exists(_shipEntity)) return;
-            if (_selectedAsteroidEntity == Entity.Null || !_entityManager.Exists(_selectedAsteroidEntity)) return;
+            if (_selectedAsteroidEntity == Entity.Null || !_entityManager.Exists(_selectedAsteroidEntity))
+            {
+                Debug.LogWarning("[InputBridge] StartMining: asteroid entity no longer exists, clearing selection");
+                _selectedTargetId = -1;
+                _selectedAsteroidEntity = Entity.Null;
+                _selectedTargetType = TargetType.None;
+                _stateStore?.Dispatch(new ClearSelectionAction());
+                return;
+            }
 
             // Resolve ore ID from the selected asteroid entity
             string oreId = "unknown";
@@ -533,7 +621,17 @@ namespace VoidHarvest.Features.Input.Views
         /// </summary>
         public void InitiateDocking(DockingPortComponent port)
         {
-            if (!_ecsReady || !_entityManager.Exists(_shipEntity) || port == null) return;
+            if (!_ecsReady)
+            {
+                Debug.LogWarning("[InputBridge] InitiateDocking: ECS not ready");
+                return;
+            }
+            if (!_entityManager.Exists(_shipEntity)) return;
+            if (port == null)
+            {
+                Debug.LogWarning("[InputBridge] InitiateDocking: no docking port found");
+                return;
+            }
 
             var dockingState = new DockingStateComponent
             {
@@ -570,15 +668,52 @@ namespace VoidHarvest.Features.Input.Views
         }
 
         /// <summary>
+        /// Resolves the world position of the currently selected target regardless of type.
+        /// Centralizes type-specific lookups so callers don't need per-type branches.
+        /// </summary>
+        private bool TryGetSelectedTargetPosition(out float3 position)
+        {
+            position = float3.zero;
+            if (_selectedTargetId < 0) return false;
+
+            switch (_selectedTargetType)
+            {
+                case TargetType.Asteroid:
+                    if (!_ecsReady) return false;
+                    if (_selectedAsteroidEntity != Entity.Null
+                        && _entityManager.Exists(_selectedAsteroidEntity)
+                        && _entityManager.HasComponent<LocalTransform>(_selectedAsteroidEntity))
+                    {
+                        position = _entityManager.GetComponentData<LocalTransform>(_selectedAsteroidEntity).Position;
+                        return true;
+                    }
+                    return false;
+
+                case TargetType.Station:
+                    var stations = FindObjectsByType<TargetableStation>(FindObjectsSortMode.None);
+                    foreach (var station in stations)
+                    {
+                        if (station.TargetId == _selectedTargetId)
+                        {
+                            position = (float3)station.transform.position;
+                            return true;
+                        }
+                    }
+                    return false;
+
+                default:
+                    return false;
+            }
+        }
+
+        /// <summary>
         /// Called by RadialMenuController to auto-fly toward the selected target.
         /// Sets align point + radial action so the ECS autopilot handles thrust and rotation.
         /// </summary>
         public void ApproachSelectedTarget(float stopDistance = 50f)
         {
-            if (!_ecsReady) return;
-            if (_selectedAsteroidEntity == Entity.Null || !_entityManager.Exists(_selectedAsteroidEntity)) return;
-            var transform = _entityManager.GetComponentData<LocalTransform>(_selectedAsteroidEntity);
-            _alignPoint = transform.Position;
+            if (!TryGetSelectedTargetPosition(out var pos)) return;
+            _alignPoint = pos;
             _hasAlignPoint = true;
         }
 

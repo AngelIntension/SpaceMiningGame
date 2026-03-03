@@ -71,29 +71,13 @@ namespace VoidHarvest.Features.HUD.Views
         /// DI injection point for the state store. See MVP-04: Right-click radial menu.
         /// </summary>
         [Inject]
-        public void Construct(IStateStore stateStore, IEventBus eventBus)
+        public void Construct(IStateStore stateStore, IEventBus eventBus,
+                              InputBridge inputBridge, TargetingController targetingController)
         {
             _stateStore = stateStore;
             _eventBus = eventBus;
-        }
-
-        private void Start()
-        {
-            // Pragmatic MVP lookup — will be replaced with DI in later phases
-            _inputBridge = FindObjectOfType<InputBridge>();
-            if (_inputBridge == null)
-            {
-                Debug.LogWarning("[RadialMenuController] InputBridge not found in scene. " +
-                                 "Radial menu commands will not reach the ship.");
-            }
-            _targetingController = FindObjectOfType<TargetingController>();
-
-            // Subscribe to radial menu events from InputBridge
-            if (_eventBus != null)
-            {
-                _eventCts = new CancellationTokenSource();
-                ListenForRadialMenuEvents(_eventCts.Token).Forget();
-            }
+            _inputBridge = inputBridge;
+            _targetingController = targetingController;
         }
 
         private async UniTaskVoid ListenForRadialMenuEvents(CancellationToken ct)
@@ -105,14 +89,15 @@ namespace VoidHarvest.Features.HUD.Views
             }
         }
 
-        private void OnDestroy()
-        {
-            _eventCts?.Cancel();
-            _eventCts?.Dispose();
-        }
-
         private void OnEnable()
         {
+            // Start async EventBus subscription each time we're enabled
+            if (_eventBus != null)
+            {
+                _eventCts = new CancellationTokenSource();
+                ListenForRadialMenuEvents(_eventCts.Token).Forget();
+            }
+
             if (uiDocument == null) return;
 
             var rootVisual = uiDocument.rootVisualElement;
@@ -168,6 +153,11 @@ namespace VoidHarvest.Features.HUD.Views
 
         private void OnDisable()
         {
+            // Cancel async EventBus subscriptions
+            _eventCts?.Cancel();
+            _eventCts?.Dispose();
+            _eventCts = null;
+
             // Unregister callbacks to avoid leaks
             _segmentApproach?.UnregisterCallback<ClickEvent>(_ => OnSegmentClicked(ActionApproach));
             _segmentOrbit?.UnregisterCallback<ClickEvent>(_ => OnSegmentClicked(ActionOrbit));
@@ -191,6 +181,21 @@ namespace VoidHarvest.Features.HUD.Views
             if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
             {
                 Close();
+                return;
+            }
+
+            // Click on empty space (not on a menu button) closes the menu
+            var mouse = Mouse.current;
+            if (mouse != null
+                && (mouse.leftButton.wasPressedThisFrame || mouse.rightButton.wasPressedThisFrame))
+            {
+                var mousePos = mouse.position.ReadValue();
+                var uiPos = new Vector2(mousePos.x, Screen.height - mousePos.y);
+                var picked = _root.panel.Pick(uiPos);
+                if (!IsMenuInteractable(picked))
+                {
+                    Close();
+                }
             }
         }
 
@@ -206,13 +211,19 @@ namespace VoidHarvest.Features.HUD.Views
             bool isDocked = _stateStore?.Current.Loop.Docking.IsDocked ?? false;
             if (isDocked) return;
 
-            // Position menu at mouse cursor
+            // Position menu at mouse cursor, clamped to screen bounds
             var mouse = Mouse.current;
             if (mouse == null) return;
             var mousePos = mouse.position.ReadValue();
             // Convert screen coords to UI Toolkit coords (Y is flipped)
             float uiX = mousePos.x - 150f; // Center the 300px menu
             float uiY = Screen.height - mousePos.y - 150f;
+
+            // Clamp so the 300×300 radial + 530px-wide distance submenu stay on screen
+            const float menuSize = 300f;
+            const float totalWidth = 530f; // radial (300) + submenu offset (310) + submenu width (220)
+            uiX = Mathf.Clamp(uiX, 0f, Mathf.Max(0f, Screen.width - totalWidth));
+            uiY = Mathf.Clamp(uiY, 0f, Mathf.Max(0f, Screen.height - menuSize));
 
             _root.style.left = uiX;
             _root.style.top = uiY;
@@ -397,7 +408,12 @@ namespace VoidHarvest.Features.HUD.Views
 
         private void OnLockTargetClicked()
         {
-            _targetingController?.AttemptLockOnSelected();
+            if (_targetingController == null)
+            {
+                Debug.LogWarning("[RadialMenuController] TargetingController not found, Lock Target disabled");
+                return;
+            }
+            _targetingController.AttemptLockOnSelected();
             Close();
         }
 
@@ -429,6 +445,22 @@ namespace VoidHarvest.Features.HUD.Views
                 ActionLockTarget => _segmentLockTarget,
                 _ => null
             };
+        }
+
+        /// <summary>
+        /// Returns true if the picked element is a button, slider, or input field
+        /// within the radial menu (segments, presets, confirm, distance slider).
+        /// </summary>
+        private bool IsMenuInteractable(VisualElement picked)
+        {
+            while (picked != null)
+            {
+                if (picked == _root) return false;
+                if (picked is Button || picked is SliderInt || picked is BaseField<int>)
+                    return true;
+                picked = picked.parent;
+            }
+            return false;
         }
     }
 }

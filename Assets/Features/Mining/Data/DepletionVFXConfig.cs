@@ -6,7 +6,7 @@ namespace VoidHarvest.Features.Mining.Data
     /// Configuration for asteroid depletion visual effects.
     /// Vein glow, crumble bursts, and fragment explosion parameters.
     /// </summary>
-    [CreateAssetMenu(menuName = "VoidHarvest/Mining/DepletionVFXConfig", fileName = "DepletionVFXConfig")]
+    [CreateAssetMenu(menuName = "VoidHarvest/Mining/Depletion VFX Config", fileName = "DepletionVFXConfig")]
     public class DepletionVFXConfig : ScriptableObject
     {
         [Header("Vein Glow")]

@@ -29,7 +29,7 @@ namespace VoidHarvest.Features.StationServices.Views
         {
             if (_stateStore == null) return;
 
-            float currentTime = Time.time;
+            float currentTime = Time.realtimeSinceStartup;
             var services = _stateStore.Current.Loop.StationServices;
 
             foreach (var stationJobs in services.RefiningJobs)

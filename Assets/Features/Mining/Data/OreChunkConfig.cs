@@ -6,7 +6,7 @@ namespace VoidHarvest.Features.Mining.Data
     /// Configuration for cosmetic ore chunk collection feedback.
     /// Spawn timing, chunk physics, and collection parameters.
     /// </summary>
-    [CreateAssetMenu(menuName = "VoidHarvest/Mining/OreChunkConfig", fileName = "OreChunkConfig")]
+    [CreateAssetMenu(menuName = "VoidHarvest/Mining/Ore Chunk Config", fileName = "OreChunkConfig")]
     public class OreChunkConfig : ScriptableObject
     {
         [Header("Spawn Timing")]

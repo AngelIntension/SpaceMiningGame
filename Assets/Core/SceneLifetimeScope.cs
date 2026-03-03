@@ -5,11 +5,20 @@ using VoidHarvest.Features.Mining.Data;
 using VoidHarvest.Features.Docking.Data;
 using VoidHarvest.Features.StationServices.Data;
 using VoidHarvest.Features.Targeting.Data;
+using VoidHarvest.Features.Camera.Views;
+using VoidHarvest.Features.Input.Views;
 using VoidHarvest.Features.Targeting.Views;
 
 /// <summary>
 /// Per-scene DI scope. Child of RootLifetimeScope; registers scene-specific services.
 /// See Constitution § VI: Explicit Over Implicit.
+///
+/// Async EventBus Subscription Convention (Spec 008 FR-032):
+///   OnEnable  — create CancellationTokenSource, start async subscriptions
+///   OnDisable — cancel + dispose CTS, null the field
+///   OnDestroy — safety net calling Cleanup() (guards double-dispose)
+/// This ensures subscriptions are active only while the component is enabled,
+/// preventing duplicate handlers on enable/disable cycles and leaked listeners.
 /// </summary>
 public class SceneLifetimeScope : LifetimeScope
 {
@@ -63,5 +72,12 @@ public class SceneLifetimeScope : LifetimeScope
             builder.RegisterInstance(targetingAudioConfig);
         if (targetingVFXConfig != null)
             builder.RegisterInstance(targetingVFXConfig);
+
+        // View-layer MonoBehaviour singletons (scene-placed).
+        // Enables [Inject] resolution instead of fragile FindObjectOfType.
+        builder.RegisterComponentInHierarchy<InputBridge>();
+        builder.RegisterComponentInHierarchy<CameraView>();
+        builder.RegisterComponentInHierarchy<TargetingController>();
+        builder.RegisterComponentInHierarchy<TargetPreviewManager>();
     }
 }

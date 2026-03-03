@@ -6,7 +6,7 @@ namespace VoidHarvest.Features.Mining.Data
     /// Configuration for mining spatial audio feedback.
     /// Clip references and volume/pitch parameters for all 6 audio cues.
     /// </summary>
-    [CreateAssetMenu(menuName = "VoidHarvest/Mining/MiningAudioConfig", fileName = "MiningAudioConfig")]
+    [CreateAssetMenu(menuName = "VoidHarvest/Mining/Mining Audio Config", fileName = "MiningAudioConfig")]
     public class MiningAudioConfig : ScriptableObject
     {
         [Header("Laser Hum")]

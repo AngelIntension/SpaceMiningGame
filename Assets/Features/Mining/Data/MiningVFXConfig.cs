@@ -6,7 +6,7 @@ namespace VoidHarvest.Features.Mining.Data
     /// Configuration for mining beam visual effects.
     /// Beam pulse, impact sparks, and heat shimmer parameters.
     /// </summary>
-    [CreateAssetMenu(menuName = "VoidHarvest/Mining/MiningVFXConfig", fileName = "MiningVFXConfig")]
+    [CreateAssetMenu(menuName = "VoidHarvest/Mining/Mining VFX Config", fileName = "MiningVFXConfig")]
     public class MiningVFXConfig : ScriptableObject
     {
         [Header("Beam")]

@@ -6,7 +6,7 @@ namespace VoidHarvest.Features.Docking.Data
     /// Designer-tunable audio configuration for docking sequences.
     /// See Spec 004 US5: Docking Audio & Visual Feedback.
     /// </summary>
-    [CreateAssetMenu(menuName = "VoidHarvest/DockingAudioConfig")]
+    [CreateAssetMenu(menuName = "VoidHarvest/Docking/Docking Audio Config")]
     public class DockingAudioConfig : ScriptableObject
     {
         [Header("Approach")]

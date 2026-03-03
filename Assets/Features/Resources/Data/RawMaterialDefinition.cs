@@ -6,7 +6,7 @@ namespace VoidHarvest.Features.Resources.Data
     /// Static data definition for a raw material type (processed output from refining).
     /// See Spec 006: Station Services.
     /// </summary>
-    [CreateAssetMenu(menuName = "VoidHarvest/Raw Material Definition")]
+    [CreateAssetMenu(menuName = "VoidHarvest/Station/Raw Material Definition")]
     public class RawMaterialDefinition : ScriptableObject
     {
         /// <summary>Unique identifier for this material type (e.g., "luminite_ingots").</summary>
@@ -27,5 +27,13 @@ namespace VoidHarvest.Features.Resources.Data
 
         /// <summary>Cargo volume consumed per unit.</summary>
         public float VolumePerUnit;
+
+        private void OnValidate()
+        {
+            if (string.IsNullOrEmpty(MaterialId))
+                Debug.LogWarning($"[{name}] MaterialId must not be empty");
+            if (string.IsNullOrEmpty(DisplayName))
+                Debug.LogWarning($"[{name}] DisplayName must not be empty");
+        }
     }
 }

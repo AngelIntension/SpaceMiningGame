@@ -52,12 +52,14 @@ namespace VoidHarvest.Features.Targeting.Views
 
         [Inject]
         public void Construct(IStateStore stateStore, IEventBus eventBus,
-                              TargetingConfig config, TargetingVFXConfig vfxConfig)
+                              TargetingConfig config, TargetingVFXConfig vfxConfig,
+                              TargetPreviewManager previewManager)
         {
             _stateStore = stateStore;
             _eventBus = eventBus;
             _config = config;
             _vfxConfig = vfxConfig;
+            _previewManager = previewManager;
         }
 
         private void Start()
@@ -65,12 +67,12 @@ namespace VoidHarvest.Features.Targeting.Views
             _mainCamera = Camera.main;
             TryInitializeECS();
 
-            _previewManager = FindObjectOfType<TargetPreviewManager>();
-
             // Cache the Cinemachine tracking target (the ship's actual transform)
             var cinemachineCam = FindObjectOfType<CinemachineCamera>();
             if (cinemachineCam != null)
                 _shipTransform = cinemachineCam.Target.TrackingTarget;
+            else
+                Debug.LogWarning("[TargetingController] CinemachineCamera not found, ship tracking unavailable");
 
             if (uiDocument != null && _config != null)
             {
