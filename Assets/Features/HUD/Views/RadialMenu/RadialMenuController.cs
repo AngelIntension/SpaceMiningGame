@@ -181,6 +181,21 @@ namespace VoidHarvest.Features.HUD.Views
             if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
             {
                 Close();
+                return;
+            }
+
+            // Click on empty space (not on a menu button) closes the menu
+            var mouse = Mouse.current;
+            if (mouse != null
+                && (mouse.leftButton.wasPressedThisFrame || mouse.rightButton.wasPressedThisFrame))
+            {
+                var mousePos = mouse.position.ReadValue();
+                var uiPos = new Vector2(mousePos.x, Screen.height - mousePos.y);
+                var picked = _root.panel.Pick(uiPos);
+                if (!IsMenuInteractable(picked))
+                {
+                    Close();
+                }
             }
         }
 
@@ -430,6 +445,22 @@ namespace VoidHarvest.Features.HUD.Views
                 ActionLockTarget => _segmentLockTarget,
                 _ => null
             };
+        }
+
+        /// <summary>
+        /// Returns true if the picked element is a button, slider, or input field
+        /// within the radial menu (segments, presets, confirm, distance slider).
+        /// </summary>
+        private bool IsMenuInteractable(VisualElement picked)
+        {
+            while (picked != null)
+            {
+                if (picked == _root) return false;
+                if (picked is Button || picked is SliderInt || picked is BaseField<int>)
+                    return true;
+                picked = picked.parent;
+            }
+            return false;
         }
     }
 }
