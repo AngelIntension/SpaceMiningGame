@@ -82,6 +82,14 @@ namespace VoidHarvest.Features.Targeting.Views
         {
             float range = Vector3.Distance(shipPos, targetPos);
             _rangeLabel.text = TargetingMath.FormatRange(range);
+
+            // Reassign RT as background each frame to force UI Toolkit to re-read content
+            if (_previewRT != null)
+            {
+                _viewport.style.backgroundImage = new StyleBackground(
+                    Background.FromRenderTexture(_previewRT));
+                _viewport.MarkDirtyRepaint();
+            }
         }
 
         private void OnDismiss()

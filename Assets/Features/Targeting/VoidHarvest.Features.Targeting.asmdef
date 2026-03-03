@@ -10,6 +10,7 @@
         "Unity.Entities",
         "Unity.Entities.Graphics",
         "Unity.Entities.Hybrid",
+        "Unity.Cinemachine",
         "Unity.Mathematics",
         "Unity.Burst",
         "Unity.Collections",

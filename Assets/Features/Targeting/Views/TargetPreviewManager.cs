@@ -14,6 +14,8 @@ namespace VoidHarvest.Features.Targeting.Views
     /// <summary>
     /// Manages preview slots for target card viewports. Each locked target gets
     /// an isolated clone + camera + RenderTexture on the "TargetPreview" layer.
+    /// Camera angle mirrors the ship-to-target perspective; scene directional
+    /// light illuminates clones naturally via URP.
     /// See Spec 007: In-Flight Targeting (FR-028).
     /// </summary>
     public sealed class TargetPreviewManager : MonoBehaviour
@@ -25,6 +27,7 @@ namespace VoidHarvest.Features.Targeting.Views
             public GameObject Clone;
             public Camera PreviewCamera;
             public RenderTexture RenderTexture;
+            public float ViewDistance;
             public bool Active;
         }
 
@@ -119,6 +122,41 @@ namespace VoidHarvest.Features.Targeting.Views
             }
         }
 
+        /// <summary>
+        /// Update preview camera for a specific target to mirror ship-to-target perspective.
+        /// Called each frame from TargetingController with live world positions.
+        /// </summary>
+        public void UpdatePreviewCamera(int targetId, Vector3 shipWorldPos, Vector3 targetWorldPos)
+        {
+            if (_slots == null) return;
+
+            for (int i = 0; i < _slots.Length; i++)
+            {
+                if (!_slots[i].Active || _slots[i].TargetId != targetId) continue;
+
+                var slot = _slots[i];
+                if (slot.Clone == null || slot.PreviewCamera == null) return;
+
+                Vector3 clonePos = slot.Clone.transform.position;
+
+                // Direction from ship to target (check before normalization)
+                Vector3 rawDir = targetWorldPos - shipWorldPos;
+                Vector3 viewDir = rawDir.sqrMagnitude > 0.001f
+                    ? rawDir.normalized
+                    : Vector3.forward;
+
+                // Position camera behind the clone relative to ship viewing direction
+                float dist = slot.ViewDistance;
+                Vector3 newCamPos = clonePos - viewDir * dist;
+                slot.PreviewCamera.transform.position = newCamPos;
+                slot.PreviewCamera.transform.LookAt(clonePos);
+
+                // Force camera to re-render this frame
+                slot.PreviewCamera.Render();
+                return;
+            }
+        }
+
         private void CreateSlot(ref PreviewSlot slot, int index, int targetId, TargetType targetType)
         {
             int rtWidth = _config != null ? _config.ViewportRenderWidth : 140;
@@ -138,6 +176,8 @@ namespace VoidHarvest.Features.Targeting.Views
             var rt = new RenderTexture(rtWidth, rtHeight, 16);
             rt.name = $"TargetPreview_{targetId}";
 
+            float viewDistance = GetViewDistance(clone);
+
             // Create preview camera
             var camGO = new GameObject($"PreviewCam_{targetId}");
             camGO.transform.SetParent(transform);
@@ -150,8 +190,7 @@ namespace VoidHarvest.Features.Targeting.Views
             cam.nearClipPlane = 0.1f;
             cam.farClipPlane = 200f;
 
-            // Position camera looking at clone
-            float viewDistance = GetViewDistance(clone);
+            // Initial camera position (will be updated per-frame)
             cam.transform.position = slotPos + new Vector3(0f, viewDistance * 0.3f, -viewDistance);
             cam.transform.LookAt(slotPos);
 
@@ -162,6 +201,7 @@ namespace VoidHarvest.Features.Targeting.Views
                 Clone = clone,
                 PreviewCamera = cam,
                 RenderTexture = rt,
+                ViewDistance = viewDistance,
                 Active = true
             };
         }
@@ -282,23 +322,6 @@ namespace VoidHarvest.Features.Targeting.Views
                 }
             }
             return null;
-        }
-
-        private void LateUpdate()
-        {
-            if (_slots == null) return;
-            if (!_ecsReady) TryInitializeECS();
-
-            for (int i = 0; i < _slots.Length; i++)
-            {
-                if (!_slots[i].Active) continue;
-
-                // Slowly rotate clone for visual interest
-                if (_slots[i].Clone != null)
-                {
-                    _slots[i].Clone.transform.Rotate(Vector3.up, 20f * Time.deltaTime, Space.World);
-                }
-            }
         }
 
         private void DestroySlot(ref PreviewSlot slot)

@@ -6,6 +6,7 @@ using VContainer;
 using VoidHarvest.Core.EventBus;
 using VoidHarvest.Core.Extensions;
 using VoidHarvest.Core.State;
+using Unity.Cinemachine;
 using VoidHarvest.Features.Targeting.Data;
 using VoidHarvest.Features.Targeting.Systems;
 using VoidHarvest.Features.Mining.Data;
@@ -45,6 +46,7 @@ namespace VoidHarvest.Features.Targeting.Views
         private float _cachedRadius;
         private bool _cacheValid;
 
+        private Transform _shipTransform;
         private int _prevSelectionId = -1;
         private float[] _cornerOpacities = new float[] { 1f, 1f, 1f, 1f };
 
@@ -64,6 +66,11 @@ namespace VoidHarvest.Features.Targeting.Views
             TryInitializeECS();
 
             _previewManager = FindObjectOfType<TargetPreviewManager>();
+
+            // Cache the Cinemachine tracking target (the ship's actual transform)
+            var cinemachineCam = FindObjectOfType<CinemachineCamera>();
+            if (cinemachineCam != null)
+                _shipTransform = cinemachineCam.Target.TrackingTarget;
 
             if (uiDocument != null && _config != null)
             {
@@ -351,6 +358,18 @@ namespace VoidHarvest.Features.Targeting.Views
 
             // Target card panel
             _cardPanelView?.Update(targeting.LockedTargets, this, shipPos);
+
+            // Update preview cameras to mirror ship-to-target perspective
+            if (_previewManager != null && _shipTransform != null)
+            {
+                Vector3 shipVisualPos = _shipTransform.position;
+                var locked = targeting.LockedTargets;
+                for (int i = 0; i < locked.Length; i++)
+                {
+                    if (GetTargetWorldPosition(locked[i].TargetId, out var targetPos, out _))
+                        _previewManager.UpdatePreviewCamera(locked[i].TargetId, shipVisualPos, targetPos);
+                }
+            }
         }
 
         private Vector3 GetShipPosition()
