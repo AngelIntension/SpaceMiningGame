@@ -31,14 +31,6 @@
             <ui:Button name="hotbar-8" text="8" class="hotbar-slot" />
         </ui:VisualElement>
 
-        <!-- Center-right: Target info panel -->
-        <ui:VisualElement name="target-info-panel" class="hud-panel target-info-panel">
-            <ui:Label name="target-name" text="" class="target-label" />
-            <ui:Label name="target-ore-type" text="" class="target-sublabel" />
-            <ui:Label name="target-distance" text="" class="target-sublabel" />
-            <ui:Label name="target-mass" text="" class="target-sublabel" />
-        </ui:VisualElement>
-
         <!-- Center: Warning panel -->
         <ui:VisualElement name="warning-panel" class="warning-panel">
             <ui:Label name="warning-text" text="" class="warning-text" />

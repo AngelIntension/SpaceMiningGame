@@ -1,0 +1,199 @@
+.targeting-root {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    picking-mode: ignore;
+}
+
+/* --- Reticle Container --- */
+.reticle-container {
+    position: absolute;
+    display: none;
+    picking-mode: ignore;
+}
+
+/* --- Corner Brackets --- */
+.reticle-corner {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    picking-mode: ignore;
+}
+
+.reticle-corner-tl {
+    border-top-width: 2px;
+    border-left-width: 2px;
+    border-top-color: rgba(0, 200, 255, 0.8);
+    border-left-color: rgba(0, 200, 255, 0.8);
+}
+
+.reticle-corner-tr {
+    border-top-width: 2px;
+    border-right-width: 2px;
+    border-top-color: rgba(0, 200, 255, 0.8);
+    border-right-color: rgba(0, 200, 255, 0.8);
+}
+
+.reticle-corner-bl {
+    border-bottom-width: 2px;
+    border-left-width: 2px;
+    border-bottom-color: rgba(0, 200, 255, 0.8);
+    border-left-color: rgba(0, 200, 255, 0.8);
+}
+
+.reticle-corner-br {
+    border-bottom-width: 2px;
+    border-right-width: 2px;
+    border-bottom-color: rgba(0, 200, 255, 0.8);
+    border-right-color: rgba(0, 200, 255, 0.8);
+}
+
+/* --- Reticle Label Groups --- */
+.reticle-labels-group {
+    position: absolute;
+    left: 50%;
+    translate: -50% 0;
+    flex-direction: column;
+    align-items: center;
+    picking-mode: ignore;
+}
+
+.reticle-labels-above {
+    bottom: 100%;
+    margin-bottom: 4px;
+}
+
+.reticle-labels-below {
+    top: 100%;
+    margin-top: 4px;
+}
+
+/* --- Reticle Labels --- */
+.reticle-label {
+    color: rgba(200, 230, 255, 0.9);
+    font-size: 12px;
+    -unity-text-align: middle-center;
+    picking-mode: ignore;
+}
+
+.reticle-label-type {
+    margin-top: 2px;
+    color: rgba(0, 200, 255, 0.7);
+    font-size: 11px;
+}
+
+.reticle-label-mass {
+    margin-top: 2px;
+    color: rgba(180, 220, 255, 0.7);
+    font-size: 11px;
+}
+
+/* --- Off-Screen Indicator --- */
+.offscreen-indicator {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    background-color: rgba(0, 200, 255, 0.6);
+    display: none;
+    picking-mode: ignore;
+    /* Triangle shape via borders */
+    border-top-width: 8px;
+    border-bottom-width: 8px;
+    border-left-width: 6px;
+    border-right-width: 6px;
+    border-top-color: transparent;
+    border-bottom-color: transparent;
+    border-left-color: transparent;
+    border-right-color: rgba(0, 200, 255, 0.6);
+    background-color: transparent;
+}
+
+/* --- Lock Progress --- */
+.lock-progress-container {
+    position: absolute;
+    display: none;
+    picking-mode: ignore;
+}
+
+.lock-progress-ring {
+    position: absolute;
+    left: -3px;
+    top: -3px;
+    right: -3px;
+    bottom: -3px;
+    border-width: 2px;
+    border-color: rgba(0, 200, 255, 0);
+    picking-mode: ignore;
+}
+
+.lock-flash {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0);
+    picking-mode: ignore;
+}
+
+/* --- Target Cards Panel --- */
+.target-cards-panel {
+    position: absolute;
+    top: 16px;
+    right: 230px;
+    flex-direction: row-reverse;
+    picking-mode: ignore;
+}
+
+/* --- Target Card --- */
+.target-card {
+    width: 140px;
+    height: 180px;
+    margin-left: 8px;
+    background-color: rgba(8, 12, 24, 0.75);
+    border-color: rgba(0, 200, 255, 0.3);
+    border-width: 1px;
+    border-radius: 4px;
+}
+
+.target-card-viewport {
+    width: 100%;
+    height: 100px;
+    background-color: rgba(8, 12, 24, 0.9);
+}
+
+.target-card-dismiss {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    width: 16px;
+    height: 16px;
+    font-size: 10px;
+    color: rgba(200, 230, 255, 0.7);
+    background-color: rgba(40, 40, 60, 0.8);
+    border-color: rgba(0, 200, 255, 0.3);
+    border-width: 1px;
+    border-radius: 2px;
+    -unity-text-align: middle-center;
+}
+
+.target-card-dismiss:hover {
+    background-color: rgba(180, 40, 40, 0.8);
+    border-color: rgba(255, 60, 60, 0.6);
+}
+
+.target-card-info {
+    padding: 4px;
+}
+
+.target-card-name {
+    color: rgba(200, 230, 255, 0.9);
+    font-size: 11px;
+    -unity-font-style: bold;
+}
+
+.target-card-range {
+    color: rgba(180, 220, 255, 0.7);
+    font-size: 10px;
+    margin-top: 2px;
+}

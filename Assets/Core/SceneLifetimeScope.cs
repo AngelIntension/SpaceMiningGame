@@ -4,6 +4,8 @@ using VContainer.Unity;
 using VoidHarvest.Features.Mining.Data;
 using VoidHarvest.Features.Docking.Data;
 using VoidHarvest.Features.StationServices.Data;
+using VoidHarvest.Features.Targeting.Data;
+using VoidHarvest.Features.Targeting.Views;
 
 /// <summary>
 /// Per-scene DI scope. Child of RootLifetimeScope; registers scene-specific services.
@@ -25,6 +27,11 @@ public class SceneLifetimeScope : LifetimeScope
     [Header("Station Services")]
     [SerializeField] private StationServicesConfigMap stationServicesConfigMap;
     [SerializeField] private GameServicesConfig gameServicesConfig;
+
+    [Header("Targeting")]
+    [SerializeField] private TargetingConfig targetingConfig;
+    [SerializeField] private TargetingAudioConfig targetingAudioConfig;
+    [SerializeField] private TargetingVFXConfig targetingVFXConfig;
 
     /// <summary>
     /// Configure scene-level DI bindings. Registers VFX ScriptableObject configs
@@ -50,5 +57,11 @@ public class SceneLifetimeScope : LifetimeScope
             builder.RegisterInstance(stationServicesConfigMap);
         if (gameServicesConfig != null)
             builder.RegisterInstance(gameServicesConfig);
+        if (targetingConfig != null)
+            builder.RegisterInstance(targetingConfig);
+        if (targetingAudioConfig != null)
+            builder.RegisterInstance(targetingAudioConfig);
+        if (targetingVFXConfig != null)
+            builder.RegisterInstance(targetingVFXConfig);
     }
 }

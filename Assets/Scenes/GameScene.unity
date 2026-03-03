@@ -190,6 +190,7 @@ MonoBehaviour:
   - {fileID: 1021181112}
   - {fileID: 1597571234}
   - {fileID: 729069247}
+  - {fileID: 1231240174}
   miningVFXConfig: {fileID: 11400000, guid: 41e789176bcdb4444a5b0a2aeb58c75b, type: 2}
   depletionVFXConfig: {fileID: 11400000, guid: c0ea49c6882dea84aab85531f6b4737d, type: 2}
   oreChunkConfig: {fileID: 11400000, guid: 2179d0b939cbc8748b8a220df4f46f00, type: 2}
@@ -199,6 +200,9 @@ MonoBehaviour:
   dockingAudioConfig: {fileID: 11400000, guid: 7fd96f0185cb7c74db4372eaec51fd77, type: 2}
   stationServicesConfigMap: {fileID: 11400000, guid: 0f659ae2e54c2d94fb2c3017149071d4, type: 2}
   gameServicesConfig: {fileID: 11400000, guid: b84a89a6b27ab85439d5ec802106f7f1, type: 2}
+  targetingConfig: {fileID: 11400000, guid: 565b8a5c94bf6d24a9bb9968504ee348, type: 2}
+  targetingAudioConfig: {fileID: 11400000, guid: b3b099375363acf42a8574c86fae1921, type: 2}
+  targetingVFXConfig: {fileID: 11400000, guid: a85c4ed4292b40c41a7d9e713914f582, type: 2}
 --- !u!1 &330585543
 GameObject:
   m_ObjectHideFlags: 0
@@ -1488,6 +1492,200 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1231240174
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1231240180}
+  - component: {fileID: 1231240179}
+  - component: {fileID: 1231240178}
+  - component: {fileID: 1231240177}
+  - component: {fileID: 1231240176}
+  - component: {fileID: 1231240175}
+  m_Layer: 0
+  m_Name: TargetingSystem
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!82 &1231240175
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1231240174}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 0}
+  m_PlayOnAwake: 1
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+--- !u!114 &1231240176
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1231240174}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 19102, guid: 0000000000000000e000000000000000, type: 0}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.dll::UnityEngine.UIElements.UIDocument
+  m_PanelSettings: {fileID: 0}
+  m_ParentUI: {fileID: 0}
+  sourceAsset: {fileID: 9197481963319205126, guid: 34a1b2348d3e05a40afd068294bdd057, type: 3}
+  m_SortingOrder: 0
+  m_Position: 0
+  m_WorldSpaceSizeMode: 1
+  m_WorldSpaceWidth: 1920
+  m_WorldSpaceHeight: 1080
+  m_PivotReferenceSize: 0
+  m_Pivot: 0
+  m_WorldSpaceCollider: {fileID: 0}
+--- !u!114 &1231240177
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1231240174}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: af7b5c7eef89ad04196278ce036efdd6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: VoidHarvest.Features.Targeting::VoidHarvest.Features.Targeting.Views.TargetingAudioController
+--- !u!114 &1231240178
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1231240174}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 71ec1b906d67f684fbd257d68518b484, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: VoidHarvest.Features.Targeting::VoidHarvest.Features.Targeting.Views.TargetPreviewManager
+--- !u!114 &1231240179
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1231240174}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 522658b20a7eda94ca454fc80d6589ab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: VoidHarvest.Features.Targeting::VoidHarvest.Features.Targeting.Views.TargetingController
+  uiDocument: {fileID: 1231240176}
+  shipConfig: {fileID: 11400000, guid: 012645816f5baab48a6d45a67a292794, type: 2}
+--- !u!4 &1231240180
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1231240174}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1236084347
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1604,8 +1802,29 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 4718422465969686566, guid: 367ac946a7b4aaa4382ff7f2b4a8233f, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1274278901}
   m_SourcePrefab: {fileID: 100100000, guid: 367ac946a7b4aaa4382ff7f2b4a8233f, type: 3}
+--- !u!1 &1274278900 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4718422465969686566, guid: 367ac946a7b4aaa4382ff7f2b4a8233f, type: 3}
+  m_PrefabInstance: {fileID: 1274278899}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1274278901
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1274278900}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac8229405a7f0ac4d98d2e3bb2919cdd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: VoidHarvest.Features.Targeting::VoidHarvest.Features.Targeting.Views.TargetableStation
+  stationId: 2
 --- !u!1 &1351852029
 GameObject:
   m_ObjectHideFlags: 0
@@ -1713,8 +1932,29 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 9062628008030399983, guid: 1a617c619e08b4e48ba3f4959c9a632a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1359845203}
   m_SourcePrefab: {fileID: 100100000, guid: 1a617c619e08b4e48ba3f4959c9a632a, type: 3}
+--- !u!1 &1359845202 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 9062628008030399983, guid: 1a617c619e08b4e48ba3f4959c9a632a, type: 3}
+  m_PrefabInstance: {fileID: 1359845201}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1359845203
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1359845202}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac8229405a7f0ac4d98d2e3bb2919cdd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: VoidHarvest.Features.Targeting::VoidHarvest.Features.Targeting.Views.TargetableStation
+  stationId: 1
 --- !u!1 &1537462336
 GameObject:
   m_ObjectHideFlags: 0
@@ -2005,3 +2245,4 @@ SceneRoots:
   - {fileID: 729069250}
   - {fileID: 1359845201}
   - {fileID: 1274278899}
+  - {fileID: 1231240180}

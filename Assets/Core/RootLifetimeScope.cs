@@ -6,8 +6,11 @@ using VoidHarvest.Core.EventBus;
 using VoidHarvest.Core.State;
 using VoidHarvest.Features.Ship.Systems;
 using VoidHarvest.Features.Mining.Systems;
+using VoidHarvest.Features.Docking.Data;
 using VoidHarvest.Features.StationServices.Data;
 using VoidHarvest.Features.StationServices.Systems;
+using VoidHarvest.Features.Targeting.Data;
+using VoidHarvest.Features.Targeting.Systems;
 using CameraReducerReal = VoidHarvest.Features.Camera.Systems.CameraReducer;
 using ShipStateReducerReal = VoidHarvest.Features.Ship.Systems.ShipStateReducer;
 using MiningReducerReal = VoidHarvest.Features.Mining.Systems.MiningReducer;
@@ -61,10 +64,14 @@ public sealed class RootLifetimeScope : LifetimeScope
     private static GameState CompositeReducer(GameState state, IGameAction action)
         => action switch
         {
-            // Cross-cutting station services actions first (before single-slice routing)
+            // Cross-cutting actions first (before single-slice routing)
             TransferToStationAction a => HandleTransferToStation(state, a),
             TransferToShipAction a    => HandleTransferToShip(state, a),
             RepairShipAction a        => HandleRepairShip(state, a),
+
+            // Cross-cutting: dock/undock clears all target locks
+            CompleteDockingAction a => HandleDockingWithLockClear(state, a),
+            CompleteUndockingAction a => HandleUndockingWithLockClear(state, a),
 
             // Single-slice routing
             ICameraAction a    => state with { Camera = CameraReducerReal.Reduce(state.Camera, a) },
@@ -77,6 +84,7 @@ public sealed class RootLifetimeScope : LifetimeScope
             IMarketAction a    => state with { Loop = state.Loop with { Market = MarketReducer.Reduce(state.Loop.Market, a) } },
             IBaseAction a      => state with { Loop = state.Loop with { Base = BaseReducer.Reduce(state.Loop.Base, a) } },
             IStationServicesAction a => state with { Loop = state.Loop with { StationServices = StationServicesReducerReal.Reduce(state.Loop.StationServices, a) } },
+            ITargetingAction a => state with { Loop = state.Loop with { Targeting = TargetingReducer.Reduce(state.Loop.Targeting, a) } },
             _ => state
         };
 
@@ -173,6 +181,40 @@ public sealed class RootLifetimeScope : LifetimeScope
         };
     }
 
+    /// <summary>
+    /// Cross-cutting: complete docking AND clear all target locks.
+    /// </summary>
+    private static GameState HandleDockingWithLockClear(GameState state, CompleteDockingAction a)
+    {
+        var updatedDocking = DockingReducerReal.Reduce(state.Loop.Docking, a);
+        var updatedTargeting = TargetingReducer.Reduce(state.Loop.Targeting, new ClearAllLocksAction());
+        return state with
+        {
+            Loop = state.Loop with
+            {
+                Docking = updatedDocking,
+                Targeting = updatedTargeting
+            }
+        };
+    }
+
+    /// <summary>
+    /// Cross-cutting: complete undocking AND clear all target locks.
+    /// </summary>
+    private static GameState HandleUndockingWithLockClear(GameState state, CompleteUndockingAction a)
+    {
+        var updatedDocking = DockingReducerReal.Reduce(state.Loop.Docking, a);
+        var updatedTargeting = TargetingReducer.Reduce(state.Loop.Targeting, new ClearAllLocksAction());
+        return state with
+        {
+            Loop = state.Loop with
+            {
+                Docking = updatedDocking,
+                Targeting = updatedTargeting
+            }
+        };
+    }
+
     private static GameState CreateDefaultGameState()
     {
         var stationServices = StationServicesState.Empty with
@@ -192,7 +234,8 @@ public sealed class RootLifetimeScope : LifetimeScope
                 FleetState.Empty,
                 BaseState.Empty,
                 MarketState.Empty,
-                DockingState.Empty
+                DockingState.Empty,
+                TargetingState.Empty
             ),
             ActiveShipPhysics: ShipState.Default,
             Camera: CameraState.Default,

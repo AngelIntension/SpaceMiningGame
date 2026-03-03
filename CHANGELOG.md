@@ -4,6 +4,79 @@ All notable changes to VoidHarvest are documented in this file.
 
 ## [Unreleased]
 
+### Spec 007 — In-Flight Targeting & Multi-Target Lock System
+
+**Feature**: EVE Online-inspired target selection, timed lock acquisition,
+multi-target HUD cards with live RenderTexture viewports, off-screen tracking,
+and per-ship lock configuration.
+
+#### Added
+- `TargetingState` sealed record in Features/Targeting/Data — selection,
+  lock acquisition, and locked targets (ImmutableArray).
+- `TargetingReducer` pure static reducer handling 8 action types:
+  select/clear target, begin/tick/complete/cancel lock, unlock target,
+  clear all locks.
+- `TargetingMath` pure static class — screen-space bounds projection,
+  viewport clamping, off-screen edge positioning, range formatting.
+- `LockTimeMath` pure static class — per-ship lock time calculation with
+  extensible TargetInfo parameter for future factors.
+- `ITargetable` interface in Core/Extensions — TargetId, DisplayName,
+  TypeLabel, TargetType. Any MonoBehaviour can implement to become targetable.
+- `TargetInfo` readonly struct — immutable target snapshot with factory
+  methods From(ITargetable) and FromAsteroid.
+- `TargetableStation` MonoBehaviour — ITargetable implementation for
+  station GameObjects.
+- `ReticleView` — corner-bracket reticle with name/type above, range below,
+  screen-space tracking, min/max size clamping.
+- `OffScreenIndicatorView` — directional triangle at viewport edge with
+  behind-camera mirroring.
+- `LockProgressView` — progress ring overlay during lock acquisition,
+  corner pulse animation, flash on completion.
+- `TargetCardPanelView` — horizontal panel managing target card lifecycle,
+  reflow on removal.
+- `TargetCardView` — individual card with live RenderTexture viewport,
+  name, range, dismiss button, click-to-select.
+- `TargetPreviewManager` MonoBehaviour — manages preview slots with
+  isolated clones, cameras, and RenderTextures on "TargetPreview" layer.
+  Asteroid previews use ore-colored sphere primitives; station previews
+  clone the station's visual hierarchy.
+- `TargetingController` MonoBehaviour — central orchestrator for reticle,
+  off-screen indicator, lock progress, card panel, ECS position caching,
+  lock tick, cancellation, and target destruction detection.
+- `TargetingAudioController` MonoBehaviour — event-driven audio for lock
+  confirmed, lock failed, slots full, target lost, and acquiring loop with
+  pitch shift.
+- `TargetingConfig` ScriptableObject — reticle padding/size, lock arc
+  width, off-screen margin, viewport render size/FOV, preview stage offset.
+- `TargetingAudioConfig` ScriptableObject — audio clip references for
+  targeting events.
+- `TargetingVFXConfig` ScriptableObject — lock flash duration, reticle
+  pulse speed.
+- 6 targeting events: TargetLockedEvent, TargetUnlockedEvent,
+  LockFailedEvent, LockSlotsFullEvent, TargetLostEvent,
+  AllLocksClearedEvent — all zero-allocation readonly structs.
+- "Lock Target" radial menu segment for all target types.
+- "TargetPreview" layer for isolated viewport rendering.
+- Targeting.uxml and Targeting.uss for all targeting UI elements.
+- Targeting & Locking section in HOWTOPLAY.md.
+- 45 targeting tests across 4 test files.
+
+#### Changed
+- `GameState.GameLoopState` — added `TargetingState Targeting` field.
+- `CompositeReducer` in `RootLifetimeScope` — routes ITargetingAction,
+  dispatches ClearAllLocksAction on dock/undock.
+- `InputBridge` — left-click dispatches SelectTargetAction/ClearSelectionAction
+  via ITargetable interface (replaces hard-coded component checks).
+- `RadialMenuController` — added Lock Target segment at top-left position.
+- `HUD.uxml` — removed target-info-panel (replaced by reticle system).
+- `ShipArchetypeConfig` — added BaseLockTime, MaxTargetLocks, MaxLockRange
+  fields.
+- Main camera culling mask excludes TargetPreview layer.
+
+#### Test Impact
+- 465 tests pass (was 420; 45 new tests for targeting reducer, lock time
+  math, targeting math, target info, and selection integration lifecycle).
+
 ### Spec 006 — Station Services Menu & Data-Driven Refining
 
 **Feature**: Full station economy loop — cargo transfer, resource selling,

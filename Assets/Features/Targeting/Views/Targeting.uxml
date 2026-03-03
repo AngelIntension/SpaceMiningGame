@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <Style src="Targeting.uss" />
+    <ui:VisualElement name="targeting-root" class="targeting-root">
+        <!-- Reticle container: corner brackets + labels, positioned per-frame -->
+        <ui:VisualElement name="reticle-container" class="reticle-container">
+            <ui:VisualElement name="reticle-corner-tl" class="reticle-corner reticle-corner-tl" />
+            <ui:VisualElement name="reticle-corner-tr" class="reticle-corner reticle-corner-tr" />
+            <ui:VisualElement name="reticle-corner-bl" class="reticle-corner reticle-corner-bl" />
+            <ui:VisualElement name="reticle-corner-br" class="reticle-corner reticle-corner-br" />
+
+            <!-- Labels above reticle -->
+            <ui:VisualElement name="reticle-labels-above" class="reticle-labels-group reticle-labels-above">
+                <ui:Label name="target-name-label" class="reticle-label" />
+                <ui:Label name="target-type-label" class="reticle-label reticle-label-type" />
+            </ui:VisualElement>
+
+            <!-- Labels below reticle -->
+            <ui:VisualElement name="reticle-labels-below" class="reticle-labels-group reticle-labels-below">
+                <ui:Label name="target-range-label" class="reticle-label" />
+                <ui:Label name="target-mass-label" class="reticle-label reticle-label-mass" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <!-- Off-screen tracking indicator -->
+        <ui:VisualElement name="offscreen-indicator" class="offscreen-indicator" />
+
+        <!-- Lock progress overlay (on top of reticle) -->
+        <ui:VisualElement name="lock-progress-container" class="lock-progress-container" />
+
+        <!-- Target cards panel (top-right, left of ship-info-panel) -->
+        <ui:VisualElement name="target-cards-panel" class="target-cards-panel" />
+    </ui:VisualElement>
+</ui:UXML>

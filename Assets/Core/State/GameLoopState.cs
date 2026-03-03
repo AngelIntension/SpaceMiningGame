@@ -12,6 +12,7 @@ namespace VoidHarvest.Core.State
         FleetState Fleet,
         BaseState Base,
         MarketState Market,
-        DockingState Docking
+        DockingState Docking,
+        TargetingState Targeting
     );
 }

@@ -10,9 +10,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Rendering:** Universal Render Pipeline (URP) 17.3.0
 - **Platform:** Standalone Windows 64-bit (VR/console planned)
 - **C# Version:** 9.0 / .NET Framework 4.7.1
-- **Constitution:** `.specify/memory/constitution.md` v1.1.0 — the authoritative source for all architectural decisions. Read it before any non-trivial work.
+- **Constitution:** `.specify/memory/constitution.md` v1.3.0 — the authoritative source for all architectural decisions. Read it before any non-trivial work.
 
-**Current phase:** Phase 0 (MVP) — **complete**. 3rd-person camera, EVE-style controls, 6DOF ship physics, mining beam with asteroid depletion, immutable resource inventory, procedural asteroid field, HUD with target info/radial menus/hotbar.
+**Current phase:** Phase 0 (MVP) — **complete**. 3rd-person camera, EVE-style controls, 6DOF ship physics, mining beam with asteroid depletion, immutable resource inventory, procedural asteroid field, HUD with target info/radial menus/hotbar, station docking with services/refining, in-flight targeting with multi-target lock.
 
 ## Build & Development
 
@@ -80,6 +80,9 @@ Assets/
 │   ├── Resources/           # Resource / inventory system
 │   ├── Procedural/          # Asteroid field generation, visual mapping
 │   ├── HUD/                 # In-game UI, radial menus, hotbar
+│   ├── Docking/             # Station docking state machine, snap, events
+│   ├── StationServices/     # Refining, selling, repair, cargo transfer
+│   ├── Targeting/           # Multi-target lock, reticle, target cards
 │   ├── Base/                # Station presets, prefabs (Phase 2+)
 │   ├── TechTree/            # Research / progression (Phase 1+, skeleton)
 │   ├── Economy/             # Market simulation (Phase 3+, skeleton)

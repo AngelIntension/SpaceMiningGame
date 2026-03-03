@@ -37,6 +37,13 @@ namespace VoidHarvest.Features.Ship.Data
         public Mesh HullMesh;
         /// <summary>Visual hull material reference. See MVP-01.</summary>
         public Material HullMaterial;
+
+        /// <summary>Seconds to acquire a target lock. See Spec 007.</summary>
+        public float BaseLockTime = 1.5f;
+        /// <summary>Maximum simultaneous target locks. See Spec 007.</summary>
+        public int MaxTargetLocks = 3;
+        /// <summary>Maximum range in meters for lock acquisition. See Spec 007.</summary>
+        public float MaxLockRange = 5000f;
     }
 
     /// <summary>

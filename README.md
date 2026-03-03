@@ -55,6 +55,9 @@ Assets/
 │   ├── Resources/           # Resource / inventory system
 │   ├── Procedural/          # Asteroid field generation, visual mapping
 │   ├── HUD/                 # In-game UI, radial menus, hotbar
+│   ├── Docking/             # Station docking state machine, snap, events
+│   ├── StationServices/     # Refining, selling, repair, cargo transfer
+│   ├── Targeting/           # Multi-target lock, reticle, target cards
 │   ├── Base/                # Station presets and prefabs
 │   ├── TechTree/            # Research / progression
 │   ├── Economy/             # Market simulation
@@ -75,9 +78,9 @@ Each feature folder uses `Data/`, `Systems/`, `Views/`, `Tests/` sub-folders.
 
 | Phase | Focus | Status |
 |-------|-------|--------|
-| **0 — MVP** | 3rd-person camera, EVE-style controls, 6DOF ship physics, mining beam, procedural asteroid field, HUD | **Complete** |
-| **1** | Ship fleet swapping, basic tech tree (3–4 tiers) | Planned |
-| **2** | Refining, hauling roles, outpost/base building | Planned |
+| **0 — MVP** | 3rd-person camera, EVE-style controls, 6DOF ship physics, mining, procedural asteroids, HUD, docking, station services, targeting | **Complete** |
+| **1** | Ship fleet swapping, basic tech tree (3-4 tiers) | Planned |
+| **2** | Hauling roles, outpost/base building | Planned |
 | **3** | Dynamic economy simulation, deep base customization, multi-ship fleet management | Planned |
 
 ## What's Implemented (Phase 0 MVP)
@@ -92,7 +95,9 @@ Each feature folder uses `Data/`, `Systems/`, `Views/`, `Tests/` sub-folders.
 - **Resource inventory** — immutable state with pure reducers
 - **HUD** — target info panel, warnings, selection outlines, radial menus
 - **Station docking** — approach, magnetic snap, station services menu, undock sequence; 2 station presets (Small Mining Relay, Medium Refinery Hub)
-- **Core infrastructure** — EventBus (UniTask), State Store, VContainer DI; 110+ C# files, 360+ tests, 27 assembly definitions
+- **Station services** — ore refining with deterministic yield, resource selling with credits, cargo transfer between ship and station, basic hull repair; configurable per-station via ScriptableObjects
+- **In-flight targeting** — multi-target lock system with configurable lock time and max locks; screen-space reticle with corner brackets, off-screen directional indicator, lock acquisition progress ring; target card panel with live RenderTexture viewports from ship perspective, dismiss/re-select; radial menu integration for lock actions
+- **Core infrastructure** — EventBus (UniTask), State Store, VContainer DI; 150+ C# files, 465+ tests, 29 assembly definitions
 
 ## Architecture Principles
 

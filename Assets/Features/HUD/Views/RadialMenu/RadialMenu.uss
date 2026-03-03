@@ -94,6 +94,12 @@
     top: 125px;
 }
 
+/* Top-Left: Lock Target */
+.segment-top-left {
+    left: 10px;
+    top: 40px;
+}
+
 /* Bottom-Right: Dock */
 .segment-bottom-right {
     left: 190px;
